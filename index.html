@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Straight Stud Construction LLC | Est. 2021</title>
+    <style>
+        :root { --primary: #0a2540; --accent: #e65100; }
+        body { font-family: system-ui, sans-serif; margin:0; color:#222; line-height:1.65; }
+        header { background: var(--primary); color:white; padding:1rem 0; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+        nav { max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px; }
+        .logo { font-size:1.85rem; font-weight:bold; }
+        .nav-links a { color:white; margin-left:2rem; text-decoration:none; font-weight:500; }
+        .hero {
+            background: linear-gradient(rgba(10,37,64,0.8), rgba(10,37,64,0.8)), url('https://picsum.photos/id/1015/2000/1200') center/cover no-repeat;
+            color:white; text-align:center; padding:170px 20px 140px;
+        }
+        .hero h1 { font-size:3.4rem; margin:0 0 12px; }
+        .hero p { font-size:1.55rem; margin-bottom:30px; }
+        .btn { background:var(--accent); color:white; padding:16px 40px; border:none; font-size:1.15rem; border-radius:6px; cursor:pointer; font-weight:600; }
+        section { padding:90px 20px; max-width:1200px; margin:auto; }
+        h2 { text-align:center; font-size:2.6rem; color:var(--primary); margin-bottom:50px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:32px; }
+        .card { background:white; border-radius:10px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .card:hover { transform: translateY(-10px); box-shadow:0 15px 30px rgba(0,0,0,0.15); }
+        .card img { width:100%; height:240px; object-fit:cover; }
+        .card-content { padding:24px; }
+        footer { background:var(--primary); color:white; text-align:center; padding:60px 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Straight Stud Construction LLC</div>
+            <div class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#projects">Projects</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Straight Stud Construction LLC</h1>
+        <p>Est. 2021 • Exterior Specialists • Custom Homes • Custom Decks</p>
+        <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Free Quote</button>
+    </section>
+
+    <section id="services">
+        <h2>Our Exterior Services</h2>
+        <div class="grid">
+            <div class="card"><div class="card-content"><h3>Custom Homes & Additions</h3><p>Complete custom home builds and home expansions.</p></div></div>
+            <div class="card"><div class="card-content"><h3>Custom Decks & Pergolas</h3><p>Premium decks, porches, and outdoor living structures.</p></div></div>
+            <div class="card"><div class="card-content"><h3>Siding & Exterior Finishes</h3><p>Vinyl Siding • Hardie Board • Aluminum Trim • Professional Installation.</p></div></div>
+            <div class="card"><div class="card-content"><h3>Roofing</h3><p>Asphalt Shingles • Full roof replacement and repairs.</p></div></div>
+        </div>
+    </section>
+
+    <section id="projects" style="background:#f8f9fa;">
+        <h2>Recent Projects</h2>
+        <div class="grid">
+            <div class="card"><img src="https://picsum.photos/id/1015/600/400" alt="Deck"><div class="card-content"><h3>Custom Deck – Muskegon</h3><p>Premium composite deck with pergola</p></div></div>
+            <div class="card"><img src="https://picsum.photos/id/133/600/400" alt="Home"><div class="card-content"><h3>5780 Arroyo Vista</h3><p>Large exterior & deck project</p></div></div>
+            <div class="card"><img src="https://picsum.photos/id/201/600/400" alt="Siding"><div class="card-content"><h3>Hardie & Vinyl Exterior</h3><p>Full siding & trim renovation</p></div></div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2>About Us</h2>
+        <p style="max-width:800px;margin:0 auto;font-size:1.25rem;text-align:center;">Founded in 2021, Straight Stud Construction specializes in high-quality exterior work — Custom Homes, Decks, Siding (Vinyl & Hardie), Roofing (Asphalt Shingles), Aluminum Trim, and more. We deliver durable, beautiful results with honest pricing and reliable service.</p>
+    </section>
+
+    <section id="contact" style="background:#f8f9fa;">
+        <h2>Contact Us</h2>
+        <form style="max-width:600px;margin:40px auto;background:white;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);" action="https://formspree.io/f/myourcode" method="POST">
+            <input type="text" name="name" placeholder="Your Name" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
+            <input type="email" name="email" placeholder="Email Address" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
+            <textarea name="message" placeholder="Project details (e.g. Custom Deck, Hardie Siding, Roofing...)" style="width:100%;padding:14px;margin:10px 0;height:140px;border:1px solid #ddd;border-radius:6px;" required></textarea>
+            <button type="submit" class="btn" style="width:100%;">Send Message</button>
+        </form>
+        <p style="text-align:center;margin-top:20px;">📞 Your Phone • ✉️ Your Email</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2021–2026 Straight Stud Construction LLC. All Rights Reserved.</p>
+        <p>New York Area • Licensed & Insured</p>
+    </footer>
+</body>
+</html>
