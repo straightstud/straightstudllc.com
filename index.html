@@ -11,21 +11,16 @@
         nav { max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px; }
         .logo { font-size:1.85rem; font-weight:bold; }
         .nav-links a { color:white; margin-left:2rem; text-decoration:none; font-weight:500; }
-        .hero {
-            background: linear-gradient(rgba(10,37,64,0.8), rgba(10,37,64,0.8)), url('https://picsum.photos/id/1015/2000/1200') center/cover no-repeat;
-            color:white; text-align:center; padding:170px 20px 140px;
-        }
+        .hero { background: linear-gradient(rgba(10,37,64,0.8), rgba(10,37,64,0.8)), url('https://picsum.photos/id/1015/2000/1200') center/cover; color:white; text-align:center; padding:160px 20px 120px; }
         .hero h1 { font-size:3.4rem; margin:0 0 12px; }
-        .hero p { font-size:1.55rem; margin-bottom:30px; }
         .btn { background:var(--accent); color:white; padding:16px 40px; border:none; font-size:1.15rem; border-radius:6px; cursor:pointer; font-weight:600; }
-        section { padding:90px 20px; max-width:1200px; margin:auto; }
-        h2 { text-align:center; font-size:2.6rem; color:var(--primary); margin-bottom:50px; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:32px; }
-        .card { background:white; border-radius:10px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.1); transition: all 0.3s; }
-        .card:hover { transform: translateY(-10px); box-shadow:0 15px 30px rgba(0,0,0,0.15); }
-        .card img { width:100%; height:240px; object-fit:cover; }
-        .card-content { padding:24px; }
-        footer { background:var(--primary); color:white; text-align:center; padding:60px 20px; }
+        section { padding:80px 20px; max-width:1200px; margin:auto; }
+        h2 { text-align:center; font-size:2.6rem; color:var(--primary); margin-bottom:40px; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; }
+        .card { border-radius:10px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+        .card img { width:100%; height:220px; object-fit:cover; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:15px; }
+        footer { background:var(--primary); color:white; text-align:center; padding:50px 20px; }
     </style>
 </head>
 <body>
@@ -50,33 +45,37 @@
     <section id="services">
         <h2>Our Exterior Services</h2>
         <div class="grid">
-            <div class="card"><div class="card-content"><h3>Custom Homes & Additions</h3><p>High-quality custom home builds and expansions.</p></div></div>
-            <div class="card"><div class="card-content"><h3>Custom Decks & Pergolas</h3><p>Beautiful, durable outdoor living spaces.</p></div></div>
-            <div class="card"><div class="card-content"><h3>Siding & Exterior Finishes</h3><p>Vinyl Siding • Hardie Board • Aluminum Trim.</p></div></div>
-            <div class="card"><div class="card-content"><h3>Roofing</h3><p>Asphalt Shingle roofing and repairs.</p></div></div>
+            <div class="card"><div style="padding:24px;"><h3>Custom Homes & Additions</h3><p>High-quality custom builds and expansions.</p></div></div>
+            <div class="card"><div style="padding:24px;"><h3>Custom Decks & Pergolas</h3><p>Durable and beautiful outdoor spaces.</p></div></div>
+            <div class="card"><div style="padding:24px;"><h3>Siding & Trim</h3><p>Vinyl, Hardie Board, Aluminum Trim.</p></div></div>
+            <div class="card"><div style="padding:24px;"><h3>Roofing</h3><p>Asphalt Shingle roofing and repairs.</p></div></div>
         </div>
     </section>
 
     <section id="projects" style="background:#f8f9fa;">
-        <h2>Recent Projects</h2>
-        <div class="grid">
-            <div class="card"><img src="https://picsum.photos/id/1015/600/400" alt="Custom Deck"><div class="card-content"><h3>Custom Deck</h3><p>Premium outdoor living space</p></div></div>
-            <div class="card"><img src="https://picsum.photos/id/133/600/400" alt="Home Addition"><div class="card-content"><h3>Custom Home Project</h3><p>Full exterior renovation</p></div></div>
-            <div class="card"><img src="https://picsum.photos/id/201/600/400" alt="Siding"><div class="card-content"><h3>Hardie Siding Installation</h3><p>Professional exterior finish</p></div></div>
+        <h2>Our Work</h2>
+        <div class="gallery">
+            <img src="https://picsum.photos/id/1015/600/400" alt="Project">
+            <img src="https://picsum.photos/id/133/600/400" alt="Project">
+            <img src="https://picsum.photos/id/201/600/400" alt="Project">
+            <!-- Add your uploaded images here later if you want more -->
         </div>
+        <p style="text-align:center;margin-top:40px;">
+            <a href="YOUR_GOOGLE_PORTFOLIO_LINK_HERE" target="_blank" class="btn">View Full Portfolio on Google</a>
+        </p>
     </section>
 
     <section id="about">
         <h2>About Us</h2>
-        <p style="max-width:800px;margin:0 auto;font-size:1.25rem;text-align:center;">Founded in 2021, Straight Stud Construction LLC specializes in quality exterior construction. We focus on custom homes, decks, siding, roofing, and more — built with craftsmanship and integrity.</p>
+        <p style="max-width:800px;margin:0 auto;font-size:1.25rem;text-align:center;">Founded in 2021, we specialize in quality exterior construction including custom homes, decks, siding, and roofing across Michigan.</p>
     </section>
 
     <section id="contact" style="background:#f8f9fa;">
         <h2>Contact Us</h2>
         <form style="max-width:600px;margin:40px auto;background:white;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);" action="https://formspree.io/f/YOUR_CODE" method="POST">
             <input type="text" name="name" placeholder="Your Name" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
-            <input type="email" name="email" placeholder="Email Address" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
-            <textarea name="message" placeholder="Tell us about your project..." style="width:100%;padding:14px;margin:10px 0;height:140px;border:1px solid #ddd;border-radius:6px;" required></textarea>
+            <input type="email" name="email" placeholder="Email" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
+            <textarea name="message" placeholder="Tell us about your project" style="width:100%;padding:14px;margin:10px 0;height:140px;border:1px solid #ddd;border-radius:6px;" required></textarea>
             <button type="submit" class="btn" style="width:100%;">Send Message</button>
         </form>
         <p style="text-align:center;margin-top:20px;">Phone: [Your Phone] • Email: [Your Email]</p>
@@ -84,7 +83,6 @@
 
     <footer>
         <p>&copy; 2021–2026 Straight Stud Construction LLC. All Rights Reserved.</p>
-        <p>Licensed & Insured • Serving Michigan</p>
     </footer>
 </body>
 </html>
