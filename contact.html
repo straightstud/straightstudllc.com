@@ -92,13 +92,12 @@
             <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
 
             <!--
-              SETUP: Create a free form at https://formspree.io
-              Replace YOUR_FORM_ID below with your form ID (e.g. xyzabcde).
-              Set redirect to: https://straightstudllc.com/contact.html?sent=1
+              Quote requests are emailed to request@straightstudllc.com via FormSubmit.
+              First live submission: check that inbox and click FormSubmit’s activation link once.
             -->
             <form
               id="contact-form"
-              action="https://formspree.io/f/YOUR_FORM_ID"
+              action="https://formsubmit.co/request@straightstudllc.com"
               method="POST"
               novalidate
             >
@@ -107,10 +106,14 @@
                 <label for="company_website">Company website</label>
                 <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
               </div>
+              <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-              <!-- Formspree helpers -->
-              <input type="hidden" name="_subject" value="New quote request — Straight Stud Construction">
-              <input type="text" name="_gotcha" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <!-- FormSubmit delivery options -->
+              <input type="hidden" name="_subject" value="New quote request — Straight Stud Construction LLC">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_next" value="https://www.straightstudllc.com/contact.html?sent=1">
+              <!-- Reply-To uses the customer’s email field below (name="email") -->
 
               <div class="form-row">
                 <div class="form-group">
@@ -152,12 +155,12 @@
                 <textarea id="message" name="message" required maxlength="4000" placeholder="Describe your project, approximate size, timeline, and any questions."></textarea>
               </div>
 
-              <button type="submit" class="btn btn--primary btn--full">Send Message</button>
+              <button type="submit" class="btn btn--primary btn--full">Request Free Quote</button>
 
               <p class="form-note">
+                Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
                 By submitting, you agree we may contact you about your request. We do not sell your information.
-                See our <a href="privacy.html">Privacy Policy</a>. For urgent matters, email
-                <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a> directly.
+                See our <a href="privacy.html">Privacy Policy</a>.
               </p>
             </form>
           </div>

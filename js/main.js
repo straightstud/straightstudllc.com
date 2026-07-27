@@ -189,7 +189,7 @@
         return;
       }
 
-      // Basic client-side validation (server/Formspree still required)
+      // Basic client-side validation (FormSubmit delivers to request@straightstudllc.com)
       const name = form.querySelector('[name="name"]');
       const email = form.querySelector('[name="email"]');
       const message = form.querySelector('[name="message"]');
@@ -212,20 +212,6 @@
         submitBtn.disabled = true;
         submitBtn.textContent = "Sending…";
       }
-
-      // If Formspree action is still placeholder, prevent and show message
-      const action = form.getAttribute("action") || "";
-      if (action.indexOf("YOUR_FORM_ID") !== -1 || action.indexOf("YOUR_CODE") !== -1) {
-        e.preventDefault();
-        showFormStatus(
-          "Contact form is almost ready. Please email us directly at request@straightstudllc.com while we finish setup.",
-          false
-        );
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = "Send Message";
-        }
-      }
     });
 
     function showFormStatus(msg, ok) {
@@ -235,9 +221,12 @@
       status.setAttribute("role", "alert");
     }
 
-    // Success query param from Formspree redirect
+    // Success query param after FormSubmit redirect
     if (window.location.search.indexOf("sent=1") !== -1 && status) {
-      showFormStatus("Thank you! Your message was sent. We’ll get back to you soon.", true);
+      showFormStatus(
+        "Thank you! Your quote request was sent to request@straightstudllc.com. We’ll get back to you soon.",
+        true
+      );
       if (window.history.replaceState) {
         window.history.replaceState({}, "", window.location.pathname);
       }

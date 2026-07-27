@@ -38,20 +38,17 @@ assets/portfolio/custom-homes/
 
 See `assets/portfolio/README.txt` for exact HTML to paste when adding each photo.
 
-## 2. Wire up the contact form (Formspree — free tier)
+## 2. Quote form → request@straightstudllc.com
 
-1. Go to [https://formspree.io](https://formspree.io) and create an account
-2. Create a new form → set email to `request@straightstudllc.com`
-3. Copy your form ID (looks like `xyzabcde`)
-4. In `contact.html`, replace:
+The contact form posts to **FormSubmit** and emails **request@straightstudllc.com**.
 
-   `https://formspree.io/f/YOUR_FORM_ID`
+1. Deploy the site (or use the live domain).
+2. Submit a **test quote** once from the Contact page.
+3. Open **request@straightstudllc.com** and click FormSubmit’s **activation / confirm** link (one-time).
+4. After that, every “Request Free Quote” submission lands in that inbox.
+5. Reply from your email — Reply-To is the customer’s address.
 
-   with your real URL
-5. Optional: set Formspree redirect to  
-   `https://straightstudllc.com/contact.html?sent=1`
-
-Spam protection already included: honeypot fields + double-submit lock.
+Spam protection: honeypot fields + double-submit lock. Success redirect: `contact.html?sent=1`.
 
 ## 3. Security checklist (do these when you go live)
 
