@@ -34,15 +34,26 @@
   }
 
   /* ---------- Active nav link ---------- */
-  const path = window.location.pathname.split("/").pop() || "index.html";
-  document.querySelectorAll(".nav__link").forEach(function (link) {
-    const href = link.getAttribute("href");
-    if (!href) return;
-    const file = href.split("/").pop().split("#")[0];
-    if (file === path || (path === "" && file === "index.html")) {
-      link.classList.add("is-active");
-    }
-  });
+  (function () {
+    const path = window.location.pathname.toLowerCase();
+    const isHome = path === "/" || path.endsWith("/index.html") && !path.includes("/portfolio");
+    const isPortfolio = path.includes("/portfolio");
+    // Basename without .html, e.g. about, contact
+    const page = (path.split("/").filter(Boolean).pop() || "").replace(/\.html$/, "");
+
+    document.querySelectorAll(".nav__link").forEach(function (link) {
+      const href = (link.getAttribute("href") || "").toLowerCase();
+      let active = false;
+      if (isPortfolio && href.includes("portfolio")) {
+        active = true;
+      } else if (isHome && (href === "index.html" || href === "../index.html" || href === "/" || href.endsWith("/index.html"))) {
+        active = true;
+      } else if (!isHome && !isPortfolio && page && href.includes(page)) {
+        active = true;
+      }
+      if (active) link.classList.add("is-active");
+    });
+  })();
 
   /* ---------- Portfolio filters ---------- */
   const filterBtns = document.querySelectorAll(".filter-btn");

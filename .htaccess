@@ -18,3 +18,13 @@
 # RewriteEngine On
 # RewriteCond %{HTTPS} off
 # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Clean portfolio URL (business cards: www.straightstudllc.com/portfolio)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # /portfolio and /portfolio/ → portfolio/index.html
+  RewriteRule ^portfolio/?$ portfolio/index.html [L]
+  # Legacy portfolio.html → clean URL (keep query string)
+  RewriteRule ^portfolio\.html$ /portfolio/ [R=301,L,QSA]
+</IfModule>
+
