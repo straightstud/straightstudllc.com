@@ -1,88 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Straight Stud Construction LLC | Est. 2021</title>
-    <style>
-        :root { --primary: #0a2540; --accent: #e65100; }
-        body { font-family: system-ui, sans-serif; margin:0; color:#222; line-height:1.65; }
-        header { background: var(--primary); color:white; padding:1rem 0; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
-        nav { max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center; padding:0 20px; }
-        .logo { font-size:1.85rem; font-weight:bold; }
-        .nav-links a { color:white; margin-left:2rem; text-decoration:none; font-weight:500; }
-        .hero { background: linear-gradient(rgba(10,37,64,0.8), rgba(10,37,64,0.8)), url('https://picsum.photos/id/1015/2000/1200') center/cover; color:white; text-align:center; padding:160px 20px 120px; }
-        .hero h1 { font-size:3.4rem; margin:0 0 12px; }
-        .btn { background:var(--accent); color:white; padding:16px 40px; border:none; font-size:1.15rem; border-radius:6px; cursor:pointer; font-weight:600; }
-        section { padding:80px 20px; max-width:1200px; margin:auto; }
-        h2 { text-align:center; font-size:2.6rem; color:var(--primary); margin-bottom:40px; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; }
-        .card { border-radius:10px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
-        .card img { width:100%; height:220px; object-fit:cover; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:15px; }
-        footer { background:var(--primary); color:white; text-align:center; padding:50px 20px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Straight Stud Construction LLC — custom decks, home additions, siding, and custom homes in the Greater Grand Rapids area. Licensed & insured. Est. 2021.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a2540">
+  <meta property="og:title" content="Straight Stud Construction LLC | Greater Grand Rapids">
+  <meta property="og:description" content="Custom decks, home additions, siding & custom homes. Quality craftsmanship since 2021.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://straightstudllc.com/">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <title>Straight Stud Construction LLC | Custom Decks & Home Construction — Grand Rapids</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "GeneralContractor",
+    "name": "Straight Stud Construction LLC",
+    "url": "https://straightstudllc.com",
+    "email": "request@straightstudllc.com",
+    "foundingDate": "2021",
+    "areaServed": {
+      "@type": "Place",
+      "name": "Greater Grand Rapids, Michigan"
+    },
+    "description": "Custom decks, home additions, siding, and custom home construction.",
+    "priceRange": "$$"
+  }
+  </script>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">Straight Stud Construction LLC</div>
-            <div class="nav-links">
-                <a href="#services">Services</a>
-                <a href="#projects">Projects</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-            </div>
-        </nav>
-    </header>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand" aria-label="Straight Stud Construction LLC home">
+        <img src="assets/logo/logo.png" alt="" class="brand__logo" width="120" height="56" onerror="this.style.display='none'">
+        <span class="brand__text">
+          <span class="brand__name">Straight Stud Construction LLC</span>
+          <span class="brand__tag">Est. 2021 · Grand Rapids Area</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <a class="nav__link" href="index.html">Home</a>
+        <a class="nav__link" href="portfolio.html">Portfolio</a>
+        <a class="nav__link" href="about.html">About</a>
+        <a class="nav__link" href="contact.html">Contact</a>
+        <a class="nav__cta btn btn--primary btn--sm" href="contact.html">Free Quote</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
     <section class="hero">
-        <h1>Straight Stud Construction LLC</h1>
-        <p>Est. 2021 • Custom Homes • Custom Decks • Exterior Specialists</p>
-        <button class="btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Free Quote</button>
-    </section>
-
-    <section id="services">
-        <h2>Our Exterior Services</h2>
-        <div class="grid">
-            <div class="card"><div style="padding:24px;"><h3>Custom Homes & Additions</h3><p>High-quality custom builds and expansions.</p></div></div>
-            <div class="card"><div style="padding:24px;"><h3>Custom Decks & Pergolas</h3><p>Durable and beautiful outdoor spaces.</p></div></div>
-            <div class="card"><div style="padding:24px;"><h3>Siding & Trim</h3><p>Vinyl, Hardie Board, Aluminum Trim.</p></div></div>
-            <div class="card"><div style="padding:24px;"><h3>Roofing</h3><p>Asphalt Shingle roofing and repairs.</p></div></div>
-        </div>
-    </section>
-
-    <section id="projects" style="background:#f8f9fa;">
-        <h2>Our Work</h2>
-        <div class="gallery">
-            <img src="https://picsum.photos/id/1015/600/400" alt="Project">
-            <img src="https://picsum.photos/id/133/600/400" alt="Project">
-            <img src="https://picsum.photos/id/201/600/400" alt="Project">
-            <!-- Add your uploaded images here later if you want more -->
-        </div>
-        <p style="text-align:center;margin-top:40px;">
-            <a href="YOUR_GOOGLE_PORTFOLIO_LINK_HERE" target="_blank" class="btn">View Full Portfolio on Google</a>
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container hero__content">
+        <span class="hero__badge">Licensed &amp; Insured · Greater Grand Rapids</span>
+        <h1>Built Straight. Built Strong. Built to Last.</h1>
+        <p class="hero__lead">
+          Custom decks, home additions, siding, and full custom homes — quality craftsmanship for West Michigan homeowners since 2021.
         </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="contact.html">Get a Free Quote</a>
+          <a class="btn btn--secondary" href="portfolio.html">View Our Work</a>
+        </div>
+        <div class="hero__meta">
+          <div class="hero__meta-item">
+            <strong>2021</strong>
+            <span>Established</span>
+          </div>
+          <div class="hero__meta-item">
+            <strong>4+</strong>
+            <span>Service lines</span>
+          </div>
+          <div class="hero__meta-item">
+            <strong>GR</strong>
+            <span>Greater Grand Rapids</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="about">
-        <h2>About Us</h2>
-        <p style="max-width:800px;margin:0 auto;font-size:1.25rem;text-align:center;">Founded in 2021, we specialize in quality exterior construction including custom homes, decks, siding, and roofing across Michigan.</p>
+    <section class="section" id="services" aria-labelledby="services-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__eyebrow">What We Do</span>
+          <h2 class="section__title" id="services-title">Construction Services</h2>
+          <p class="section__lead">From outdoor living spaces to full custom builds — one trusted team for your next project.</p>
+        </div>
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="service-card__icon" aria-hidden="true">⌂</div>
+            <h3>Custom Deck Builds</h3>
+            <p>Premium custom decks and outdoor living spaces — our specialty. Designed for your lifestyle and built to last through Michigan seasons.</p>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon" aria-hidden="true">▣</div>
+            <h3>Home Additions</h3>
+            <p>Quality room additions and expansions that blend seamlessly with your existing home — more space, same craftsmanship.</p>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon" aria-hidden="true">◫</div>
+            <h3>Siding &amp; Exterior</h3>
+            <p>Vinyl, Hardie Board, aluminum trim, and exterior upgrades that protect your home and elevate curb appeal.</p>
+          </article>
+          <article class="service-card">
+            <div class="service-card__icon" aria-hidden="true">◆</div>
+            <h3>Custom Homes</h3>
+            <p>Full custom home construction with attention to structure, finish, and the details that make a house yours.</p>
+          </article>
+        </div>
+      </div>
     </section>
 
-    <section id="contact" style="background:#f8f9fa;">
-        <h2>Contact Us</h2>
-        <form style="max-width:600px;margin:40px auto;background:white;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);" action="https://formspree.io/f/YOUR_CODE" method="POST">
-            <input type="text" name="name" placeholder="Your Name" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
-            <input type="email" name="email" placeholder="Email" style="width:100%;padding:14px;margin:10px 0;border:1px solid #ddd;border-radius:6px;" required>
-            <textarea name="message" placeholder="Tell us about your project" style="width:100%;padding:14px;margin:10px 0;height:140px;border:1px solid #ddd;border-radius:6px;" required></textarea>
-            <button type="submit" class="btn" style="width:100%;">Send Message</button>
-        </form>
-        <p style="text-align:center;margin-top:20px;">Phone: [Your Phone] • Email: [Your Email]</p>
+    <section class="section section--alt" aria-labelledby="featured-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__eyebrow">Portfolio</span>
+          <h2 class="section__title" id="featured-title">Featured Work</h2>
+          <p class="section__lead">A snapshot of recent projects. Explore the full gallery organized by project type.</p>
+        </div>
+        <div class="portfolio-grid" id="featured-grid">
+          <article
+            class="portfolio-item"
+            data-category="decks"
+            data-full="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg"
+            data-title="Custom deck project"
+            tabindex="0"
+            role="button"
+            aria-label="View Custom deck project">
+            <img src="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg" alt="Custom deck project" loading="lazy" width="600" height="450">
+            <div class="portfolio-item__overlay">
+              <span class="portfolio-item__cat">Decks</span>
+              <span class="portfolio-item__title">Custom deck project</span>
+            </div>
+          </article>
+          <article
+            class="portfolio-item"
+            data-category="additions"
+            data-full="assets/portfolio/additions/additions-12-20250405-193327-10671c.jpg"
+            data-title="Home addition project"
+            tabindex="0"
+            role="button"
+            aria-label="View Home addition project">
+            <img src="assets/portfolio/additions/additions-12-20250405-193327-10671c.jpg" alt="Home addition project" loading="lazy" width="600" height="450">
+            <div class="portfolio-item__overlay">
+              <span class="portfolio-item__cat">Additions</span>
+              <span class="portfolio-item__title">Home addition project</span>
+            </div>
+          </article>
+          <article
+            class="portfolio-item"
+            data-category="siding"
+            data-full="assets/portfolio/siding/siding-01-1712-4ed9f3.jpg"
+            data-title="Siding & exterior project"
+            tabindex="0"
+            role="button"
+            aria-label="View Siding & exterior project">
+            <img src="assets/portfolio/siding/siding-01-1712-4ed9f3.jpg" alt="Siding & exterior project" loading="lazy" width="600" height="450">
+            <div class="portfolio-item__overlay">
+              <span class="portfolio-item__cat">Siding</span>
+              <span class="portfolio-item__title">Siding & exterior project</span>
+            </div>
+          </article>
+          <article
+            class="portfolio-item"
+            data-category="custom-homes"
+            data-full="assets/portfolio/custom-homes/custom-homes-01-20241112-124613-65b222.jpg"
+            data-title="Custom home project"
+            tabindex="0"
+            role="button"
+            aria-label="View Custom home project">
+            <img src="assets/portfolio/custom-homes/custom-homes-01-20241112-124613-65b222.jpg" alt="Custom home project" loading="lazy" width="600" height="450">
+            <div class="portfolio-item__overlay">
+              <span class="portfolio-item__cat">Custom Homes</span>
+              <span class="portfolio-item__title">Custom home project</span>
+            </div>
+          </article>
+        </div>
+        <p style="text-align:center;margin-top:36px;">
+          <a class="btn btn--outline" href="portfolio.html">Browse Full Portfolio</a>
+        </p>
+      </div>
     </section>
 
-    <footer>
-        <p>&copy; 2021–2026 Straight Stud Construction LLC. All Rights Reserved.</p>
-    </footer>
+    <section class="section" aria-labelledby="why-title">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-grid__media">
+            <img src="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg" alt="Straight Stud Construction project" loading="lazy" width="640" height="480" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+          </div>
+          <div class="about-grid__body">
+            <span class="section__eyebrow">Why Straight Stud</span>
+            <h2 class="section__title" id="why-title" style="text-align:left;">Craftsmanship You Can Trust</h2>
+            <p>
+              Straight Stud Construction LLC is a Greater Grand Rapids–based builder focused on honest communication, clean job sites, and work that stands up to real life — and real weather.
+            </p>
+            <ul class="checklist">
+              <li>Clear quotes and straightforward project timelines</li>
+              <li>Quality materials matched to your budget and goals</li>
+              <li>Licensed &amp; insured for your peace of mind</li>
+              <li>Local crew that treats your home with respect</li>
+            </ul>
+            <p style="margin-top:28px;">
+              <a class="btn btn--primary" href="about.html">About Our Company</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt">
+      <div class="container">
+        <div class="cta-banner">
+          <h2>Ready to start your project?</h2>
+          <p>Tell us about your deck, addition, siding, or custom build. We’ll follow up with next steps — no pressure, no spam.</p>
+          <a class="btn btn--primary" href="contact.html">Request a Free Quote</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand__name">Straight Stud Construction LLC</div>
+          <p>Custom decks, home additions, siding, and custom homes serving the Greater Grand Rapids area since 2021.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="portfolio.html?filter=decks">Custom Decks</a>
+          <a href="portfolio.html?filter=additions">Home Additions</a>
+          <a href="portfolio.html?filter=siding">Siding &amp; Exterior</a>
+          <a href="portfolio.html?filter=custom-homes">Custom Homes</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="liability.html">Liability Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2021–<span data-year>2026</span> Straight Stud Construction LLC. All rights reserved.</span>
+        <span>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="liability.html">Disclaimer</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
 </body>
 </html>

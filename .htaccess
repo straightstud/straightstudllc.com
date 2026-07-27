@@ -1,0 +1,20 @@
+# Apache security + HTTPS (cPanel / shared hosting)
+# Enable HTTPS redirect only after SSL is active on your domain.
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; form-action 'self' https://formspree.io; base-uri 'self'; frame-ancestors 'none'; object-src 'none'"
+</IfModule>
+
+# Block access to hidden / backup files
+<FilesMatch "\.(bak|config|sql|ini|log|htaccess)$">
+  Require all denied
+</FilesMatch>
+
+# Optional: force HTTPS (uncomment after SSL certificate is installed)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
