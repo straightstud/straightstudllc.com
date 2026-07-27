@@ -1,0 +1,10 @@
+# Security headers for Netlify / Cloudflare Pages
+# (If you use Apache, see .htaccess instead)
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-XSS-Protection: 0
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; form-action 'self' https://formsubmit.co https://formspree.io; base-uri 'self'; frame-ancestors 'none'; object-src 'none'

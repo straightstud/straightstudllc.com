@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact Straight Stud Construction LLC for a free quote on decks, additions, siding, or custom homes in Greater Grand Rapids. Email request@straightstudllc.com.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a2540">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <title>Contact &amp; Free Quote | Straight Stud Construction LLC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand" aria-label="Straight Stud Construction LLC home">
+        <img src="assets/logo/logo.png" alt="" class="brand__logo" width="120" height="56" onerror="this.style.display='none'">
+        <span class="brand__text">
+          <span class="brand__name">Straight Stud Construction LLC</span>
+          <span class="brand__tag">Est. 2021 · Grand Rapids Area</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <a class="nav__link" href="index.html">Home</a>
+        <a class="nav__link" href="portfolio/">Portfolio</a>
+        <a class="nav__link" href="about.html">About</a>
+        <a class="nav__link" href="contact.html">Contact</a>
+        <a class="nav__cta btn btn--primary btn--sm" href="contact.html">Free Quote</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-hero">
+      <div class="container">
+        <h1>Contact Us</h1>
+        <p>Free quotes · Customer service · Project questions</p>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="container">
+        <div class="contact-layout">
+          <aside class="contact-info">
+            <h2>Customer Service</h2>
+            <p>Questions about a quote, schedule, or existing project? We’re here to help.</p>
+
+            <div class="contact-detail">
+              <div class="contact-detail__icon" aria-hidden="true">✉</div>
+              <div>
+                <strong>Email</strong>
+                <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>
+              </div>
+            </div>
+
+            <div class="contact-detail">
+              <div class="contact-detail__icon" aria-hidden="true">📍</div>
+              <div>
+                <strong>Service area</strong>
+                <span>Greater Grand Rapids, Michigan</span>
+              </div>
+            </div>
+
+            <div class="contact-detail">
+              <div class="contact-detail__icon" aria-hidden="true">⏱</div>
+              <div>
+                <strong>Response time</strong>
+                <span>We aim to reply within 1–2 business days</span>
+              </div>
+            </div>
+
+            <div class="contact-hours">
+              <h3>Typical hours</h3>
+              <ul>
+                <li><span>Monday – Friday</span><span>8:00 AM – 5:00 PM</span></li>
+                <li><span>Saturday</span><span>By appointment</span></li>
+                <li><span>Sunday</span><span>Closed</span></li>
+              </ul>
+            </div>
+          </aside>
+
+          <div class="contact-form-card">
+            <h2>Request a Free Quote</h2>
+            <p>Tell us about your project. Fields marked <span class="req" style="color:var(--accent)">*</span> are required.</p>
+
+            <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
+
+            <!--
+              Quote requests are emailed to request@straightstudllc.com via FormSubmit.
+              First live submission: check that inbox and click FormSubmit’s activation link once.
+            -->
+            <form
+              id="contact-form"
+              action="https://formsubmit.co/request@straightstudllc.com"
+              method="POST"
+              novalidate
+            >
+              <!-- Security: honeypot anti-spam (leave empty) -->
+              <div class="hp-field" aria-hidden="true">
+                <label for="company_website">Company website</label>
+                <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+              </div>
+              <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+              <!-- FormSubmit delivery options -->
+              <input type="hidden" name="_subject" value="New quote request — Straight Stud Construction LLC">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_next" value="https://www.straightstudllc.com/contact.html?sent=1">
+              <!-- Reply-To uses the customer’s email field below (name="email") -->
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="name">Full name <span class="req">*</span></label>
+                  <input type="text" id="name" name="name" required autocomplete="name" maxlength="120" placeholder="Jane Smith">
+                </div>
+                <div class="form-group">
+                  <label for="email">Email <span class="req">*</span></label>
+                  <input type="email" id="email" name="email" required autocomplete="email" maxlength="120" placeholder="you@example.com">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="phone">Phone</label>
+                  <input type="tel" id="phone" name="phone" autocomplete="tel" maxlength="30" placeholder="(616) 555-0100">
+                </div>
+                <div class="form-group">
+                  <label for="service">Project type</label>
+                  <select id="service" name="service">
+                    <option value="">Select one…</option>
+                    <option value="Custom Deck">Custom Deck</option>
+                    <option value="Home Addition">Home Addition</option>
+                    <option value="Siding & Exterior">Siding &amp; Exterior</option>
+                    <option value="Custom Home">Custom Home</option>
+                    <option value="Other / Multiple">Other / Multiple</option>
+                    <option value="Customer Service">Customer Service / Existing Project</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="location">City / neighborhood</label>
+                <input type="text" id="location" name="location" maxlength="100" placeholder="e.g. Ada, Kentwood, Rockford">
+              </div>
+
+              <div class="form-group">
+                <label for="message">Project details <span class="req">*</span></label>
+                <textarea id="message" name="message" required maxlength="4000" placeholder="Describe your project, approximate size, timeline, and any questions."></textarea>
+              </div>
+
+              <button type="submit" class="btn btn--primary btn--full">Request Free Quote</button>
+
+              <p class="form-note">
+                Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
+                By submitting, you agree we may contact you about your request. We do not sell your information.
+                See our <a href="privacy.html">Privacy Policy</a>.
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand__name">Straight Stud Construction LLC</div>
+          <p>Custom decks, home additions, siding, and custom homes serving the Greater Grand Rapids area since 2021.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">Home</a>
+          <a href="portfolio/">Portfolio</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="portfolio/?filter=decks">Custom Decks</a>
+          <a href="portfolio/?filter=additions">Home Additions</a>
+          <a href="portfolio/?filter=siding">Siding &amp; Exterior</a>
+          <a href="portfolio/?filter=custom-homes">Custom Homes</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="liability.html">Liability Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2021–<span data-year>2026</span> Straight Stud Construction LLC. All rights reserved.</span>
+        <span>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="liability.html">Disclaimer</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

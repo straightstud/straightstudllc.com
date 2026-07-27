@@ -1,0 +1,30 @@
+﻿# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+
+# Local / temp
+*.tmp
+*.log
+__pycache__/
+*.pyc
+.Python
+.env
+.env.*
+
+# Optional large working files (keep site assets tracked)
+_photo_inventory.csv
+
+# Raw photo dump (1GB+) — curated web assets live under assets/portfolio/
+Work Portfolio/
+Work Portfolio/**
+
+# Local CLIP / publish logs (not needed on the live site)
+scripts/_publish_portfolio_log.csv
+scripts/_portfolio_manifest.csv
+scripts/_*.csv
+scripts/_*.txt
