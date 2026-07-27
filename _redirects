@@ -1,3 +1,5 @@
-# Business card URL + legacy .html
-/portfolio.html  /portfolio/  301
-/portfolio       /portfolio/  301
+# Netlify-style redirects (ignored by GitHub Pages).
+# Live routes on GitHub Pages:
+#   /portfolio      -> portfolio.html  (gallery)
+#   /portfolio/     -> portfolio/index.html (gallery)
+# Business card / QR: https://www.straightstudllc.com/portfolio
