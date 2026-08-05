@@ -201,10 +201,10 @@
             },
           ],
         },
-        // Aluminum: $95 cost × 1.20
+        // Aluminum: $55 cost × 1.06 tax × 1.20 markup → $70 (rounded)
         aluminum: {
           label: "Aluminum railing",
-          perLf: 114,
+          perLf: 70,
           samples: [
             {
               id: "alum_black",
