@@ -97,7 +97,28 @@ Any static host works:
 
 Upload the **contents** of this folder (not a nested extra folder) so `index.html` is at the web root.
 
-## 6. Optional polish
+## 6. Google Tag Manager + Google Analytics 4
+
+The site loads both on every page via `js/analytics.js`:
+
+| Tool | ID | Role |
+|------|-----|------|
+| **Google Tag Manager** | `GTM-T583DK7D` | Container for extra tags (ads, etc.) |
+| **Google Analytics 4** | `G-XSX8FN3QLS` | Traffic / pageview measurement (gtag.js) |
+
+- Head: `js/analytics.js`
+- Body: GTM noscript iframe (right after `<body>`)
+
+**Do not** also add a GA4 tag for `G-XSX8FN3QLS` inside Tag Manager — that would double-count visits. GA4 is already on the site via gtag.
+
+### After deploy — verify
+
+1. Deploy the site (including `_headers` / `.htaccess` CSP).
+2. Visit the live site.
+3. In [Google Analytics](https://analytics.google.com) → **Reports → Realtime** — you should see yourself within about a minute.
+4. Optional: Tag Manager **Preview** to confirm the GTM container loads.
+
+## 7. Optional polish
 
 - Add a phone number on `contact.html` when you want calls publicly listed  
 - Google Business Profile linked to this site  
