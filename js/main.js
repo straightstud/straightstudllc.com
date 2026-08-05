@@ -36,19 +36,25 @@
   /* ---------- Active nav link ---------- */
   (function () {
     const path = window.location.pathname.toLowerCase();
-    const isHome = path === "/" || path.endsWith("/index.html") && !path.includes("/portfolio");
+    const isHome =
+      (path === "/" || path.endsWith("/index.html")) &&
+      !path.includes("/portfolio") &&
+      !path.includes("/deck-estimate");
     const isPortfolio = path.includes("/portfolio");
+    const isDeckEstimate = path.includes("/deck-estimate");
     // Basename without .html, e.g. about, contact
     const page = (path.split("/").filter(Boolean).pop() || "").replace(/\.html$/, "");
 
     document.querySelectorAll(".nav__link").forEach(function (link) {
       const href = (link.getAttribute("href") || "").toLowerCase();
       let active = false;
-      if (isPortfolio && href.includes("portfolio")) {
+      if (isDeckEstimate && href.includes("deck-estimate")) {
         active = true;
-      } else if (isHome && (href === "index.html" || href === "../index.html" || href === "/" || href.endsWith("/index.html"))) {
+      } else if (isPortfolio && href.includes("portfolio")) {
         active = true;
-      } else if (!isHome && !isPortfolio && page && href.includes(page)) {
+      } else if (isHome && (href === "index.html" || href === "../index.html" || href === "/" || href.endsWith("/index.html")) && !href.includes("deck-estimate") && !href.includes("portfolio")) {
+        active = true;
+      } else if (!isHome && !isPortfolio && !isDeckEstimate && page && href.includes(page)) {
         active = true;
       }
       if (active) link.classList.add("is-active");

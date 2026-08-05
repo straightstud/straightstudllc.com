@@ -236,24 +236,31 @@ ul {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   color: #fff;
   text-decoration: none;
   flex-shrink: 0;
+  max-width: min(220px, 42vw);
 }
 
 .brand:hover {
   color: #fff;
+  opacity: 0.95;
 }
 
 .brand__logo {
-  height: 52px;
+  display: block;
+  height: 48px;
   width: auto;
+  max-width: 180px;
   object-fit: contain;
+  object-position: left center;
+  border-radius: 4px;
 }
 
+/* Logo is the brand mark — hide duplicate text so header stays clean */
 .brand__text {
-  display: flex;
+  display: none;
   flex-direction: column;
   line-height: 1.15;
 }
@@ -268,6 +275,16 @@ ul {
   font-size: 0.72rem;
   opacity: 0.75;
   font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .brand {
+    max-width: min(150px, 48vw);
+  }
+  .brand__logo {
+    height: 40px;
+    max-width: 140px;
+  }
 }
 
 .nav {

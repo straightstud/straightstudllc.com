@@ -3,7 +3,7 @@
  * Container: GTM-T583DK7D
  *
  * GA4 (G-XSX8FN3QLS) is installed via the official gtag snippet in each page <head>
- * so Google’s “Test installation” can detect it. Do not also add GA4 for that ID
+ * so Google's "Test installation" can detect it. Do not also add GA4 for that ID
  * inside Tag Manager or visits will double-count.
  *
  * Pair with the GTM noscript iframe immediately after <body> on every page.

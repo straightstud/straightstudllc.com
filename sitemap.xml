@@ -21,6 +21,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.straightstudllc.com/deck-estimate/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://straightstudllc.com/privacy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

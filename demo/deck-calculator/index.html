@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#0a2540">
+  <title>Deck Estimate Calculator (Demo) | Straight Stud Construction LLC</title>
+  <link rel="stylesheet" href="calculator.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="demo-header">
+    <div class="wrap demo-header__inner">
+      <div class="brand">
+        <span class="brand__name">Straight Stud Construction LLC</span>
+        <span class="brand__tag">Deck Estimate · Demo only</span>
+      </div>
+      <span class="demo-badge" title="Not linked from the live site">DEMO — not live</span>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="intro">
+      <h1>Deck rough estimate</h1>
+      <p>
+        Enter your info and deck size for a <strong>rough labor estimate</strong>.
+        Optionally add materials, then request an appointment — we’ll get everything you typed so we can follow up with a real quote.
+      </p>
+      <p class="disclaimer">
+        Demo only. Numbers are rough planning estimates, not a contract or final bid.
+        Site visit required for accurate pricing.
+      </p>
+    </div>
+
+    <!-- Progress -->
+    <ol class="steps" id="step-indicator" aria-label="Progress">
+      <li class="steps__item is-active" data-step="1"><span>1</span> Your info</li>
+      <li class="steps__item" data-step="2"><span>2</span> Deck size</li>
+      <li class="steps__item" data-step="3"><span>3</span> Labor total</li>
+      <li class="steps__item" data-step="4"><span>4</span> Materials</li>
+      <li class="steps__item" data-step="5"><span>5</span> Request</li>
+    </ol>
+
+    <!-- ========== STEP 1: Contact + want estimate? ========== -->
+    <section class="card panel is-active" id="panel-1" data-panel="1" aria-labelledby="p1-title">
+      <h2 id="p1-title">Your information</h2>
+      <p class="panel-lead">We’ll use this if you request a follow-up. Nothing is sent until the last step.</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cust-name">Full name <span class="req">*</span></label>
+          <input type="text" id="cust-name" name="name" autocomplete="name" maxlength="120" placeholder="Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label for="cust-email">Email <span class="req">*</span></label>
+          <input type="email" id="cust-email" name="email" autocomplete="email" maxlength="120" placeholder="you@example.com" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cust-phone">Phone</label>
+          <input type="tel" id="cust-phone" name="phone" autocomplete="tel" maxlength="30" placeholder="(616) 555-0100">
+        </div>
+        <div class="form-group">
+          <label for="cust-city">City / neighborhood</label>
+          <input type="text" id="cust-city" name="city" maxlength="100" placeholder="e.g. Ada, Kentwood, Rockford">
+        </div>
+      </div>
+
+      <fieldset class="choice-block">
+        <legend>Do you want a rough estimate?</legend>
+        <label class="choice">
+          <input type="radio" name="want_estimate" value="yes" checked>
+          <span>Yes — show me a rough number</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="want_estimate" value="no">
+          <span>No — just request a call / appointment</span>
+        </label>
+      </fieldset>
+
+      <p class="field-error" id="err-1" hidden></p>
+      <div class="panel-actions">
+        <button type="button" class="btn btn--primary" id="btn-step1">Continue</button>
+      </div>
+    </section>
+
+    <!-- ========== STEP 2: Deck details ========== -->
+    <section class="card panel" id="panel-2" data-panel="2" hidden aria-labelledby="p2-title">
+      <h2 id="p2-title">Deck details</h2>
+      <p class="panel-lead">Enter approximate sizes. Unit rates are not shown — you’ll only see totals.</p>
+
+      <div class="form-row form-row--3">
+        <div class="form-group">
+          <label for="deck-sqft">Deck area (sq ft) <span class="req">*</span></label>
+          <input type="number" id="deck-sqft" min="1" max="20000" step="1" placeholder="e.g. 320" inputmode="numeric">
+          <span class="hint">Framing &amp; install labor</span>
+        </div>
+        <div class="form-group">
+          <label for="railing-lf">Railing (linear ft)</label>
+          <input type="number" id="railing-lf" min="0" max="5000" step="1" placeholder="e.g. 48" inputmode="numeric" value="0">
+          <span class="hint">Include deck edges + stair railing LF</span>
+        </div>
+        <div class="form-group">
+          <label for="num-steps">Number of steps</label>
+          <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
+          <span class="hint">Per-step add-on (deck sq ft already counted above)</span>
+        </div>
+      </div>
+
+      <p class="field-error" id="err-2" hidden></p>
+      <div class="panel-actions">
+        <button type="button" class="btn btn--outline" data-back="1">Back</button>
+        <button type="button" class="btn btn--primary" id="btn-step2">Calculate labor</button>
+      </div>
+    </section>
+
+    <!-- ========== STEP 3: Labor result + materials? ========== -->
+    <section class="card panel" id="panel-3" data-panel="3" hidden aria-labelledby="p3-title">
+      <h2 id="p3-title">Labor estimate</h2>
+      <p class="panel-lead">Rough labor total based on what you entered. Not a final bid.</p>
+
+      <div class="totals" id="labor-breakdown">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="big-total">
+        <span class="big-total__label">Estimated labor</span>
+        <span class="big-total__value" id="labor-total-display">$0</span>
+      </div>
+
+      <fieldset class="choice-block">
+        <legend>Do you want to continue with materials?</legend>
+        <label class="choice">
+          <input type="radio" name="want_materials" value="yes" checked>
+          <span>Yes — pick decking &amp; railing materials</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="want_materials" value="no">
+          <span>No — go to request form (labor only)</span>
+        </label>
+      </fieldset>
+
+      <div class="panel-actions">
+        <button type="button" class="btn btn--outline" data-back="2">Back</button>
+        <button type="button" class="btn btn--primary" id="btn-step3">Continue</button>
+      </div>
+    </section>
+
+    <!-- ========== STEP 4: Materials ========== -->
+    <section class="card panel" id="panel-4" data-panel="4" hidden aria-labelledby="p4-title">
+      <h2 id="p4-title">Materials</h2>
+      <p class="panel-lead">
+        Choose decking and railing. Material prices already include a <strong>20% upcharge</strong> (true cost × 1.20).
+        Enter <strong>all railing LF including stairs</strong> (posts + rail in the rate).
+      </p>
+
+      <div class="form-group">
+        <label for="decking-type">Decking type <span class="req">*</span></label>
+        <select id="decking-type">
+          <option value="">Select decking…</option>
+          <option value="treated">Pressure-treated lumber</option>
+          <option value="trex">Trex (composite)</option>
+          <option value="timbertech">TimberTech (composite)</option>
+        </select>
+      </div>
+
+      <!-- Visual sample blocks for Trex / TimberTech (shown after brand pick) -->
+      <div class="sample-panel" id="sample-panel" hidden>
+        <div class="sample-panel__head">
+          <h3 id="sample-panel-title">Choose a sample</h3>
+          <p class="sample-panel__hint">
+            Click a color block to select it. Colors are approximate demo swatches — final boards may vary; we’ll confirm samples on site.
+          </p>
+        </div>
+        <div id="sample-gallery" class="sample-gallery" role="listbox" aria-labelledby="sample-panel-title" aria-required="true">
+          <!-- filled by JS -->
+        </div>
+        <p class="sample-selected" id="sample-selected" hidden>
+          Selected: <strong id="sample-selected-label"></strong>
+        </p>
+        <!-- Keep select for state/accessibility; driven by sample clicks -->
+        <select id="decking-sub" class="sr-only-select" tabindex="-1" aria-hidden="true">
+          <option value="">Select line…</option>
+        </select>
+        <input type="hidden" id="decking-color" value="">
+      </div>
+
+      <!-- Treated: simple wood sample (no brand colors) -->
+      <div class="sample-panel" id="treated-sample" hidden>
+        <div class="sample-panel__head">
+          <h3>Pressure-treated lumber</h3>
+          <p class="sample-panel__hint">Standard treated decking look (demo swatch).</p>
+        </div>
+        <div class="sample-gallery sample-gallery--single">
+          <div class="sample-card is-selected" aria-selected="true">
+            <div class="sample-card__swatch sample-card__swatch--treated" aria-hidden="true"></div>
+            <div class="sample-card__meta">
+              <span class="sample-card__line">Pressure-treated</span>
+              <span class="sample-card__name">Natural green / weathers to gray</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual sample blocks for railing -->
+      <div class="sample-panel sample-panel--railing" id="railing-sample-panel">
+        <div class="sample-panel__head">
+          <h3 id="railing-sample-title">Railing samples — pick a block</h3>
+          <p class="sample-panel__hint">
+            Click a railing style/color. Rate includes posts + rail; use total LF including stairs.
+            Previews are approximate — we’ll confirm samples on site.
+            Choose “No railing materials” if you only need labor or already have materials.
+          </p>
+        </div>
+        <div id="railing-sample-gallery" class="railing-sample-root" role="listbox" aria-labelledby="railing-sample-title">
+          <!-- filled by JS -->
+        </div>
+        <p class="sample-selected" id="railing-sample-selected" hidden>
+          Selected railing: <strong id="railing-sample-selected-label"></strong>
+        </p>
+        <select id="railing-type" class="sr-only-select" tabindex="-1" aria-hidden="true">
+          <option value="none" selected>No railing materials</option>
+          <option value="treated_wood">Treated railing + wood spindles</option>
+          <option value="hybrid">Hybrid railing</option>
+          <option value="aluminum">Aluminum railing</option>
+          <option value="composite">Composite railing</option>
+        </select>
+        <input type="hidden" id="railing-color" value="none">
+      </div>
+
+      <div class="totals" id="materials-breakdown">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="big-total big-total--stack">
+        <div>
+          <span class="big-total__label">Labor</span>
+          <span class="big-total__sub" id="mat-labor-display">$0</span>
+        </div>
+        <div>
+          <span class="big-total__label">Materials</span>
+          <span class="big-total__sub" id="mat-materials-display">$0</span>
+        </div>
+        <div>
+          <span class="big-total__label">Estimated total</span>
+          <span class="big-total__value" id="grand-total-display">$0</span>
+        </div>
+      </div>
+
+      <p class="field-error" id="err-4" hidden></p>
+      <div class="panel-actions">
+        <button type="button" class="btn btn--outline" data-back="3">Back</button>
+        <button type="button" class="btn btn--primary" id="btn-step4">Continue to request</button>
+      </div>
+    </section>
+
+    <!-- ========== STEP 5: Request form (prefilled summary) ========== -->
+    <section class="card panel" id="panel-5" data-panel="5" hidden aria-labelledby="p5-title">
+      <h2 id="p5-title">Request appointment / formal quote</h2>
+      <p class="panel-lead">
+        Review your estimate. When you submit, we receive your contact info, deck sizes, choices, and totals so we can set up a visit and prep a contract.
+      </p>
+
+      <div class="summary" id="request-summary">
+        <!-- filled by JS -->
+      </div>
+
+      <div class="big-total">
+        <span class="big-total__label" id="final-total-label">Your rough estimate</span>
+        <span class="big-total__value" id="final-total-display">$0</span>
+      </div>
+
+      <!--
+        FormSubmit → request@straightstudllc.com
+        First live submission: activate the FormSubmit email link once.
+      -->
+      <form
+        id="estimate-form"
+        action="https://formsubmit.co/request@straightstudllc.com"
+        method="POST"
+        novalidate
+      >
+        <div class="hp-field" aria-hidden="true">
+          <label for="company_website">Company website</label>
+          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+        </div>
+        <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <input type="hidden" name="_subject" value="Deck estimate request (DEMO) — Straight Stud Construction">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="">
+
+        <!-- Customer (synced from step 1) -->
+        <input type="hidden" name="name" id="f-name" value="">
+        <input type="hidden" name="email" id="f-email" value="">
+        <input type="hidden" name="phone" id="f-phone" value="">
+        <input type="hidden" name="city" id="f-city" value="">
+
+        <!-- Deck + estimate payload -->
+        <input type="hidden" name="deck_sqft" id="f-sqft" value="">
+        <input type="hidden" name="railing_linear_ft" id="f-railing-lf" value="">
+        <input type="hidden" name="number_of_steps" id="f-steps" value="">
+        <input type="hidden" name="labor_framing_install" id="f-labor-framing" value="">
+        <input type="hidden" name="labor_railing" id="f-labor-railing" value="">
+        <input type="hidden" name="labor_steps" id="f-labor-steps" value="">
+        <input type="hidden" name="labor_hybrid_extra" id="f-labor-hybrid" value="">
+        <input type="hidden" name="labor_total" id="f-labor-total" value="">
+        <input type="hidden" name="included_materials" id="f-included-mat" value="">
+        <input type="hidden" name="decking_choice" id="f-decking" value="">
+        <input type="hidden" name="decking_color_sample" id="f-decking-color" value="">
+        <input type="hidden" name="railing_choice" id="f-railing-type" value="">
+        <input type="hidden" name="railing_color_sample" id="f-railing-color" value="">
+        <input type="hidden" name="framing_materials" id="f-framing-mat" value="">
+        <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
+        <input type="hidden" name="materials_total" id="f-mat-total" value="">
+        <input type="hidden" name="grand_total" id="f-grand" value="">
+        <input type="hidden" name="estimate_summary" id="f-summary" value="">
+        <input type="hidden" name="source" value="demo/deck-calculator">
+
+        <div class="form-group">
+          <label for="cust-notes">Anything else we should know?</label>
+          <textarea id="cust-notes" name="customer_notes" maxlength="2000" placeholder="Timeline, access, HOA rules, preferred appointment times…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="check-label">
+            <input type="checkbox" id="agree-rough" required>
+            I understand this is a rough demo estimate, not a final quote or contract.
+          </label>
+        </div>
+
+        <p class="field-error" id="err-5" hidden></p>
+
+        <div class="panel-actions">
+          <button type="button" class="btn btn--outline" id="btn-back-5">Back</button>
+          <button type="submit" class="btn btn--primary" id="btn-submit">Send request to Straight Stud</button>
+        </div>
+
+        <p class="form-note">
+          Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
+          We use your details only to follow up on this estimate. Demo form — not linked from the public site.
+        </p>
+      </form>
+    </section>
+
+    <!-- Skip-to-request only path (no estimate) -->
+    <section class="card panel" id="panel-request-only" data-panel="request-only" hidden aria-labelledby="pro-title">
+      <h2 id="pro-title">Request a call / appointment</h2>
+      <p class="panel-lead">You skipped the calculator. Tell us a bit about the project and we’ll reach out.</p>
+
+      <form
+        id="request-only-form"
+        action="https://formsubmit.co/request@straightstudllc.com"
+        method="POST"
+        novalidate
+      >
+        <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="hidden" name="_subject" value="Deck appointment request (DEMO, no estimate) — Straight Stud">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="name" id="ro-name" value="">
+        <input type="hidden" name="email" id="ro-email" value="">
+        <input type="hidden" name="phone" id="ro-phone" value="">
+        <input type="hidden" name="city" id="ro-city" value="">
+        <input type="hidden" name="source" value="demo/deck-calculator (no estimate)">
+
+        <div class="form-group">
+          <label for="ro-message">Project details <span class="req">*</span></label>
+          <textarea id="ro-message" name="message" required maxlength="4000" placeholder="Approximate size, location, timeline…"></textarea>
+        </div>
+
+        <div class="panel-actions">
+          <button type="button" class="btn btn--outline" data-back="1">Back</button>
+          <button type="submit" class="btn btn--primary">Send request</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="demo-footer wrap">
+    <p>
+      <strong>Straight Stud Construction LLC</strong> · Greater Grand Rapids · Est. 2021<br>
+      <span class="muted">This page is a private demo folder (<code>demo/deck-calculator/</code>) — not part of the live site navigation.</span>
+    </p>
+  </footer>
+
+  <script src="calculator.js" defer></script>
+</body>
+</html>

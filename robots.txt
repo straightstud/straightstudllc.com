@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+# Private demos — not for public indexing
+Disallow: /demo/
+
 Sitemap: https://straightstudllc.com/sitemap.xml
