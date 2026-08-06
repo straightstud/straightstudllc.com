@@ -33,8 +33,16 @@
       // All material $/unit = true cost × 1.20 (20% upcharge included)
       // PT framing lumber + hangers — was $6.50 cost
       framingPerSqft: 7.8,
-      // Fastener / hardware cushion — was $5 cost
+      // Composite (Trex/TimberTech): hidden fasteners + butyl tape cushion — cost × 1.20
       fastenersPerSqft: 6,
+      // Pressure-treated: 3" deck screws only (no butyl / no hidden fasteners)
+      // 0.05 lb/sqft × $16.50/lb cost × 1.20 markup = $0.99/sqft sell
+      treatedScrews: {
+        lbsPerSqft: 0.05,
+        costPerLb: 16.5,
+        // sell rate baked: 0.05 * 16.5 * 1.20
+        perSqft: 0.99,
+      },
       // Decking boards — was cost rates × 1.20 (color does not change price)
       decking: {
         treated: { label: "Pressure-treated lumber", perSqft: 8.4 },
@@ -944,9 +952,21 @@
         ? state.sqft * (RATES.materials.framingPerSqft || 0)
         : 0;
     var deckCost = state.sqft * (deck.perSqft || 0);
-    var fastenerCost = hasDecking
-      ? state.sqft * (RATES.materials.fastenersPerSqft || 0)
-      : 0;
+    // Treated: 3" screws only (replaces $6/sf composite fastener cushion)
+    // Composite: hidden fasteners + butyl at fastenersPerSqft
+    var fastenerCost = 0;
+    if (hasDecking) {
+      if (state.deckingType === "treated") {
+        var ts = RATES.materials.treatedScrews || {};
+        var treatedPer =
+          ts.perSqft != null
+            ? ts.perSqft
+            : (ts.lbsPerSqft || 0) * (ts.costPerLb || 0) * 1.2;
+        fastenerCost = state.sqft * treatedPer;
+      } else {
+        fastenerCost = state.sqft * (RATES.materials.fastenersPerSqft || 0);
+      }
+    }
     var railCost = state.railingLf * (rail.perLf || 0);
 
     // Hybrid: extra labor for alum spindles / cocktail rail build
@@ -987,8 +1007,14 @@
         "</span></div>";
     }
     if (fastenerCost > 0) {
+      var fastenerLabel =
+        state.deckingType === "treated"
+          ? "3&quot; deck screws"
+          : "Fasteners / hardware";
       rows +=
-        '<div class="totals__row"><span>Fasteners / hardware</span><span>' +
+        '<div class="totals__row"><span>' +
+        fastenerLabel +
+        "</span><span>" +
         money(fastenerCost) +
         "</span></div>";
     }
@@ -1082,7 +1108,9 @@
         "Decking color sample: " +
           (state.deckingColorName ||
             (state.deckingType === "treated" ? "Pressure-treated" : "—")),
-        "Fasteners / hardware: " + money(state.materials.fasteners || 0),
+        (state.deckingType === "treated"
+          ? "3\" deck screws: "
+          : "Fasteners / hardware: ") + money(state.materials.fasteners || 0),
         "Railing materials: " + (state.railingLabel || "—"),
         "Railing sample: " +
           (state.railingColorName ||
@@ -1255,7 +1283,12 @@
           state.deckingColorName ||
             (state.deckingType === "treated" ? "Pressure-treated" : "—")
         ) +
-        row("Fasteners / hardware", money(state.materials.fasteners || 0)) +
+        row(
+          state.deckingType === "treated"
+            ? "3\" deck screws"
+            : "Fasteners / hardware",
+          money(state.materials.fasteners || 0)
+        ) +
         row("Railing materials", state.railingLabel || "—") +
         row("Railing sample", state.railingColorName || "—") +
         row("Materials total", money(state.materials.total));
