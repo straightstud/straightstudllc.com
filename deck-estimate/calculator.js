@@ -1,59 +1,66 @@
 /**
  * Straight Stud Construction LLC — Deck estimate calculator (live)
  *
- * Labor rates: charge rates — never shown as unit prices on the page.
- * Material rates: LOCKED = true cost × 1.20 (20% upcharge baked into each rate).
+ * Labor rates: base charge rates for the median deck band (~200–350 sq ft).
+ * Labor $/sf scales with deck size (small-job premium, large-deck efficiency).
+ * Material rates: sell with markup + small buffer; do NOT scale with sq ft.
  * No separate markup line — materials total is final sell price.
  *
  * Railing LF includes stairs. Unit rates are never displayed to customers.
+ *
+ * Size bands (local median reported deck ~220–225 sf):
+ *   <200 sf     — small-job labor premium
+ *   200–350 sf  — base labor (factor 1.0)
+ *   400–600+ sf — lower labor $/sf (volume efficiency)
  */
 (function () {
   "use strict";
 
   /* ------------------------------------------------------------------
-   * RATES — LOCKED. Unit rates never shown in the UI.
-   * Materials = cost × 1.20 already. Do not add another markup.
+   * RATES — base rates (labor at 200–350 sf). Unit rates never shown in UI.
+   * Materials = cost × 1.20 + small buffer. Do not add another markup.
    * ------------------------------------------------------------------ */
   var RATES = {
     labor: {
-      framingPerSqft: 7.5, // new build framing labor
+      // Base rates = median band (200–350 sf). Scaled by sizeLaborFactor(sqft).
+      framingPerSqft: 10, // new build framing labor
       // Composite decking install (Trex / TimberTech) — new build only; not treated
-      compositeInstallPerSqft: 17.5,
+      compositeInstallPerSqft: 25,
       // Pressure-treated face-screw board install — new build when treated selected
-      treatedInstallPerSqft: 12.5,
+      treatedInstallPerSqft: 17.5,
       // Redeck path
-      redeckPerSqft: 15, // redeck labor (new surface on existing structure)
-      demoDisposePerSqft: 7.5, // demo & dispose old decking
-      railingPerLf: 35, // base railing install labor
-      perStep: 100, // add-on per step
+      redeckPerSqft: 18, // redeck labor (new surface on existing structure)
+      demoDisposePerSqft: 9, // demo & dispose old decking
+      railingPerLf: 35, // base railing install labor (not size-scaled)
+      perStep: 100, // add-on per step (not size-scaled)
       // Extra labor when hybrid rail selected (alum spindles + cocktail rail build)
       hybridExtraPerLf: 12,
     },
     // New builds include limited lifetime workmanship warranty (shown in UI + email)
     warrantyNewBuild: "Limited lifetime workmanship warranty included on all new builds",
     materials: {
-      // All material $/unit = true cost × 1.20 (20% upcharge included)
-      // PT framing lumber + hangers — was $6.50 cost
-      framingPerSqft: 7.8,
-      // Composite (Trex/TimberTech): hidden fasteners + butyl tape cushion — cost × 1.20
-      fastenersPerSqft: 6,
+      // Sell rates: cost × 1.20 + ~8–10% buffer (waste, delivery, price swings)
+      // Fixed per unit — do not scale with deck size
+      // PT framing lumber + hangers
+      framingPerSqft: 8.5,
+      // Composite (Trex/TimberTech): hidden fasteners + butyl tape cushion
+      fastenersPerSqft: 6.5,
       // Pressure-treated: 3" deck screws only (no butyl / no hidden fasteners)
-      // 0.05 lb/sqft × $16.50/lb cost × 1.20 markup = $0.99/sqft sell
+      // 0.05 lb/sqft × $16.50/lb × 1.20 × buffer ≈ $1.10/sqft sell
       treatedScrews: {
         lbsPerSqft: 0.05,
         costPerLb: 16.5,
-        // sell rate baked: 0.05 * 16.5 * 1.20
-        perSqft: 0.99,
+        perSqft: 1.1,
       },
-      // Decking boards — was cost rates × 1.20 (color does not change price)
+      // Decking boards — buffer baked in (color does not change price)
       decking: {
-        treated: { label: "Pressure-treated lumber", perSqft: 8.4 },
+        treated: { label: "Pressure-treated lumber", perSqft: 9.1 },
         trex: {
           label: "Trex",
           lines: {
             enhance: {
               label: "Trex Enhance",
-              perSqft: 8.4,
+              perSqft: 9.1,
               samples: [
                 { id: "beach_dune", name: "Beach Dune", grain: ["#d4b896", "#c4a078", "#b8926a", "#c9a882"] },
                 { id: "clam_shell", name: "Clam Shell", grain: ["#b8b0a4", "#a89e90", "#9a9084", "#aea69a"] },
@@ -65,7 +72,7 @@
             },
             select: {
               label: "Trex Select",
-              perSqft: 13.2,
+              perSqft: 14.3,
               samples: [
                 { id: "pebble_grey", name: "Pebble Grey", grain: ["#9a9690", "#8a8680", "#aaa6a0", "#7a7670"] },
                 { id: "woodland_brown", name: "Woodland Brown", grain: ["#5c4030", "#4a3224", "#6e4e3a", "#3e2a1e"] },
@@ -75,7 +82,7 @@
             },
             transcend: {
               label: "Trex Transcend",
-              perSqft: 18.6,
+              perSqft: 20.1,
               samples: [
                 { id: "island_mist", name: "Island Mist", grain: ["#a8b0a8", "#98a098", "#b8c0b8", "#889088"] },
                 { id: "spiced_rum", name: "Spiced Rum", grain: ["#6b3a2a", "#5a2e20", "#7c4a38", "#4a2418"] },
@@ -89,7 +96,7 @@
             },
             signature: {
               label: "Trex Signature",
-              perSqft: 21.6,
+              perSqft: 23.3,
               samples: [
                 { id: "whidbey", name: "Whidbey", grain: ["#c8b8a0", "#b8a890", "#d8c8b0", "#a89880"] },
                 { id: "tide_pool", name: "Tide Pool", grain: ["#5a6870", "#4a5860", "#6a7880", "#3a4850"] },
@@ -104,7 +111,7 @@
           lines: {
             terrain: {
               label: "TimberTech Terrain",
-              perSqft: 14.4,
+              perSqft: 15.6,
               samples: [
                 { id: "brown_oak", name: "Brown Oak", grain: ["#7a5238", "#6a4228", "#8a6248", "#5a3218"] },
                 { id: "silver_maple", name: "Silver Maple", grain: ["#a8a4a0", "#989490", "#b8b4b0", "#888480"] },
@@ -115,7 +122,7 @@
             },
             legacy: {
               label: "TimberTech Legacy",
-              perSqft: 18.6,
+              perSqft: 20.1,
               samples: [
                 { id: "french_white_oak", name: "French White Oak", grain: ["#d8c8b0", "#c8b8a0", "#e8d8c0", "#b8a890"] },
                 { id: "ashwood", name: "Ashwood", grain: ["#9a928a", "#8a827a", "#aaa29a", "#7a726a"] },
@@ -127,7 +134,7 @@
             },
             reserve: {
               label: "TimberTech Reserve / AZEK",
-              perSqft: 19.2,
+              perSqft: 20.7,
               samples: [
                 { id: "coastline", name: "Coastline", grain: ["#b0b8b8", "#a0a8a8", "#c0c8c8", "#909898"] },
                 { id: "mahogany", name: "Mahogany", grain: ["#6b2e1e", "#5b1e0e", "#7b3e2e", "#4b0e00"] },
@@ -155,10 +162,10 @@
             },
           ],
         },
-        // Wood: $16 cost × 1.20
+        // Wood: cost × 1.20 + buffer
         treated_wood: {
           label: "Wood rail (4x4 posts + wood spindles)",
-          perLf: 19.2,
+          perLf: 20.7,
           samples: [
             {
               id: "pt_green",
@@ -183,10 +190,10 @@
             },
           ],
         },
-        // Hybrid materials: $28 cost × 1.20; extra labor $12/LF separate
+        // Hybrid materials: cost × 1.20 + buffer; extra labor $12/LF separate
         hybrid: {
           label: "Hybrid (wood posts/rails + alum spindles)",
-          perLf: 33.6,
+          perLf: 36.3,
           samples: [
             {
               id: "hybrid_black",
@@ -211,10 +218,10 @@
             },
           ],
         },
-        // Aluminum: $55 cost × 1.06 tax × 1.20 markup → $70 (rounded)
+        // Aluminum: $55 cost × 1.06 tax × 1.20 markup + buffer → $75
         aluminum: {
           label: "Aluminum railing",
-          perLf: 70,
+          perLf: 75,
           samples: [
             {
               id: "alum_black",
@@ -246,10 +253,10 @@
             },
           ],
         },
-        // Composite: $51 cost × 1.20 (kits + sleeves + caps + 4x4 core)
+        // Composite: cost × 1.20 + buffer (kits + sleeves + caps + 4x4 core)
         composite: {
           label: "Composite rail (kits + sleeves + caps)",
-          perLf: 61.2,
+          perLf: 66,
           samples: [
             {
               id: "comp_black",
@@ -406,10 +413,42 @@
     return state.projectType !== "redeck";
   }
 
+  /**
+   * Labor $/sf scales with deck size. Materials do not.
+   * Local median reported deck size ~220–225 sf.
+   *
+   *   ≤100 sf     → 1.12  (small-job premium)
+   *   100–200 sf  → 1.12 → 1.02 (blend down)
+   *   200–350 sf  → 1.00  (base / median band)
+   *   350–400 sf  → 1.00 → 0.92 (blend to volume)
+   *   400–600 sf  → 0.92 → 0.88
+   *   >600 sf     → down toward 0.85 floor
+   */
+  function sizeLaborFactor(sqft) {
+    var s = Math.max(0, Number(sqft) || 0);
+    if (s <= 0) return 1;
+    if (s <= 100) return 1.12;
+    if (s < 200) return 1.12 - ((s - 100) / 100) * 0.1;
+    if (s <= 350) return 1;
+    if (s < 400) return 1 - ((s - 350) / 50) * 0.08;
+    if (s <= 600) return 0.92 - ((s - 400) / 200) * 0.04;
+    return Math.max(0.85, 0.88 - ((s - 600) / 400) * 0.03);
+  }
+
+  function sizeLaborBandLabel(sqft) {
+    var s = Math.max(0, Number(sqft) || 0);
+    if (s <= 0) return "";
+    if (s < 200) return "Small deck — labor priced with a small-job efficiency factor";
+    if (s <= 350) return "Standard size — base labor rates (typical local deck size)";
+    if (s < 400) return "Larger deck — labor efficiency starting to apply";
+    return "Large deck — lower labor per sq ft (volume efficiency)";
+  }
+
   /** Always compute framing labor + framing materials (for redeck worst-case notice). */
   function calcWorstCaseFraming() {
     var sqft = state.sqft || 0;
-    var framingLabor = sqft * RATES.labor.framingPerSqft;
+    var f = sizeLaborFactor(sqft);
+    var framingLabor = sqft * RATES.labor.framingPerSqft * f;
     var framingMaterials = sqft * (RATES.materials.framingPerSqft || 0);
     state.worstCase = {
       framingLabor: framingLabor,
@@ -429,28 +468,32 @@
     var treatedInstall = 0;
     var redeck = 0;
     var demoDispose = 0;
+    var f = sizeLaborFactor(sqft);
+    state.sizeLaborFactor = f;
+    state.sizeLaborBand = sizeLaborBandLabel(sqft);
 
     // Backend: always know framing labor/materials for transparency
     calcWorstCaseFraming();
 
     if (isNewBuild()) {
-      framing = sqft * RATES.labor.framingPerSqft;
+      framing = sqft * RATES.labor.framingPerSqft * f;
       // Composite install only on new build when Trex / TimberTech selected
       compositeInstall = isCompositeDecking()
-        ? sqft * RATES.labor.compositeInstallPerSqft
+        ? sqft * RATES.labor.compositeInstallPerSqft * f
         : 0;
       // Treated face-screw board install when pressure-treated selected
       treatedInstall =
         state.deckingType === "treated"
-          ? sqft * RATES.labor.treatedInstallPerSqft
+          ? sqft * RATES.labor.treatedInstallPerSqft * f
           : 0;
     } else {
       // Redeck main total: surface + demo/dispose only (framing NOT in total)
-      redeck = sqft * RATES.labor.redeckPerSqft;
-      demoDispose = sqft * RATES.labor.demoDisposePerSqft;
+      redeck = sqft * RATES.labor.redeckPerSqft * f;
+      demoDispose = sqft * RATES.labor.demoDisposePerSqft * f;
       framing = 0;
     }
 
+    // Rail LF + steps: fixed unit rates (not size-scaled)
     var railing = lf * RATES.labor.railingPerLf;
     var stepLabor = steps * RATES.labor.perStep;
 
@@ -463,6 +506,7 @@
       railing: railing,
       steps: stepLabor,
       hybridExtra: hybridExtra,
+      sizeFactor: f,
       total:
         framing +
         compositeInstall +
@@ -540,6 +584,12 @@
         money(L.hybridExtra) +
         "</span></div>";
     }
+    if (state.sizeLaborBand) {
+      html +=
+        '<div class="totals__row totals__row--muted"><span>' +
+        escapeHtml(state.sizeLaborBand) +
+        "</span><span></span></div>";
+    }
     document.getElementById("labor-breakdown").innerHTML = html;
     var laborDisp = document.getElementById("labor-total-display");
     if (laborDisp) laborDisp.textContent = money(L.total);
@@ -549,8 +599,8 @@
     if (ban) ban.hidden = !isNewBuild();
     if (lead) {
       lead.textContent = isNewBuild()
-        ? "New build labor. Board install is added when you choose decking (treated face-screw or Trex/TimberTech composite)."
-        : "Redeck labor includes surface install plus demo & dispose. Assumes existing framing is sound — see final page for worst-case framing note.";
+        ? "New build labor scales with deck size (larger decks cost less per sq ft for labor). Board install is added when you choose decking."
+        : "Redeck labor scales with deck size. Includes surface install plus demo & dispose. Assumes existing framing is sound — see final page for worst-case framing note.";
     }
   }
 
