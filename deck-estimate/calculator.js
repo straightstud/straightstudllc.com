@@ -522,13 +522,18 @@
         "</span></div>";
     }
 
-    html +=
-      '<div class="totals__row"><span>Railing install</span><span>' +
-      money(L.railing) +
-      "</span></div>" +
-      '<div class="totals__row"><span>Steps</span><span>' +
-      money(L.steps) +
-      "</span></div>";
+    if (L.railing > 0) {
+      html +=
+        '<div class="totals__row"><span>Railing install</span><span>' +
+        money(L.railing) +
+        "</span></div>";
+    }
+    if (L.steps > 0) {
+      html +=
+        '<div class="totals__row"><span>Steps</span><span>' +
+        money(L.steps) +
+        "</span></div>";
+    }
     if (L.hybridExtra > 0) {
       html +=
         '<div class="totals__row"><span>Hybrid rail extra labor</span><span>' +
@@ -1263,6 +1268,21 @@
       ? "Locked estimate (labor + materials)"
       : "Locked estimate (labor only)";
 
+    // Split labor / materials on lock-in so the total never looks like one opaque fee
+    var finLab = document.getElementById("final-labor-display");
+    var finMat = document.getElementById("final-materials-display");
+    var finMatRow = document.getElementById("final-materials-row");
+    if (finLab) finLab.textContent = money(state.labor.total);
+    if (finMatRow && finMat) {
+      if (state.wantMaterials) {
+        finMatRow.hidden = false;
+        finMat.textContent = money(state.materials.total || 0);
+      } else {
+        finMatRow.hidden = true;
+        finMat.textContent = money(0);
+      }
+    }
+
     var sumEl = document.getElementById("request-summary");
     var html =
       '<dl class="summary__dl">' +
@@ -1276,46 +1296,81 @@
       row("Deck area", state.sqft + " sq ft") +
       row("Railing", state.railingLf + " linear ft") +
       row("Steps", String(state.steps));
+    // Only list labor lines that apply (no $0 noise that looks like padding)
     if (isNewBuild()) {
-      html +=
-        row("Framing labor", money(state.labor.framing)) +
-        row(
+      if (state.labor.framing > 0) {
+        html += row("Framing labor", money(state.labor.framing));
+      }
+      if (state.labor.compositeInstall > 0) {
+        html += row(
           "Composite install labor",
-          money(state.labor.compositeInstall || 0)
-        ) +
-        row(
-          "Treated face-screw install",
-          money(state.labor.treatedInstall || 0)
+          money(state.labor.compositeInstall)
         );
+      }
+      if (state.labor.treatedInstall > 0) {
+        html += row(
+          "Treated face-screw install",
+          money(state.labor.treatedInstall)
+        );
+      }
+      if (
+        !state.wantMaterials &&
+        !state.labor.compositeInstall &&
+        !state.labor.treatedInstall
+      ) {
+        html += row(
+          "Board install labor",
+          "Not in this total — confirmed when decking is chosen on site"
+        );
+      }
     } else {
-      html +=
-        row("Redeck labor", money(state.labor.redeck || 0)) +
-        row("Demo & dispose", money(state.labor.demoDispose || 0));
+      if (state.labor.redeck > 0) {
+        html += row("Redeck labor", money(state.labor.redeck));
+      }
+      if (state.labor.demoDispose > 0) {
+        html += row("Demo & dispose", money(state.labor.demoDispose));
+      }
     }
-    html +=
-      row("Railing labor", money(state.labor.railing)) +
-      row("Steps labor", money(state.labor.steps)) +
-      row("Labor total", money(state.labor.total));
+    if (state.labor.railing > 0) {
+      html += row("Railing labor", money(state.labor.railing));
+    }
+    if (state.labor.steps > 0) {
+      html += row("Steps labor", money(state.labor.steps));
+    }
+    if (state.labor.hybridExtra > 0) {
+      html += row("Hybrid rail extra labor", money(state.labor.hybridExtra));
+    }
+    html += row("Labor total", money(state.labor.total));
     if (state.wantMaterials) {
+      if (state.materials.framing > 0) {
+        html += row("Framing materials", money(state.materials.framing));
+      }
       html +=
-        row("Framing materials", money(state.materials.framing || 0)) +
         row("Decking", state.deckingLabel || "—") +
         row(
           "Color sample",
           state.deckingColorName ||
             (state.deckingType === "treated" ? "Pressure-treated" : "—")
-        ) +
-        row(
+        );
+      if (state.materials.fasteners > 0) {
+        html += row(
           state.deckingType === "treated"
             ? "3\" deck screws"
             : "Fasteners / hardware",
-          money(state.materials.fasteners || 0)
-        ) +
-        row("Railing materials", state.railingLabel || "—") +
-        row("Railing sample", state.railingColorName || "—") +
-        row("Materials total", money(state.materials.total));
+          money(state.materials.fasteners)
+        );
+      }
+      if (state.materials.railing > 0 || keyIsRailing(state.railingType)) {
+        html +=
+          row("Railing materials", state.railingLabel || "—") +
+          row("Railing sample", state.railingColorName || "—");
+      }
+      html += row("Materials total", money(state.materials.total));
     } else {
-      html += row("Materials", "Not included");
+      html += row(
+        "Materials",
+        "Not included (labor-only estimate)"
+      );
     }
     html += row("Estimate total", money(total)) + "</dl>";
     sumEl.innerHTML = html;

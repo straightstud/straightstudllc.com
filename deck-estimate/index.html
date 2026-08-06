@@ -55,10 +55,12 @@
       <h1>Deck estimate calculator</h1>
       <p>
         Build your deck size, see a <strong>rough number</strong>, optionally add materials.
-        If you like the total, enter your info at the end to <strong>lock in this estimate</strong> and schedule a site visit to verify scope and sign.
+        Labor and materials are shown <strong>separately</strong> — no hidden fees, no unit-rate games.
+        If you like the total, enter your info to <strong>lock in this estimate</strong> and schedule a site visit to verify scope and sign.
       </p>
       <p class="disclaimer">
         Rough planning estimate only — not a final contract until we verify on site and you sign.
+        Totals reflect straight labor plus materials (materials include supply and our standard contractor markup — not a surprise add-on).
         Pricing is held for your follow-up appointment once you submit.
       </p>
     </div>
@@ -137,7 +139,7 @@
         </label>
         <label class="choice">
           <input type="radio" name="want_materials" value="no">
-          <span>No — lock in labor-only estimate &amp; schedule visit</span>
+          <span>No — lock in labor-only estimate &amp; schedule visit <em class="choice-em">(board install labor is finalized when decking is chosen on site)</em></span>
         </label>
       </fieldset>
 
@@ -151,10 +153,11 @@
     <section class="card panel" id="panel-3" data-panel="3" hidden aria-labelledby="p3-title">
       <h2 id="p3-title">Materials</h2>
       <p class="panel-lead">
-        Choose decking and railing samples. Prices include materials and our standard markup.
+        Choose decking and railing samples. Material prices include supply and standard contractor markup (built into the line — not stacked again at the end).
         Enter <strong>all railing LF including stairs</strong> (posts + rail in the rate).
         On <strong>new builds</strong>, Trex / TimberTech adds composite install labor; pressure-treated adds face-screw board install labor.
         On <strong>redecks</strong>, framing materials are not charged (structure stays).
+        Railing is priced from your linear feet — more rail raises the total fairly, not as a mystery fee.
       </p>
 
       <div class="form-group">
@@ -274,9 +277,24 @@
         <!-- filled by JS -->
       </div>
 
-      <div class="big-total">
-        <span class="big-total__label" id="final-total-label">Your locked estimate total</span>
-        <span class="big-total__value" id="final-total-display">$0</span>
+      <p class="fair-price-note" id="fair-price-note">
+        This is a transparent planning total: labor for the work listed above, plus materials if you included them.
+        Final price is confirmed on site — we don’t bait-and-switch unit rates after the visit.
+      </p>
+
+      <div class="big-total big-total--stack" id="final-total-stack">
+        <div id="final-labor-row">
+          <span class="big-total__label">Labor</span>
+          <span class="big-total__sub" id="final-labor-display">$0</span>
+        </div>
+        <div id="final-materials-row" hidden>
+          <span class="big-total__label">Materials</span>
+          <span class="big-total__sub" id="final-materials-display">$0</span>
+        </div>
+        <div>
+          <span class="big-total__label" id="final-total-label">Your locked estimate total</span>
+          <span class="big-total__value" id="final-total-display">$0</span>
+        </div>
       </div>
 
       <form
