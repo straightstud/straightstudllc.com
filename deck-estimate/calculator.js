@@ -19,6 +19,8 @@
       framingPerSqft: 7.5, // new build framing labor
       // Composite decking install (Trex / TimberTech) — new build only; not treated
       compositeInstallPerSqft: 17.5,
+      // Pressure-treated face-screw board install — new build when treated selected
+      treatedInstallPerSqft: 12.5,
       // Redeck path
       redeckPerSqft: 15, // redeck labor (new surface on existing structure)
       demoDisposePerSqft: 7.5, // demo & dispose old decking
@@ -303,6 +305,7 @@
     labor: {
       framing: 0,
       compositeInstall: 0,
+      treatedInstall: 0,
       redeck: 0,
       demoDispose: 0,
       railing: 0,
@@ -423,6 +426,7 @@
     var hybridExtra = state.labor.hybridExtra || 0;
     var framing = 0;
     var compositeInstall = 0;
+    var treatedInstall = 0;
     var redeck = 0;
     var demoDispose = 0;
 
@@ -435,6 +439,11 @@
       compositeInstall = isCompositeDecking()
         ? sqft * RATES.labor.compositeInstallPerSqft
         : 0;
+      // Treated face-screw board install when pressure-treated selected
+      treatedInstall =
+        state.deckingType === "treated"
+          ? sqft * RATES.labor.treatedInstallPerSqft
+          : 0;
     } else {
       // Redeck main total: surface + demo/dispose only (framing NOT in total)
       redeck = sqft * RATES.labor.redeckPerSqft;
@@ -448,6 +457,7 @@
     state.labor = {
       framing: framing,
       compositeInstall: compositeInstall,
+      treatedInstall: treatedInstall,
       redeck: redeck,
       demoDispose: demoDispose,
       railing: railing,
@@ -456,6 +466,7 @@
       total:
         framing +
         compositeInstall +
+        treatedInstall +
         redeck +
         demoDispose +
         railing +
@@ -470,6 +481,7 @@
     L.total =
       (L.framing || 0) +
       (L.compositeInstall || 0) +
+      (L.treatedInstall || 0) +
       (L.redeck || 0) +
       (L.demoDispose || 0) +
       (L.railing || 0) +
@@ -491,12 +503,14 @@
           '<div class="totals__row"><span>Composite decking install</span><span>' +
           money(L.compositeInstall) +
           "</span></div>";
-      } else if (state.wantMaterials && state.deckingType === "treated") {
+      } else if (L.treatedInstall > 0) {
         html +=
-          '<div class="totals__row totals__row--muted"><span>Composite install</span><span>N/A (treated)</span></div>';
+          '<div class="totals__row"><span>Treated deck face-screw install</span><span>' +
+          money(L.treatedInstall) +
+          "</span></div>";
       } else if (!state.wantMaterials || !state.deckingType) {
         html +=
-          '<div class="totals__row totals__row--muted"><span>Composite install</span><span>Added if you pick Trex/TimberTech next</span></div>';
+          '<div class="totals__row totals__row--muted"><span>Board install labor</span><span>Added when you pick decking next</span></div>';
       }
     } else {
       html +=
@@ -530,7 +544,7 @@
     if (ban) ban.hidden = !isNewBuild();
     if (lead) {
       lead.textContent = isNewBuild()
-        ? "New build labor. Composite install is added when you choose Trex or TimberTech in materials."
+        ? "New build labor. Board install is added when you choose decking (treated face-screw or Trex/TimberTech composite)."
         : "Redeck labor includes surface install plus demo & dispose. Assumes existing framing is sound — see final page for worst-case framing note.";
     }
   }
@@ -1080,6 +1094,8 @@
       "",
       "Labor — Framing: " + money(state.labor.framing),
       "Labor — Composite install: " + money(state.labor.compositeInstall || 0),
+      "Labor — Treated face-screw install: " +
+        money(state.labor.treatedInstall || 0),
       "Labor — Redeck: " + money(state.labor.redeck || 0),
       "Labor — Demo & dispose: " + money(state.labor.demoDispose || 0),
       "Labor — Railing install: " + money(state.labor.railing),
@@ -1155,6 +1171,8 @@
     document.getElementById("f-labor-framing").value = money(state.labor.framing);
     var fComp = document.getElementById("f-labor-composite");
     if (fComp) fComp.value = money(state.labor.compositeInstall || 0);
+    var fTreated = document.getElementById("f-labor-treated");
+    if (fTreated) fTreated.value = money(state.labor.treatedInstall || 0);
     var fRedeck = document.getElementById("f-labor-redeck");
     if (fRedeck) fRedeck.value = money(state.labor.redeck || 0);
     var fDemo = document.getElementById("f-labor-demo");
@@ -1264,6 +1282,10 @@
         row(
           "Composite install labor",
           money(state.labor.compositeInstall || 0)
+        ) +
+        row(
+          "Treated face-screw install",
+          money(state.labor.treatedInstall || 0)
         );
     } else {
       html +=
