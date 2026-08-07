@@ -31,36 +31,80 @@
       // Redeck path
       redeckPerSqft: 18, // redeck labor (new surface on existing structure)
       demoDisposePerSqft: 9, // demo & dispose old decking
-      railingPerLf: 35, // base railing install labor (not size-scaled)
+      // Same install labor for every rail type (wood / hybrid / aluminum / composite)
+      railingPerLf: 35, // not size-scaled; no type premium
       perStep: 100, // add-on per step (not size-scaled)
-      // Extra labor when hybrid rail selected (alum spindles + cocktail rail build)
-      hybridExtraPerLf: 12,
     },
     // New builds include limited lifetime workmanship warranty (shown in UI + email)
     warrantyNewBuild: "Limited lifetime workmanship warranty included on all new builds",
     materials: {
-      // Sell rates: cost × 1.20 + ~8–10% buffer (waste, delivery, price swings)
-      // Fixed per unit — do not scale with deck size
-      // PT framing lumber + hangers
-      framingPerSqft: 8.5,
-      // Composite (Trex/TimberTech): hidden fasteners + butyl tape cushion
-      fastenersPerSqft: 6.5,
-      // Pressure-treated: 3" deck screws only (no butyl / no hidden fasteners)
-      // 0.05 lb/sqft × $16.50/lb × 1.20 × buffer ≈ $1.10/sqft sell
+      // Sell rates = vendor COST × 1.20 (no second markup). Fixed — do not scale with deck size.
+      // Costs from Zeeland / Carter / HD Pro + owner hardware rules (see MATERIALS-COST-LOG.md).
+      //
+      // FRAMING MATERIALS (finalized 2026-08-07) — full takeoff legend:
+      //   16" composite pads @ 8' OC, 6x6 posts, double 2x12 beams, 2x10 @ 16" OC,
+      //   LUS210 hangers, H2.5A ties, GRK 4", Paslode 3", PP hanger nails,
+      //   ice & water, Z-flashing, ABA66Z post bases, gravel, 8% lumber waste,
+      //   delivery allowance, MI 6% tax.
+      //   Takeoff: 12x20 COMP ~$10.04/sf · 12x12 COMP ~$11.57/sf · blend ~$10.75/sf
+      //   Sell = 10.75 × 1.20 = $12.90/sf (same rate all sizes; small decks slightly tighter)
+      framingPerSqft: 12.9,
+      /*
+       * Composite FASTENERS + fascia + tape — MERGED (owner rules)
+       * COST then ×1.20 sell. One line in UI: "Fasteners / fascia / joist tape"
+       *
+       * 1) Perimeter plugs+screws (~1/6 deck): $100/100 LF board
+       *    5.5" face → 2.1818 LF/sf board × (1/6) ≈ $0.36/sf
+       * 2) Hidden fasteners: $1.00/sf
+       * 3) Joist tape: $20/50' = $0.40/LF × 1 LF/sf = $0.40/sf
+       * 4) Fascia board: $8–$18/LF (legend mid $13/LF) × 0.25 LF/sf = $3.25/sf
+       * 5) Fascia plugs+screws: $80/100 LF = $0.80/LF × 0.25 LF/sf = $0.20/sf
+       *
+       * Cost total = 0.36 + 1.00 + 0.40 + 3.25 + 0.20 = $5.21/sf
+       * Sell = 5.21 × 1.20 = $6.25/sf
+       *
+       * Fascia range check (board only @ 0.25 LF/sf):
+       *   $8/LF → $2.00/sf | $13 mid → $3.25/sf | $18/LF → $4.50/sf
+       */
+      fastenersPerSqft: 6.25,
+      compositeHardware: {
+        cortexCostPer100Lf: 100,
+        boardFaceIn: 5.5,
+        perimeterShare: 1 / 6,
+        hiddenFastenersCostPerSqft: 1.0,
+        tapeCostPer50Lf: 20,
+        tapeLfPerSqft: 1,
+        // Fascia board $8–$18/LF — use mid $13 for legend
+        fasciaCostPerLfMin: 8,
+        fasciaCostPerLfMax: 18,
+        fasciaCostPerLf: 13,
+        fasciaLfPerSqft: 0.25,
+        fasciaPlugsCostPer100Lf: 80, // $80 / 100 LF fascia
+        // derived cost pieces
+        perimeterPlugsCostPerSqft: 0.36,
+        hiddenCostPerSqft: 1.0,
+        tapeCostPerSqft: 0.4,
+        fasciaBoardCostPerSqft: 3.25, // 13 × 0.25
+        fasciaPlugsCostPerSqft: 0.2, // 0.80 × 0.25
+        costPerSqft: 5.21,
+        sellPerSqft: 6.25,
+      },
+      // Pressure-treated: 3" deck screws only (no Cortex / no butyl / no composite fascia kit)
+      // 0.05 lb/sqft × $16.50/lb ≈ $0.85 cost × 1.20 + buffer
       treatedScrews: {
         lbsPerSqft: 0.05,
         costPerLb: 16.5,
         perSqft: 1.1,
       },
-      // Decking boards — buffer baked in (color does not change price)
+      // Decking boards — at least cost × 1.20 (color does not change price)
       decking: {
-        treated: { label: "Pressure-treated lumber", perSqft: 9.1 },
+        treated: { label: "Pressure-treated lumber", perSqft: 9.1 }, // above cost 7.00 × 1.20
         trex: {
           label: "Trex",
           lines: {
             enhance: {
               label: "Trex Enhance",
-              perSqft: 9.1,
+              perSqft: 9.1, // above cost ~7.00 × 1.20
               samples: [
                 { id: "beach_dune", name: "Beach Dune", grain: ["#d4b896", "#c4a078", "#b8926a", "#c9a882"] },
                 { id: "clam_shell", name: "Clam Shell", grain: ["#b8b0a4", "#a89e90", "#9a9084", "#aea69a"] },
@@ -72,7 +116,7 @@
             },
             select: {
               label: "Trex Select",
-              perSqft: 14.3,
+              perSqft: 14.4, // cost 12.00 × 1.20
               samples: [
                 { id: "pebble_grey", name: "Pebble Grey", grain: ["#9a9690", "#8a8680", "#aaa6a0", "#7a7670"] },
                 { id: "woodland_brown", name: "Woodland Brown", grain: ["#5c4030", "#4a3224", "#6e4e3a", "#3e2a1e"] },
@@ -82,7 +126,8 @@
             },
             transcend: {
               label: "Trex Transcend",
-              perSqft: 20.1,
+              // cost ~$19.50/sf of deck (Lineage field boards + waste, Zeeland 1511896)
+              perSqft: 23.4, // cost 19.50 × 1.20
               samples: [
                 { id: "island_mist", name: "Island Mist", grain: ["#a8b0a8", "#98a098", "#b8c0b8", "#889088"] },
                 { id: "spiced_rum", name: "Spiced Rum", grain: ["#6b3a2a", "#5a2e20", "#7c4a38", "#4a2418"] },
@@ -96,7 +141,7 @@
             },
             signature: {
               label: "Trex Signature",
-              perSqft: 23.3,
+              perSqft: 25.2, // cost 21.00 × 1.20
               samples: [
                 { id: "whidbey", name: "Whidbey", grain: ["#c8b8a0", "#b8a890", "#d8c8b0", "#a89880"] },
                 { id: "tide_pool", name: "Tide Pool", grain: ["#5a6870", "#4a5860", "#6a7880", "#3a4850"] },
@@ -111,7 +156,7 @@
           lines: {
             terrain: {
               label: "TimberTech Terrain",
-              perSqft: 15.6,
+              perSqft: 15.6, // above cost ~12.50 × 1.20
               samples: [
                 { id: "brown_oak", name: "Brown Oak", grain: ["#7a5238", "#6a4228", "#8a6248", "#5a3218"] },
                 { id: "silver_maple", name: "Silver Maple", grain: ["#a8a4a0", "#989490", "#b8b4b0", "#888480"] },
@@ -122,7 +167,7 @@
             },
             legacy: {
               label: "TimberTech Legacy",
-              perSqft: 20.1,
+              perSqft: 23.4, // cost 19.50 × 1.20 (Transcend-class)
               samples: [
                 { id: "french_white_oak", name: "French White Oak", grain: ["#d8c8b0", "#c8b8a0", "#e8d8c0", "#b8a890"] },
                 { id: "ashwood", name: "Ashwood", grain: ["#9a928a", "#8a827a", "#aaa29a", "#7a726a"] },
@@ -134,7 +179,7 @@
             },
             reserve: {
               label: "TimberTech Reserve / AZEK",
-              perSqft: 20.7,
+              perSqft: 20.7, // above cost ~16.00 × 1.20
               samples: [
                 { id: "coastline", name: "Coastline", grain: ["#b0b8b8", "#a0a8a8", "#c0c8c8", "#909898"] },
                 { id: "mahogany", name: "Mahogany", grain: ["#6b2e1e", "#5b1e0e", "#7b3e2e", "#4b0e00"] },
@@ -162,10 +207,10 @@
             },
           ],
         },
-        // Wood: cost × 1.20 + buffer
+        // Wood: cost × 1.20 (+ small buffer)
         treated_wood: {
           label: "Wood rail (4x4 posts + wood spindles)",
-          perLf: 20.7,
+          perLf: 20.7, // cost 17 × 1.20
           samples: [
             {
               id: "pt_green",
@@ -190,10 +235,10 @@
             },
           ],
         },
-        // Hybrid materials: cost × 1.20 + buffer; extra labor $12/LF separate
+        // Hybrid materials: cost × 1.20 (rail labor is flat $35/LF all types)
         hybrid: {
           label: "Hybrid (wood posts/rails + alum spindles)",
-          perLf: 36.3,
+          perLf: 36.3, // cost 30 × 1.20
           samples: [
             {
               id: "hybrid_black",
@@ -218,7 +263,7 @@
             },
           ],
         },
-        // Aluminum: $55 cost × 1.06 tax × 1.20 markup + buffer → $75
+        // Aluminum: cost ~$58 × 1.20 → $69.60; kept prior buffer sell
         aluminum: {
           label: "Aluminum railing",
           perLf: 75,
@@ -462,7 +507,6 @@
     var sqft = state.sqft;
     var lf = state.railingLf;
     var steps = state.steps;
-    var hybridExtra = state.labor.hybridExtra || 0;
     var framing = 0;
     var compositeInstall = 0;
     var treatedInstall = 0;
@@ -493,7 +537,7 @@
       framing = 0;
     }
 
-    // Rail LF + steps: fixed unit rates (not size-scaled)
+    // Rail LF + steps: fixed unit rates (not size-scaled). Same $35/LF all rail types.
     var railing = lf * RATES.labor.railingPerLf;
     var stepLabor = steps * RATES.labor.perStep;
 
@@ -505,7 +549,7 @@
       demoDispose: demoDispose,
       railing: railing,
       steps: stepLabor,
-      hybridExtra: hybridExtra,
+      hybridExtra: 0, // retired — rail labor is flat $35/LF for all types
       sizeFactor: f,
       total:
         framing +
@@ -514,8 +558,7 @@
         redeck +
         demoDispose +
         railing +
-        stepLabor +
-        hybridExtra,
+        stepLabor,
     };
     return state.labor;
   }
@@ -529,8 +572,8 @@
       (L.redeck || 0) +
       (L.demoDispose || 0) +
       (L.railing || 0) +
-      (L.steps || 0) +
-      (L.hybridExtra || 0);
+      (L.steps || 0);
+    L.hybridExtra = 0;
   }
 
   function renderLaborBreakdown() {
@@ -576,12 +619,6 @@
       html +=
         '<div class="totals__row"><span>Steps</span><span>' +
         money(L.steps) +
-        "</span></div>";
-    }
-    if (L.hybridExtra > 0) {
-      html +=
-        '<div class="totals__row"><span>Hybrid rail extra labor</span><span>' +
-        money(L.hybridExtra) +
         "</span></div>";
     }
     if (state.sizeLaborBand) {
@@ -1021,8 +1058,8 @@
         ? state.sqft * (RATES.materials.framingPerSqft || 0)
         : 0;
     var deckCost = state.sqft * (deck.perSqft || 0);
-    // Treated: 3" screws only (replaces $6/sf composite fastener cushion)
-    // Composite: hidden fasteners + butyl at fastenersPerSqft
+    // Treated: 3" screws only
+    // Composite: merged fasteners + joist tape + fascia (see compositeHardware)
     var fastenerCost = 0;
     if (hasDecking) {
       if (state.deckingType === "treated") {
@@ -1038,13 +1075,7 @@
     }
     var railCost = state.railingLf * (rail.perLf || 0);
 
-    // Hybrid: extra labor for alum spindles / cocktail rail build
-    if (state.railingType === "hybrid" && state.railingLf > 0) {
-      state.labor.hybridExtra =
-        state.railingLf * (RATES.labor.hybridExtraPerLf || 0);
-    } else {
-      state.labor.hybridExtra = 0;
-    }
+    // Rail install labor is flat $35/LF for all types (no hybrid premium)
     // Refresh framing + composite install from current decking choice
     calcLabor();
     renderLaborBreakdown();
@@ -1079,7 +1110,7 @@
       var fastenerLabel =
         state.deckingType === "treated"
           ? "3&quot; deck screws"
-          : "Fasteners / hardware";
+          : "Fasteners / fascia / joist tape";
       rows +=
         '<div class="totals__row"><span>' +
         fastenerLabel +
@@ -1093,12 +1124,6 @@
         escapeHtml(rail.label) +
         "</span><span>" +
         money(railCost) +
-        "</span></div>";
-    }
-    if (state.labor.hybridExtra > 0) {
-      rows +=
-        '<div class="totals__row"><span>Hybrid rail extra labor (alum spindles / build)</span><span>' +
-        money(state.labor.hybridExtra) +
         "</span></div>";
     }
     if (!rows) {
@@ -1153,9 +1178,8 @@
         money(state.labor.treatedInstall || 0),
       "Labor — Redeck: " + money(state.labor.redeck || 0),
       "Labor — Demo & dispose: " + money(state.labor.demoDispose || 0),
-      "Labor — Railing install: " + money(state.labor.railing),
+      "Labor — Railing install ($35/LF all types): " + money(state.labor.railing),
       "Labor — Steps: " + money(state.labor.steps),
-      "Labor — Hybrid rail extra: " + money(state.labor.hybridExtra || 0),
       "Labor total: " + money(state.labor.total),
     ];
     if (!isNewBuild()) {
@@ -1181,7 +1205,8 @@
             (state.deckingType === "treated" ? "Pressure-treated" : "—")),
         (state.deckingType === "treated"
           ? "3\" deck screws: "
-          : "Fasteners / hardware: ") + money(state.materials.fasteners || 0),
+          : "Fasteners / fascia / joist tape: ") +
+          money(state.materials.fasteners || 0),
         "Railing materials: " + (state.railingLabel || "—"),
         "Railing sample: " +
           (state.railingColorName ||
@@ -1387,9 +1412,6 @@
     if (state.labor.steps > 0) {
       html += row("Steps labor", money(state.labor.steps));
     }
-    if (state.labor.hybridExtra > 0) {
-      html += row("Hybrid rail extra labor", money(state.labor.hybridExtra));
-    }
     html += row("Labor total", money(state.labor.total));
     if (state.wantMaterials) {
       if (state.materials.framing > 0) {
@@ -1406,7 +1428,7 @@
         html += row(
           state.deckingType === "treated"
             ? "3\" deck screws"
-            : "Fasteners / hardware",
+            : "Fasteners / fascia / joist tape",
           money(state.materials.fasteners)
         );
       }
@@ -1458,7 +1480,6 @@
     state.deckingColor = "";
     state.deckingColorName = "";
     state.deckingLabel = "";
-    state.labor.hybridExtra = 0;
     calcLabor();
     renderLaborBreakdown();
     showPanel(2);
