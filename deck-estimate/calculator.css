@@ -1031,3 +1031,27 @@ body {
 .card-inset {
   box-shadow: none;
 }
+
+.choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 10px;
+}
+.choice--inline {
+  flex: 1 1 auto;
+  min-width: 4.5rem;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.choice--inline:hover {
+  border-color: var(--accent);
+}
+.choice-block__sublegend {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 10px 0 6px;
+}

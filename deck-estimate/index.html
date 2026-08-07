@@ -94,9 +94,51 @@
             <div class="form-group">
               <label for="num-steps">Number of steps</label>
               <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
-              <span class="hint">Separate cost — treated vs composite rates (not in platform %). Composite stairs take more labor (blocking, risers, plugs).</span>
+              <span class="hint">Stair structure mats update live (2×12 bases + stringers + optional footings). Tread surface = deck sq ft. Rail = railing LF.</span>
             </div>
           </div>
+
+          <fieldset class="choice-block choice-block--design" id="stair-options" data-stair-options>
+            <legend>Stair options</legend>
+            <p class="choice-block__note">
+              Structure only: PT 2×12 tread bases, stringers, hardware (+20% markup).
+              Extra footings for long runs / landings. Face boards stay in deck sq ft; rail in railing LF.
+            </p>
+            <p class="choice-block__sublegend">Stair width</p>
+            <div class="choice-row">
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_width" value="3">
+                <span><strong>3′</strong></span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_width" value="4" checked>
+                <span><strong>4′</strong> (typical)</span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_width" value="5">
+                <span><strong>5′</strong></span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_width" value="6">
+                <span><strong>6′</strong></span>
+              </label>
+            </div>
+            <p class="choice-block__sublegend">Extra stair footings (16″ composite pad package)</p>
+            <div class="choice-row">
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_extra_footings" value="0" checked>
+                <span><strong>None</strong> — short run / tight to deck</span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_extra_footings" value="1">
+                <span><strong>+1 footing</strong> — long run or landing</span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="stair_extra_footings" value="2">
+                <span><strong>+2 footings</strong> — landing / freestanding</span>
+              </label>
+            </div>
+          </fieldset>
 
           <fieldset class="choice-block choice-block--design">
             <legend>How many deck platforms / levels?</legend>
@@ -284,6 +326,9 @@
             <input type="hidden" name="deck_sqft" id="f-sqft" value="">
             <input type="hidden" name="railing_linear_ft" id="f-railing-lf" value="">
             <input type="hidden" name="number_of_steps" id="f-steps" value="">
+            <input type="hidden" name="stair_width_ft" id="f-stair-width" value="">
+            <input type="hidden" name="stair_extra_footings" id="f-stair-footings" value="">
+            <input type="hidden" name="stair_structure_materials" id="f-stair-mats" value="">
             <input type="hidden" name="platforms" id="f-platforms" value="">
             <input type="hidden" name="deck_shape" id="f-deck-shape" value="">
             <input type="hidden" name="framing_labor_platform_factor" id="f-platform-factor" value="">

@@ -52,6 +52,9 @@
       "Framing scope: 6x6 pressure-treated posts set on top of compacted gravel with 16\" composite footing pads. " +
       "Joists typically 2x10 @ 16\" O.C.; double 2x12 carrier beams; hangers, hurricane ties, and structural fasteners included in framing package. " +
       "Final layout confirmed on site.",
+    stairScopeNotes:
+      "Stair structure: PT 2x12 tread bases and stringers; extra 16\" composite footings when selected for long runs/landings. " +
+      "Stair tread surface is included in deck square footage / decking materials. Stair rail is in railing LF.",
     /*
      * Competitor context (planning only — not a bid from any company).
      * Local research: Green Shield / large remodeler composite quotes often run
@@ -97,6 +100,21 @@
        *   $8/LF → $2.00/sf | $13 mid → $3.25/sf | $18/LF → $4.50/sf
        */
       fastenersPerSqft: 6.25,
+      /*
+       * STAIR STRUCTURE materials (not tread face, not rail).
+       * Face boards = deck sq ft. Rail = railing LF.
+       * Cost × 1.20 sell. Inputs: step count + width (3/4/5/6 ft) + optional extra footings.
+       */
+      stairs: {
+        twoByTwelveCostPerLf: 2.5, // Zeeland-class 2x12
+        hardwareCostPerStep: 4,
+        stringerBoard12: 29.94,
+        stringerBoard16: 39.64,
+        stringerHardwareEach: 8,
+        // Footing package: 16" pad + gravel + post base + 0.5×6x6
+        footingPackageCost: 83.61,
+        markup: 1.2,
+      },
       compositeHardware: {
         cortexCostPer100Lf: 100,
         boardFaceIn: 5.5,
@@ -384,6 +402,8 @@
     sqft: 0,
     railingLf: 0,
     steps: 0,
+    stairWidthFt: 4, // 3 | 4 | 5 | 6
+    stairExtraFootings: 0, // long run / landing pads
     platforms: 1, // 1 | 2 | 3+
     deckShape: "rectangle", // rectangle | angled
     platformFactor: 1,
@@ -414,8 +434,10 @@
       decking: 0,
       fasteners: 0,
       railing: 0,
+      stairs: 0,
       total: 0,
     },
+    stairMaterialsDetail: null,
     grandTotal: 0,
     cameFromMaterials: false,
     // Redeck: framing labor + materials calculated in background (not in main total)
@@ -525,6 +547,65 @@
     return shape === "angled"
       ? "Angles / complex shape (+20% framing labor)"
       : "Simple rectangle (base framing labor)";
+  }
+
+  /**
+   * Stair STRUCTURE materials (cost × 1.20 sell).
+   * - 2x12 PT tread bases: one per step × width
+   * - Stringers: 3 if width ≤4', else 4; 12' sticks ≤6 steps, 16' if taller
+   * - Hardware cushion per step
+   * - Optional extra 16" footing packages (long run / landing)
+   * Tread FACE boards = deck sq ft. Rail = railing LF.
+   */
+  function calcStairMaterials(steps, widthFt, extraFootings) {
+    var s = Math.max(0, Math.round(Number(steps) || 0));
+    var w = Number(widthFt) || 4;
+    if (w !== 3 && w !== 4 && w !== 5 && w !== 6) w = 4;
+    var foot = Math.max(0, Math.round(Number(extraFootings) || 0));
+    var cfg = (RATES.materials && RATES.materials.stairs) || {};
+    var m = cfg.markup != null ? cfg.markup : 1.2;
+    if (s < 1) {
+      return {
+        steps: 0,
+        widthFt: w,
+        extraFootings: 0,
+        stringerCount: 0,
+        cost: 0,
+        sell: 0,
+        treadBasesCost: 0,
+        stringersCost: 0,
+        hardwareCost: 0,
+        footingsCost: 0,
+      };
+    }
+    var lfCost = cfg.twoByTwelveCostPerLf != null ? cfg.twoByTwelveCostPerLf : 2.5;
+    var hwStep = cfg.hardwareCostPerStep != null ? cfg.hardwareCostPerStep : 4;
+    var board12 = cfg.stringerBoard12 != null ? cfg.stringerBoard12 : 29.94;
+    var board16 = cfg.stringerBoard16 != null ? cfg.stringerBoard16 : 39.64;
+    var strHw = cfg.stringerHardwareEach != null ? cfg.stringerHardwareEach : 8;
+    var footPkg = cfg.footingPackageCost != null ? cfg.footingPackageCost : 83.61;
+
+    var nStringers = w <= 4 ? 3 : 4;
+    var strBoard = s <= 6 ? board12 : board16;
+    var treadBasesCost = s * w * lfCost;
+    var stringersCost = nStringers * strBoard + nStringers * strHw;
+    var hardwareCost = s * hwStep;
+    var footingsCost = foot * footPkg;
+    var cost = treadBasesCost + stringersCost + hardwareCost + footingsCost;
+    var sell = cost * m;
+    return {
+      steps: s,
+      widthFt: w,
+      extraFootings: foot,
+      stringerCount: nStringers,
+      cost: cost,
+      sell: sell,
+      treadBasesCost: treadBasesCost,
+      stringersCost: stringersCost,
+      hardwareCost: hardwareCost,
+      footingsCost: footingsCost,
+      markup: m,
+    };
   }
 
   /** Framing labor multipliers: size × platforms × shape (new build framing only). */
@@ -657,7 +738,11 @@
     var L = state.labor;
     var M = state.materials;
     var laborTotal = L.total || 0;
-    var matTotal = state.wantMaterials ? M.total || 0 : 0;
+    // Stair structure mats always count when steps > 0; other mats when decking chosen
+    var matTotal = M.total || 0;
+    if (!state.wantMaterials) {
+      matTotal = M.stairs || 0;
+    }
     var grand = laborTotal + matTotal;
     state.grandTotal = grand;
 
@@ -797,6 +882,21 @@
           money(M.railing) +
           "</span></div>";
       }
+    }
+    if (M.stairs > 0) {
+      var sd = state.stairMaterialsDetail || {};
+      html +=
+        '<div class="totals__row"><span>Stair structure mats (' +
+        (sd.steps || state.steps) +
+        " steps × " +
+        (sd.widthFt || state.stairWidthFt) +
+        "′" +
+        (sd.extraFootings
+          ? ", +" + sd.extraFootings + " footing"
+          : "") +
+        ")</span><span>" +
+        money(M.stairs) +
+        "</span></div>";
     }
     if (state.sizeLaborBand) {
       html +=
@@ -1256,7 +1356,7 @@
       hasDecking && isNewBuild()
         ? state.sqft * (RATES.materials.framingPerSqft || 0)
         : 0;
-    var deckCost = state.sqft * (deck.perSqft || 0);
+    var deckCost = hasDecking ? state.sqft * (deck.perSqft || 0) : 0;
     // Treated: 3" screws only
     // Composite: merged fasteners + joist tape + fascia (see compositeHardware)
     var fastenerCost = 0;
@@ -1272,20 +1372,34 @@
         fastenerCost = state.sqft * (RATES.materials.fastenersPerSqft || 0);
       }
     }
-    var railCost = state.railingLf * (rail.perLf || 0);
+    var railCost =
+      hasDecking || keyIsRailing(state.railingType)
+        ? state.railingLf * (rail.perLf || 0)
+        : state.railingLf * (rail.perLf || 0);
+
+    // Stair STRUCTURE materials always when steps > 0 (face boards in deck sf)
+    var stairDetail = calcStairMaterials(
+      state.steps,
+      state.stairWidthFt,
+      state.stairExtraFootings
+    );
+    state.stairMaterialsDetail = stairDetail;
+    var stairCost = stairDetail.sell || 0;
 
     // Rail install labor is flat $35/LF for all types (no hybrid premium)
     // Refresh framing + composite install from current decking choice
     calcLabor();
     renderLaborBreakdown();
 
-    var materialsTotal = framingCost + deckCost + fastenerCost + railCost;
+    var materialsTotal =
+      framingCost + deckCost + fastenerCost + railCost + stairCost;
 
     state.materials = {
       framing: framingCost,
       decking: deckCost,
       fasteners: fastenerCost,
       railing: railCost,
+      stairs: stairCost,
       total: materialsTotal,
     };
     state.grandTotal = state.labor.total + state.materials.total;
@@ -1322,10 +1436,19 @@
       "Platforms: " + platformLabel(state.platforms),
       "Deck shape: " + shapeLabel(state.deckShape),
       "Railing linear ft: " + state.railingLf,
-      "Steps: " + state.steps + " (separate from platform %)",
+      "Steps: " +
+        state.steps +
+        " @ " +
+        (state.stairWidthFt || 4) +
+        "' wide, extra footings: " +
+        (state.stairExtraFootings || 0),
+      "Stair structure materials (sell): " +
+        money((state.materials && state.materials.stairs) || 0),
       "",
       "SCOPE — FRAMING:",
       RATES.framingScopeNotes || "",
+      "SCOPE — STAIRS:",
+      RATES.stairScopeNotes || "",
       "",
       "Labor — Framing: " + money(state.labor.framing),
       "Labor — Composite install: " + money(state.labor.compositeInstall || 0),
@@ -1411,6 +1534,12 @@
     document.getElementById("f-sqft").value = String(state.sqft);
     document.getElementById("f-railing-lf").value = String(state.railingLf);
     document.getElementById("f-steps").value = String(state.steps);
+    var fSw = document.getElementById("f-stair-width");
+    if (fSw) fSw.value = String(state.stairWidthFt || 4);
+    var fSf = document.getElementById("f-stair-footings");
+    if (fSf) fSf.value = String(state.stairExtraFootings || 0);
+    var fSm = document.getElementById("f-stair-mats");
+    if (fSm) fSm.value = money((state.materials && state.materials.stairs) || 0);
     var fPlat = document.getElementById("f-platforms");
     if (fPlat) fPlat.value = platformLabel(state.platforms);
     var fShape = document.getElementById("f-deck-shape");
@@ -1499,12 +1628,16 @@
         ? money(state.materials.fasteners || 0)
         : "n/a";
     }
-    document.getElementById("f-mat-total").value = state.wantMaterials
-      ? money(state.materials.total)
-      : "n/a";
-    var total = state.wantMaterials
-      ? state.labor.total + (state.materials.total || 0)
-      : state.labor.total;
+    document.getElementById("f-mat-total").value = money(
+      state.wantMaterials
+        ? state.materials.total || 0
+        : (state.materials && state.materials.stairs) || 0
+    );
+    var total =
+      state.labor.total +
+      (state.wantMaterials
+        ? state.materials.total || 0
+        : (state.materials && state.materials.stairs) || 0);
     state.grandTotal = total;
     document.getElementById("f-grand").value = money(total);
     var fCompT = document.getElementById("f-competitor-total");
@@ -1549,6 +1682,12 @@
     var shapeEl = document.querySelector('input[name="deck_shape"]:checked');
     state.deckShape =
       shapeEl && shapeEl.value === "angled" ? "angled" : "rectangle";
+    var sw = document.querySelector('input[name="stair_width"]:checked');
+    var swVal = sw ? parseInt(sw.value, 10) : 4;
+    state.stairWidthFt =
+      swVal === 3 || swVal === 5 || swVal === 6 ? swVal : 4;
+    var sf = document.querySelector('input[name="stair_extra_footings"]:checked');
+    state.stairExtraFootings = sf ? parseInt(sf.value, 10) || 0 : 0;
 
     var dtype = deckingTypeEl ? deckingTypeEl.value : "";
     state.deckingType = dtype || "";
@@ -1558,13 +1697,6 @@
       state.deckingColor = "";
       state.deckingColorName = "";
       state.deckingLabel = "";
-      state.materials = {
-        framing: 0,
-        decking: 0,
-        fasteners: 0,
-        railing: 0,
-        total: 0,
-      };
     } else if (dtype === "treated") {
       state.wantMaterials = true;
       state.deckingSub = "";
@@ -1577,12 +1709,8 @@
 
   function liveRecalc() {
     syncStateFromDom();
-    if (state.wantMaterials && state.deckingType) {
-      calcAndRenderMaterials();
-    } else {
-      calcLabor();
-      renderLivePanel();
-    }
+    // Always run materials path so stair structure mats update with steps/width
+    calcAndRenderMaterials();
     updateRedeckFramingNotice();
   }
 
@@ -1601,6 +1729,12 @@
       el.addEventListener("change", liveRecalc);
     });
     document.querySelectorAll('input[name="deck_shape"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="stair_width"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="stair_extra_footings"]').forEach(function (el) {
       el.addEventListener("change", liveRecalc);
     });
     if (deckingTypeEl) {
