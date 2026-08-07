@@ -23,7 +23,13 @@
   var RATES = {
     labor: {
       // Base rates = median band (200–350 sf). Scaled by sizeLaborFactor(sqft).
-      framingPerSqft: 10, // new build framing labor
+      framingPerSqft: 10, // new build framing labor (base; × size × platform × shape)
+      // Platform count → framing labor only (stairs are separate $/step)
+      // 1 → +0% | 2 → +25% | 3+ → +50%
+      platformFactor: { 1: 1.0, 2: 1.25, 3: 1.5 },
+      // Shape → framing labor only
+      // rectangle → +0% | angled/complex → +20%
+      shapeFactor: { rectangle: 1.0, angled: 1.2 },
       // Composite decking install (Trex / TimberTech) — new build only; not treated
       compositeInstallPerSqft: 25,
       // Pressure-treated face-screw board install — new build when treated selected
@@ -354,6 +360,10 @@
     sqft: 0,
     railingLf: 0,
     steps: 0,
+    platforms: 1, // 1 | 2 | 3+
+    deckShape: "rectangle", // rectangle | angled
+    platformFactor: 1,
+    shapeFactor: 1,
     labor: {
       framing: 0,
       compositeInstall: 0,
@@ -489,11 +499,51 @@
     return "Large deck — lower labor per sq ft (volume efficiency)";
   }
 
+  /** Platform count → framing labor multiplier only. */
+  function platformLaborFactor(platforms) {
+    var p = parseInt(platforms, 10) || 1;
+    if (p >= 3) return (RATES.labor.platformFactor && RATES.labor.platformFactor[3]) || 1.5;
+    if (p === 2) return (RATES.labor.platformFactor && RATES.labor.platformFactor[2]) || 1.25;
+    return (RATES.labor.platformFactor && RATES.labor.platformFactor[1]) || 1;
+  }
+
+  /** Shape → framing labor multiplier only. */
+  function shapeLaborFactor(shape) {
+    var key = shape === "angled" ? "angled" : "rectangle";
+    var map = RATES.labor.shapeFactor || {};
+    return map[key] != null ? map[key] : key === "angled" ? 1.2 : 1;
+  }
+
+  function platformLabel(platforms) {
+    var p = parseInt(platforms, 10) || 1;
+    if (p >= 3) return "3+ platforms (+50% framing labor)";
+    if (p === 2) return "2 platforms (+25% framing labor)";
+    return "1 platform (base framing labor)";
+  }
+
+  function shapeLabel(shape) {
+    return shape === "angled"
+      ? "Angles / complex shape (+20% framing labor)"
+      : "Simple rectangle (base framing labor)";
+  }
+
+  /** Framing labor multipliers: size × platforms × shape (new build framing only). */
+  function framingLaborMultipliers() {
+    var sizeF = sizeLaborFactor(state.sqft);
+    var platF = platformLaborFactor(state.platforms);
+    var shapeF = shapeLaborFactor(state.deckShape);
+    state.sizeLaborFactor = sizeF;
+    state.platformFactor = platF;
+    state.shapeFactor = shapeF;
+    state.sizeLaborBand = sizeLaborBandLabel(state.sqft);
+    return { sizeF: sizeF, platF: platF, shapeF: shapeF, combined: sizeF * platF * shapeF };
+  }
+
   /** Always compute framing labor + framing materials (for redeck worst-case notice). */
   function calcWorstCaseFraming() {
     var sqft = state.sqft || 0;
-    var f = sizeLaborFactor(sqft);
-    var framingLabor = sqft * RATES.labor.framingPerSqft * f;
+    var m = framingLaborMultipliers();
+    var framingLabor = sqft * RATES.labor.framingPerSqft * m.combined;
     var framingMaterials = sqft * (RATES.materials.framingPerSqft || 0);
     state.worstCase = {
       framingLabor: framingLabor,
@@ -512,32 +562,31 @@
     var treatedInstall = 0;
     var redeck = 0;
     var demoDispose = 0;
-    var f = sizeLaborFactor(sqft);
-    state.sizeLaborFactor = f;
-    state.sizeLaborBand = sizeLaborBandLabel(sqft);
+    var m = framingLaborMultipliers();
+    var f = m.sizeF; // board install / redeck still use size factor only
 
     // Backend: always know framing labor/materials for transparency
     calcWorstCaseFraming();
 
     if (isNewBuild()) {
-      framing = sqft * RATES.labor.framingPerSqft * f;
-      // Composite install only on new build when Trex / TimberTech selected
+      // Framing: size × platform × shape (customer-visible design choices)
+      framing = sqft * RATES.labor.framingPerSqft * m.combined;
+      // Board install: size only (not platform/shape)
       compositeInstall = isCompositeDecking()
         ? sqft * RATES.labor.compositeInstallPerSqft * f
         : 0;
-      // Treated face-screw board install when pressure-treated selected
       treatedInstall =
         state.deckingType === "treated"
           ? sqft * RATES.labor.treatedInstallPerSqft * f
           : 0;
     } else {
-      // Redeck main total: surface + demo/dispose only (framing NOT in total)
+      // Redeck: surface + demo only (framing NOT in total)
       redeck = sqft * RATES.labor.redeckPerSqft * f;
       demoDispose = sqft * RATES.labor.demoDisposePerSqft * f;
       framing = 0;
     }
 
-    // Rail LF + steps: fixed unit rates (not size-scaled). Same $35/LF all rail types.
+    // Rail LF + steps: fixed unit rates (not size/platform/shape scaled)
     var railing = lf * RATES.labor.railingPerLf;
     var stepLabor = steps * RATES.labor.perStep;
 
@@ -549,8 +598,11 @@
       demoDispose: demoDispose,
       railing: railing,
       steps: stepLabor,
-      hybridExtra: 0, // retired — rail labor is flat $35/LF for all types
+      hybridExtra: 0,
       sizeFactor: f,
+      platformFactor: m.platF,
+      shapeFactor: m.shapeF,
+      framingCombinedFactor: m.combined,
       total:
         framing +
         compositeInstall +
@@ -585,6 +637,20 @@
         '<div class="totals__row"><span>Framing labor</span><span>' +
         money(L.framing) +
         "</span></div>";
+      // Plain-view design factors so customers see tradeoffs (rectangle vs angles, etc.)
+      if (state.platformFactor > 1 || state.shapeFactor > 1) {
+        html +=
+          '<div class="totals__row totals__row--design-note"><span>' +
+          escapeHtml(platformLabel(state.platforms)) +
+          "</span><span></span></div>";
+        html +=
+          '<div class="totals__row totals__row--design-note"><span>' +
+          escapeHtml(shapeLabel(state.deckShape)) +
+          "</span><span></span></div>";
+      } else {
+        html +=
+          '<div class="totals__row totals__row--design-note"><span>Framing: 1 platform + simple rectangle (base rate)</span><span></span></div>';
+      }
       if (L.compositeInstall > 0) {
         html +=
           '<div class="totals__row"><span>Composite decking install</span><span>' +
@@ -617,7 +683,7 @@
     }
     if (L.steps > 0) {
       html +=
-        '<div class="totals__row"><span>Steps</span><span>' +
+        '<div class="totals__row"><span>Steps (separate from platform %)</span><span>' +
         money(L.steps) +
         "</span></div>";
     }
@@ -636,7 +702,7 @@
     if (ban) ban.hidden = !isNewBuild();
     if (lead) {
       lead.textContent = isNewBuild()
-        ? "New build labor scales with deck size (larger decks cost less per sq ft for labor). Board install is added when you choose decking."
+        ? "Framing labor uses deck size, number of platforms, and shape (percentages shown on your selections). Stairs and railing are separate. Board install is added when you choose decking."
         : "Redeck labor scales with deck size. Includes surface install plus demo & dispose. Assumes existing framing is sound — see final page for worst-case framing note.";
     }
   }
@@ -1169,8 +1235,10 @@
           ? RATES.warrantyNewBuild
           : "Workmanship warranty per contract (redeck)"),
       "Deck sq ft: " + state.sqft,
+      "Platforms: " + platformLabel(state.platforms),
+      "Deck shape: " + shapeLabel(state.deckShape),
       "Railing linear ft: " + state.railingLf,
-      "Steps: " + state.steps,
+      "Steps: " + state.steps + " (separate from platform %)",
       "",
       "Labor — Framing: " + money(state.labor.framing),
       "Labor — Composite install: " + money(state.labor.compositeInstall || 0),
@@ -1248,6 +1316,14 @@
     document.getElementById("f-sqft").value = String(state.sqft);
     document.getElementById("f-railing-lf").value = String(state.railingLf);
     document.getElementById("f-steps").value = String(state.steps);
+    var fPlat = document.getElementById("f-platforms");
+    if (fPlat) fPlat.value = platformLabel(state.platforms);
+    var fShape = document.getElementById("f-deck-shape");
+    if (fShape) fShape.value = shapeLabel(state.deckShape);
+    var fPf = document.getElementById("f-platform-factor");
+    if (fPf) fPf.value = String(state.platformFactor || 1);
+    var fSf = document.getElementById("f-shape-factor");
+    if (fSf) fSf.value = String(state.shapeFactor || 1);
     document.getElementById("f-labor-framing").value = money(state.labor.framing);
     var fComp = document.getElementById("f-labor-composite");
     if (fComp) fComp.value = money(state.labor.compositeInstall || 0);
@@ -1369,8 +1445,10 @@
           : "Per contract (redeck)"
       ) +
       row("Deck area", state.sqft + " sq ft") +
+      row("Platforms", platformLabel(state.platforms)) +
+      row("Deck shape", shapeLabel(state.deckShape)) +
       row("Railing", state.railingLf + " linear ft") +
-      row("Steps", String(state.steps));
+      row("Steps", String(state.steps) + " (separate cost)");
     // Only list labor lines that apply (no $0 noise that looks like padding)
     if (isNewBuild()) {
       if (state.labor.framing > 0) {
@@ -1474,6 +1552,12 @@
     state.sqft = Math.round(sqft);
     state.railingLf = Math.round(num(document.getElementById("railing-lf"), 0));
     state.steps = Math.round(num(document.getElementById("num-steps"), 0));
+    var platEl = document.querySelector('input[name="platforms"]:checked');
+    var platVal = platEl ? parseInt(platEl.value, 10) : 1;
+    state.platforms = platVal >= 3 ? 3 : platVal === 2 ? 2 : 1;
+    var shapeEl = document.querySelector('input[name="deck_shape"]:checked');
+    state.deckShape =
+      shapeEl && shapeEl.value === "angled" ? "angled" : "rectangle";
     // Reset decking until materials step
     state.deckingType = "";
     state.deckingSub = "";

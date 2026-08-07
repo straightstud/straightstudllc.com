@@ -282,6 +282,15 @@ body {
   color: var(--primary);
   padding: 0 6px;
 }
+.choice-block--design {
+  background: linear-gradient(180deg, rgba(10, 37, 64, 0.03), transparent);
+}
+.choice-block__note {
+  margin: 0 0 12px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--muted, #5a6570);
+}
 .choice {
   display: flex;
   align-items: flex-start;
@@ -297,6 +306,27 @@ body {
 .choice input {
   margin-top: 3px;
   accent-color: var(--accent);
+}
+.choice-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.choice-badge--base {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+.choice-badge--up {
+  background: #fff3e0;
+  color: #e65100;
+}
+.totals__row--design-note span:first-child {
+  font-size: 0.88rem;
+  color: var(--muted, #5a6570);
 }
 
 .check-label {

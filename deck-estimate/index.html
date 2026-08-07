@@ -105,9 +105,61 @@
         <div class="form-group">
           <label for="num-steps">Number of steps</label>
           <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
-          <span class="hint">Per-step labor add-on</span>
+          <span class="hint">Stairs are a separate per-step cost (not in platform % below)</span>
         </div>
       </div>
+
+      <!-- Design choices: plain-language % so customers can trade shape for upgrades -->
+      <fieldset class="choice-block choice-block--design" id="platforms-fieldset">
+        <legend>How many deck platforms / levels? <span class="req">*</span></legend>
+        <p class="choice-block__note">
+          Affects <strong>framing labor only</strong> on new builds. Stairs are billed separately per step.
+          Choosing fewer levels can free budget for upgraded decking.
+        </p>
+        <label class="choice">
+          <input type="radio" name="platforms" value="1" checked>
+          <span>
+            <strong>1 platform</strong> — single level
+            <span class="choice-badge choice-badge--base">Base framing labor · +0%</span>
+          </span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="platforms" value="2">
+          <span>
+            <strong>2 platforms</strong> — two levels / tiers
+            <span class="choice-badge choice-badge--up">Framing labor <strong>+25%</strong></span>
+          </span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="platforms" value="3">
+          <span>
+            <strong>3 or more platforms</strong>
+            <span class="choice-badge choice-badge--up">Framing labor <strong>+50%</strong></span>
+          </span>
+        </label>
+      </fieldset>
+
+      <fieldset class="choice-block choice-block--design" id="shape-fieldset">
+        <legend>Deck shape <span class="req">*</span></legend>
+        <p class="choice-block__note">
+          Angles take more layout and cut time. A simple rectangle often costs less in labor —
+          savings you can put toward Trex Transcend, better rail, etc.
+        </p>
+        <label class="choice">
+          <input type="radio" name="deck_shape" value="rectangle" checked>
+          <span>
+            <strong>Simple rectangle</strong> — square corners only
+            <span class="choice-badge choice-badge--base">Base framing labor · +0%</span>
+          </span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="deck_shape" value="angled">
+          <span>
+            <strong>Angles or complex shape</strong> — 45° cuts, diagonals, L/T with odd angles
+            <span class="choice-badge choice-badge--up">Framing labor <strong>+20%</strong></span>
+          </span>
+        </label>
+      </fieldset>
 
       <p class="field-error" id="err-1" hidden></p>
       <div class="panel-actions">
@@ -345,6 +397,10 @@
         <input type="hidden" name="deck_sqft" id="f-sqft" value="">
         <input type="hidden" name="railing_linear_ft" id="f-railing-lf" value="">
         <input type="hidden" name="number_of_steps" id="f-steps" value="">
+        <input type="hidden" name="platforms" id="f-platforms" value="">
+        <input type="hidden" name="deck_shape" id="f-deck-shape" value="">
+        <input type="hidden" name="framing_labor_platform_factor" id="f-platform-factor" value="">
+        <input type="hidden" name="framing_labor_shape_factor" id="f-shape-factor" value="">
         <input type="hidden" name="project_type" id="f-project-type" value="">
         <input type="hidden" name="warranty" id="f-warranty" value="">
         <input type="hidden" name="labor_framing" id="f-labor-framing" value="">
