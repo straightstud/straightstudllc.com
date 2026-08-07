@@ -94,7 +94,7 @@
             <div class="form-group">
               <label for="num-steps">Number of steps</label>
               <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
-              <span class="hint">Separate per-step cost (not in platform %)</span>
+              <span class="hint">Separate cost — treated vs composite rates (not in platform %). Composite stairs take more labor (blocking, risers, plugs).</span>
             </div>
           </div>
 
@@ -226,6 +226,14 @@
             Happy with the number? Send it over — we’ll verify scope on site and have you sign the estimate.
           </p>
 
+          <div class="scope-block card-inset" id="scope-summary-block">
+            <h3 class="scope-block__title">Scope of work summary</h3>
+            <div class="scope-notes scope-notes--checkout" id="scope-framing-notes-checkout"></div>
+            <p class="scope-block__hint">
+              Full line-item dollars are in the live total. Site visit confirms layout, soil, and attachment details.
+            </p>
+          </div>
+
           <div class="notice-banner notice-banner--warn" id="redeck-framing-notice" hidden></div>
 
           <form
@@ -282,6 +290,7 @@
             <input type="hidden" name="framing_labor_shape_factor" id="f-shape-factor" value="">
             <input type="hidden" name="project_type" id="f-project-type" value="">
             <input type="hidden" name="warranty" id="f-warranty" value="">
+            <input type="hidden" name="framing_scope_notes" id="f-framing-scope" value="">
             <input type="hidden" name="labor_framing" id="f-labor-framing" value="">
             <input type="hidden" name="labor_composite_install" id="f-labor-composite" value="">
             <input type="hidden" name="labor_treated_install" id="f-labor-treated" value="">
@@ -359,6 +368,8 @@
           <div class="live-breakdown" id="live-breakdown">
             <!-- filled by JS -->
           </div>
+
+          <div class="scope-notes" id="scope-framing-notes" hidden></div>
 
           <p class="warranty-banner" id="warranty-banner" hidden>
             <strong>Limited lifetime workmanship warranty</strong> on new builds.

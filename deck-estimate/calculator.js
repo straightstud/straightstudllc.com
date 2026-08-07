@@ -39,10 +39,19 @@
       demoDisposePerSqft: 9, // demo & dispose old decking
       // Same install labor for every rail type (wood / hybrid / aluminum / composite)
       railingPerLf: 35, // not size-scaled; no type premium
-      perStep: 100, // add-on per step (not size-scaled)
+      // Steps — separate from platform % (composite is much slower: blocking, risers, plugs)
+      perStepTreated: 100,
+      perStepComposite: 175,
+      // Default when decking not chosen yet (planning); refined when surface is picked
+      perStep: 100,
     },
     // New builds include limited lifetime workmanship warranty (shown in UI + email)
     warrantyNewBuild: "Limited lifetime workmanship warranty included on all new builds",
+    // Scope notes for checkout / email (framing finalized)
+    framingScopeNotes:
+      "Framing scope: 6x6 pressure-treated posts set on top of compacted gravel with 16\" composite footing pads. " +
+      "Joists typically 2x10 @ 16\" O.C.; double 2x12 carrier beams; hangers, hurricane ties, and structural fasteners included in framing package. " +
+      "Final layout confirmed on site.",
     /*
      * Competitor context (planning only — not a bid from any company).
      * Local research: Green Shield / large remodeler composite quotes often run
@@ -579,7 +588,15 @@
 
     // Rail LF + steps: fixed unit rates (not size/platform/shape scaled)
     var railing = lf * RATES.labor.railingPerLf;
-    var stepLabor = steps * RATES.labor.perStep;
+    // Steps: composite much more labor than PT; default PT rate until decking chosen
+    var stepRate = RATES.labor.perStepTreated || RATES.labor.perStep || 100;
+    if (isCompositeDecking()) {
+      stepRate = RATES.labor.perStepComposite || 175;
+    } else if (state.deckingType === "treated") {
+      stepRate = RATES.labor.perStepTreated || 100;
+    }
+    state.stepLaborRate = stepRate;
+    var stepLabor = steps * stepRate;
 
     state.labor = {
       framing: framing,
@@ -740,8 +757,18 @@
         "</span></div>";
     }
     if (L.steps > 0) {
+      var stepNote = "";
+      if (isCompositeDecking()) {
+        stepNote = " (composite rate)";
+      } else if (state.deckingType === "treated") {
+        stepNote = " (treated rate)";
+      } else {
+        stepNote = " (treated rate until decking chosen)";
+      }
       html +=
-        '<div class="totals__row"><span>Steps labor</span><span>' +
+        '<div class="totals__row"><span>Steps labor' +
+        stepNote +
+        "</span><span>" +
         money(L.steps) +
         "</span></div>";
     }
@@ -781,6 +808,29 @@
     if (br) br.innerHTML = html;
     var ban = document.getElementById("warranty-banner");
     if (ban) ban.hidden = !isNewBuild();
+
+    // Scope of work — framing notes (sticky + checkout)
+    var scopeHtml = "";
+    if (isNewBuild() && state.sqft > 0) {
+      scopeHtml =
+        "<strong>Framing (included in estimate)</strong> — " +
+        escapeHtml(RATES.framingScopeNotes || "");
+    } else if (!isNewBuild() && state.sqft > 0) {
+      scopeHtml =
+        "<strong>Framing</strong> — Redeck path assumes existing structure stays. " +
+        "New posts/footings are not in the main total unless added after site visit.";
+    }
+    ["scope-framing-notes", "scope-framing-notes-checkout"].forEach(function (id) {
+      var scopeEl = document.getElementById(id);
+      if (!scopeEl) return;
+      if (scopeHtml) {
+        scopeEl.hidden = false;
+        scopeEl.innerHTML = scopeHtml;
+      } else {
+        scopeEl.hidden = true;
+        scopeEl.innerHTML = "";
+      }
+    });
   }
 
   function renderLaborBreakdown() {
@@ -1274,6 +1324,9 @@
       "Railing linear ft: " + state.railingLf,
       "Steps: " + state.steps + " (separate from platform %)",
       "",
+      "SCOPE — FRAMING:",
+      RATES.framingScopeNotes || "",
+      "",
       "Labor — Framing: " + money(state.labor.framing),
       "Labor — Composite install: " + money(state.labor.compositeInstall || 0),
       "Labor — Treated face-screw install: " +
@@ -1366,6 +1419,12 @@
     if (fPf) fPf.value = String(state.platformFactor || 1);
     var fSf = document.getElementById("f-shape-factor");
     if (fSf) fSf.value = String(state.shapeFactor || 1);
+    var fScope = document.getElementById("f-framing-scope");
+    if (fScope) {
+      fScope.value = isNewBuild()
+        ? RATES.framingScopeNotes || ""
+        : "Redeck — existing framing assumed; not rebuilt in main total.";
+    }
     document.getElementById("f-labor-framing").value = money(state.labor.framing);
     var fComp = document.getElementById("f-labor-composite");
     if (fComp) fComp.value = money(state.labor.compositeInstall || 0);
