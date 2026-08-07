@@ -53,8 +53,9 @@
       "Joists typically 2x10 @ 16\" O.C.; double 2x12 carrier beams; hangers, hurricane ties, and structural fasteners included in framing package. " +
       "Final layout confirmed on site.",
     stairScopeNotes:
-      "Stair structure: PT 2x12 tread bases and stringers; extra 16\" composite footings when selected for long runs/landings. " +
-      "Stair tread surface is included in deck square footage / decking materials. Stair rail is in railing LF.",
+      "Stair structure: PT 2x12 tread bases; color-matched risers (same brand/line as decking — PT 1x10 ripped or composite ~7.25\" riser); " +
+      "stringers; extra 16\" composite footings when selected. Riser $/LF prorated from real decking board cost by line. " +
+      "Tread face boards are in deck sq ft / decking materials. Stair rail is in railing LF.",
     /*
      * Competitor context (planning only — not a bid from any company).
      * Local research: Green Shield / large remodeler composite quotes often run
@@ -101,19 +102,50 @@
        */
       fastenersPerSqft: 6.25,
       /*
-       * STAIR STRUCTURE materials (not tread face, not rail).
+       * STAIR STRUCTURE materials (not tread FACE, not rail).
        * Face boards = deck sq ft. Rail = railing LF.
        * Cost × 1.20 sell. Inputs: step count + width (3/4/5/6 ft) + optional extra footings.
+       *
+       * COLOR-MATCHED RISERS: same brand/line as decking.
+       *   PT: 1x10 ripped to rise (~$2.00/LF cost)
+       *   Composite: ~1/2 x 7-1/4 x 12' matching collection
+       *
+       * Riser $/LF derived from REAL decking board $/LF (vendor quotes) prorated
+       * against known riser sticks:
+       *   Enhance riser Zeeland/Carter ~$72/12' = $6.00/LF
+       *   Transcend riser retail/pro ~$102/12' = $8.50/LF
+       *   Terrain online ~$66/12' = $5.50/LF
+       * Formula (composite): riserLf = enhanceRiserLf + slope × (boardLf − enhanceBoardLf)
+       *   slope = (8.50 − 6.00) / (7.24 − 2.98) ≈ 0.587
        */
       stairs: {
-        twoByTwelveCostPerLf: 2.5, // Zeeland-class 2x12
+        twoByTwelveCostPerLf: 2.5, // Zeeland-class 2x12 tread base
         hardwareCostPerStep: 4,
         stringerBoard12: 29.94,
         stringerBoard16: 39.64,
         stringerHardwareEach: 8,
-        // Footing package: 16" pad + gravel + post base + 0.5×6x6
         footingPackageCost: 83.61,
         markup: 1.2,
+        // Real decking BOARD cost $/LF (5.5" face sticks from Zeeland/Carter/HD)
+        // Used only to prorate matching riser cost by line
+        realBoardCostPerLf: {
+          treated: 2.2, // 5/4x6 PT class
+          enhance: 2.98, // Zeeland Enhance Naturals 16' @ $47.60
+          select: 4.5, // mid between Enhance and Transcend
+          transcend: 7.24, // Zeeland Lineage 16' @ $115.78
+          signature: 8.5, // premium over Transcend
+          terrain: 4.0, // mid composite
+          legacy: 7.24, // Transcend-class
+          reserve: 6.5, // between Select and Transcend; PVC class
+        },
+        // Known riser stick anchors (cost $/LF of riser face)
+        riserAnchor: {
+          enhanceBoardLf: 2.98,
+          enhanceRiserLf: 6.0, // ~$72/12'
+          transcendBoardLf: 7.24,
+          transcendRiserLf: 8.5, // ~$102/12'
+          treatedRiserLf: 2.0, // 1x10 PT ripped
+        },
       },
       compositeHardware: {
         cortexCostPer100Lf: 100,
@@ -550,8 +582,81 @@
   }
 
   /**
+   * Matching riser COST $/LF for current decking brand/line.
+   * Composite: prorate from real decking board $/LF between Enhance ($6/LF riser)
+   * and Transcend ($8.50/LF riser) anchors. PT: 1x10 ripped @ $2/LF.
+   */
+  function riserCostPerLfForDecking() {
+    var cfg = (RATES.materials && RATES.materials.stairs) || {};
+    var boards = cfg.realBoardCostPerLf || {};
+    var a = cfg.riserAnchor || {};
+    var type = state.deckingType || "";
+    var sub = state.deckingSub || "";
+
+    if (!type || type === "") {
+      // Planning default until decking chosen — PT riser rate
+      return {
+        costPerLf: a.treatedRiserLf != null ? a.treatedRiserLf : 2,
+        label: "PT 1x10 (default until decking chosen)",
+        boardCostPerLf: boards.treated || 2.2,
+      };
+    }
+    if (type === "treated") {
+      return {
+        costPerLf: a.treatedRiserLf != null ? a.treatedRiserLf : 2,
+        label: "PT 1x10 ripped to rise",
+        boardCostPerLf: boards.treated || 2.2,
+      };
+    }
+
+    var key = "enhance";
+    if (type === "trex") {
+      if (sub === "select") key = "select";
+      else if (sub === "transcend") key = "transcend";
+      else if (sub === "signature") key = "signature";
+      else key = "enhance";
+    } else if (type === "timbertech") {
+      if (sub === "legacy") key = "legacy";
+      else if (sub === "reserve") key = "reserve";
+      else key = "terrain";
+    }
+
+    var boardLf = boards[key];
+    if (boardLf == null) boardLf = boards.enhance || 2.98;
+
+    var eBoard = a.enhanceBoardLf != null ? a.enhanceBoardLf : 2.98;
+    var eRiser = a.enhanceRiserLf != null ? a.enhanceRiserLf : 6;
+    var tBoard = a.transcendBoardLf != null ? a.transcendBoardLf : 7.24;
+    var tRiser = a.transcendRiserLf != null ? a.transcendRiserLf : 8.5;
+    var slope = (tRiser - eRiser) / Math.max(0.01, tBoard - eBoard);
+    // Prorate riser LF cost from decking board LF cost (same brand ladder)
+    var riserLf = eRiser + slope * (boardLf - eBoard);
+    // Keep in a sane band (~$4–$15/LF cost for main lines; Signature can run higher)
+    if (riserLf < 4) riserLf = 4;
+    if (riserLf > 16) riserLf = 16;
+
+    var labels = {
+      enhance: "Trex Enhance matching riser (~7.25\"×12')",
+      select: "Trex Select matching riser",
+      transcend: "Trex Transcend matching riser",
+      signature: "Trex Signature matching riser",
+      terrain: "TimberTech Terrain matching riser",
+      legacy: "TimberTech Legacy matching riser",
+      reserve: "TimberTech Reserve / AZEK matching riser",
+    };
+
+    return {
+      costPerLf: riserLf,
+      label: labels[key] || "Matching composite riser",
+      boardCostPerLf: boardLf,
+      lineKey: key,
+    };
+  }
+
+  /**
    * Stair STRUCTURE materials (cost × 1.20 sell).
    * - 2x12 PT tread bases: one per step × width
+   * - Color-matched risers: PT 1x10 or composite ~7.25" matching decking line
    * - Stringers: 3 if width ≤4', else 4; 12' sticks ≤6 steps, 16' if taller
    * - Hardware cushion per step
    * - Optional extra 16" footing packages (long run / landing)
@@ -564,6 +669,7 @@
     var foot = Math.max(0, Math.round(Number(extraFootings) || 0));
     var cfg = (RATES.materials && RATES.materials.stairs) || {};
     var m = cfg.markup != null ? cfg.markup : 1.2;
+    var riserInfo = riserCostPerLfForDecking();
     if (s < 1) {
       return {
         steps: 0,
@@ -573,9 +679,12 @@
         cost: 0,
         sell: 0,
         treadBasesCost: 0,
+        risersCost: 0,
         stringersCost: 0,
         hardwareCost: 0,
         footingsCost: 0,
+        riserCostPerLf: riserInfo.costPerLf,
+        riserLabel: riserInfo.label,
       };
     }
     var lfCost = cfg.twoByTwelveCostPerLf != null ? cfg.twoByTwelveCostPerLf : 2.5;
@@ -588,10 +697,13 @@
     var nStringers = w <= 4 ? 3 : 4;
     var strBoard = s <= 6 ? board12 : board16;
     var treadBasesCost = s * w * lfCost;
+    // One riser face per step × stair width (matching decking line)
+    var risersCost = s * w * riserInfo.costPerLf;
     var stringersCost = nStringers * strBoard + nStringers * strHw;
     var hardwareCost = s * hwStep;
     var footingsCost = foot * footPkg;
-    var cost = treadBasesCost + stringersCost + hardwareCost + footingsCost;
+    var cost =
+      treadBasesCost + risersCost + stringersCost + hardwareCost + footingsCost;
     var sell = cost * m;
     return {
       steps: s,
@@ -601,9 +713,14 @@
       cost: cost,
       sell: sell,
       treadBasesCost: treadBasesCost,
+      risersCost: risersCost,
       stringersCost: stringersCost,
       hardwareCost: hardwareCost,
       footingsCost: footingsCost,
+      riserCostPerLf: riserInfo.costPerLf,
+      riserSellPerLf: riserInfo.costPerLf * m,
+      riserLabel: riserInfo.label,
+      boardCostPerLf: riserInfo.boardCostPerLf,
       markup: m,
     };
   }
@@ -897,6 +1014,18 @@
         ")</span><span>" +
         money(M.stairs) +
         "</span></div>";
+      if (sd.riserLabel && sd.risersCost > 0) {
+        html +=
+          '<div class="totals__row totals__row--design-note"><span>Risers: ' +
+          escapeHtml(sd.riserLabel) +
+          " (~$" +
+          (sd.riserSellPerLf != null
+            ? sd.riserSellPerLf.toFixed(2)
+            : "?") +
+          "/LF sell)</span><span>" +
+          money(sd.risersCost * (sd.markup || 1.2)) +
+          "</span></div>";
+      }
     }
     if (state.sizeLaborBand) {
       html +=
