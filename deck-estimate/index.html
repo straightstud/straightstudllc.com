@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Free deck estimate calculator for Greater Grand Rapids — labor and materials rough pricing from Straight Stud Construction LLC. Request a site visit with your numbers prefilled.">
+  <meta name="description" content="Free live deck estimate calculator for Greater Grand Rapids — adjust size, design, and materials and see pricing update instantly. Straight Stud Construction LLC.">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0a2540">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>Deck Estimate Calculator | Straight Stud Construction LLC</title>
   <link rel="stylesheet" href="../css/styles.css">
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSX8FN3QLS"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -17,14 +16,11 @@
     gtag('js', new Date());
     gtag('config', 'G-XSX8FN3QLS');
   </script>
-  <!-- Google Tag Manager -->
   <script src="../js/analytics.js"></script>
   <link rel="stylesheet" href="calculator.css">
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="site-header">
@@ -50,411 +46,329 @@
     </div>
   </header>
 
-  <main id="main" class="wrap">
+  <main id="main" class="wrap wrap--live">
     <div class="intro">
       <h1>Deck estimate calculator</h1>
       <p>
-        Build your deck size, see a <strong>rough number</strong>, optionally add materials.
-        Labor and materials are shown <strong>separately</strong> — no hidden fees, no unit-rate games.
-        If you like the total, enter your info to <strong>lock in this estimate</strong> and schedule a site visit to verify scope and sign.
+        Change any option below — <strong>price updates live</strong>.
+        Labor and materials stay separate. When the total hits what you want to spend,
+        lock it in and request an on-site review.
       </p>
       <p class="disclaimer">
         Rough planning estimate only — not a final contract until we verify on site and you sign.
-        Totals reflect labor plus materials (materials include supply, markup, and a small buffer — not a surprise add-on).
-        Labor efficiency adjusts with deck size; materials use steady unit pricing.
-        Pricing is held for your follow-up appointment once you submit.
+        Design choices (platforms, angles) show plain % on framing labor so you can trade shape for upgraded materials.
       </p>
     </div>
 
-    <!-- Progress -->
-    <ol class="steps" id="step-indicator" aria-label="Progress">
-      <li class="steps__item is-active" data-step="1"><span>1</span> Build deck</li>
-      <li class="steps__item" data-step="2"><span>2</span> Labor</li>
-      <li class="steps__item" data-step="3"><span>3</span> Materials</li>
-      <li class="steps__item" data-step="4"><span>4</span> Lock in &amp; schedule</li>
-    </ol>
+    <div class="live-layout">
+      <!-- ========== OPTIONS (all on one page) ========== -->
+      <div class="live-main">
 
-    <!-- ========== STEP 1: Deck details (build first) ========== -->
-    <section class="card panel is-active" id="panel-1" data-panel="1" aria-labelledby="p1-title">
-      <h2 id="p1-title">Build your deck</h2>
-      <p class="panel-lead">Choose new build or redeck, then enter sizes. Unit rates are not shown — you’ll only see totals.</p>
+        <section class="card" id="section-build" aria-labelledby="build-title">
+          <h2 id="build-title">1. Build your deck</h2>
+          <p class="panel-lead">Every change updates the total on the right (or below on mobile).</p>
 
-      <fieldset class="choice-block">
-        <legend>Project type <span class="req">*</span></legend>
-        <label class="choice">
-          <input type="radio" name="project_type" value="new_build" checked>
-          <span><strong>New build</strong> — full structure. Includes <strong>limited lifetime workmanship warranty</strong>.</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="project_type" value="redeck">
-          <span><strong>Redeck</strong> — remove old surface &amp; install new decking (existing structure stays).</span>
-        </label>
-      </fieldset>
+          <fieldset class="choice-block">
+            <legend>Project type <span class="req">*</span></legend>
+            <label class="choice">
+              <input type="radio" name="project_type" value="new_build" checked>
+              <span><strong>New build</strong> — full structure. Includes <strong>limited lifetime workmanship warranty</strong>.</span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="project_type" value="redeck">
+              <span><strong>Redeck</strong> — remove old surface &amp; install new decking (existing structure stays).</span>
+            </label>
+          </fieldset>
 
-      <div class="form-row form-row--3">
-        <div class="form-group">
-          <label for="deck-sqft">Deck area (sq ft) <span class="req">*</span></label>
-          <input type="number" id="deck-sqft" min="1" max="20000" step="1" placeholder="e.g. 320" inputmode="numeric">
-          <span class="hint" id="sqft-hint">Labor per sq ft adjusts with size (smaller decks higher, larger decks lower). Materials stay fixed rates.</span>
-        </div>
-        <div class="form-group">
-          <label for="railing-lf">Railing (linear ft)</label>
-          <input type="number" id="railing-lf" min="0" max="5000" step="1" placeholder="e.g. 48" inputmode="numeric" value="0">
-          <span class="hint">Include deck edges + stair railing LF</span>
-        </div>
-        <div class="form-group">
-          <label for="num-steps">Number of steps</label>
-          <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
-          <span class="hint">Stairs are a separate per-step cost (not in platform % below)</span>
-        </div>
-      </div>
-
-      <!-- Design choices: plain-language % so customers can trade shape for upgrades -->
-      <fieldset class="choice-block choice-block--design" id="platforms-fieldset">
-        <legend>How many deck platforms / levels? <span class="req">*</span></legend>
-        <p class="choice-block__note">
-          Affects <strong>framing labor only</strong> on new builds. Stairs are billed separately per step.
-          Choosing fewer levels can free budget for upgraded decking.
-        </p>
-        <label class="choice">
-          <input type="radio" name="platforms" value="1" checked>
-          <span>
-            <strong>1 platform</strong> — single level
-            <span class="choice-badge choice-badge--base">Base framing labor · +0%</span>
-          </span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="platforms" value="2">
-          <span>
-            <strong>2 platforms</strong> — two levels / tiers
-            <span class="choice-badge choice-badge--up">Framing labor <strong>+25%</strong></span>
-          </span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="platforms" value="3">
-          <span>
-            <strong>3 or more platforms</strong>
-            <span class="choice-badge choice-badge--up">Framing labor <strong>+50%</strong></span>
-          </span>
-        </label>
-      </fieldset>
-
-      <fieldset class="choice-block choice-block--design" id="shape-fieldset">
-        <legend>Deck shape <span class="req">*</span></legend>
-        <p class="choice-block__note">
-          Angles take more layout and cut time. A simple rectangle often costs less in labor —
-          savings you can put toward Trex Transcend, better rail, etc.
-        </p>
-        <label class="choice">
-          <input type="radio" name="deck_shape" value="rectangle" checked>
-          <span>
-            <strong>Simple rectangle</strong> — square corners only
-            <span class="choice-badge choice-badge--base">Base framing labor · +0%</span>
-          </span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="deck_shape" value="angled">
-          <span>
-            <strong>Angles or complex shape</strong> — 45° cuts, diagonals, L/T with odd angles
-            <span class="choice-badge choice-badge--up">Framing labor <strong>+20%</strong></span>
-          </span>
-        </label>
-      </fieldset>
-
-      <p class="field-error" id="err-1" hidden></p>
-      <div class="panel-actions">
-        <button type="button" class="btn btn--primary" id="btn-step1">Calculate labor</button>
-      </div>
-    </section>
-
-    <!-- ========== STEP 2: Labor result + materials? ========== -->
-    <section class="card panel" id="panel-2" data-panel="2" hidden aria-labelledby="p2-title">
-      <h2 id="p2-title">Labor estimate</h2>
-      <p class="panel-lead" id="labor-panel-lead">Rough labor total based on project type.</p>
-      <p class="warranty-banner" id="warranty-banner" hidden>
-        <strong>Limited lifetime workmanship warranty</strong> included on all new builds.
-      </p>
-
-      <div class="totals" id="labor-breakdown">
-        <!-- filled by JS -->
-      </div>
-
-      <div class="big-total">
-        <span class="big-total__label">Estimated labor</span>
-        <span class="big-total__value" id="labor-total-display">$0</span>
-      </div>
-
-      <fieldset class="choice-block">
-        <legend>Do you want to continue with materials?</legend>
-        <label class="choice">
-          <input type="radio" name="want_materials" value="yes" checked>
-          <span>Yes — pick decking &amp; railing materials</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="want_materials" value="no">
-          <span>No — lock in labor-only estimate &amp; schedule visit <em class="choice-em">(board install labor is finalized when decking is chosen on site)</em></span>
-        </label>
-      </fieldset>
-
-      <div class="panel-actions">
-        <button type="button" class="btn btn--outline" data-back="1">Back</button>
-        <button type="button" class="btn btn--primary" id="btn-step2">Continue</button>
-      </div>
-    </section>
-
-    <!-- ========== STEP 3: Materials ========== -->
-    <section class="card panel" id="panel-3" data-panel="3" hidden aria-labelledby="p3-title">
-      <h2 id="p3-title">Materials</h2>
-      <p class="panel-lead">
-        Choose decking and railing samples. Material prices include supply and standard contractor markup (built into the line — not stacked again at the end).
-        Enter <strong>all railing LF including stairs</strong> (posts + rail in the rate).
-        On <strong>new builds</strong>, Trex / TimberTech adds composite install labor; pressure-treated adds face-screw board install labor.
-        On <strong>redecks</strong>, framing materials are not charged (structure stays).
-        Railing is priced from your linear feet — more rail raises the total fairly, not as a mystery fee.
-      </p>
-
-      <div class="form-group">
-        <label for="decking-type">Decking type <span class="req">*</span></label>
-        <select id="decking-type">
-          <option value="">Select decking…</option>
-          <option value="treated">Pressure-treated lumber</option>
-          <option value="trex">Trex (composite)</option>
-          <option value="timbertech">TimberTech (composite)</option>
-        </select>
-      </div>
-
-      <!-- Visual sample blocks for Trex / TimberTech (shown after brand pick) -->
-      <div class="sample-panel" id="sample-panel" hidden>
-        <div class="sample-panel__head">
-          <h3 id="sample-panel-title">Choose a sample</h3>
-          <p class="sample-panel__hint">
-            Click a color block to select it. Colors are approximate demo swatches — final boards may vary; we’ll confirm samples on site.
-          </p>
-        </div>
-        <div id="sample-gallery" class="sample-gallery" role="listbox" aria-labelledby="sample-panel-title" aria-required="true">
-          <!-- filled by JS -->
-        </div>
-        <p class="sample-selected" id="sample-selected" hidden>
-          Selected: <strong id="sample-selected-label"></strong>
-        </p>
-        <!-- Keep select for state/accessibility; driven by sample clicks -->
-        <select id="decking-sub" class="sr-only-select" tabindex="-1" aria-hidden="true">
-          <option value="">Select line…</option>
-        </select>
-        <input type="hidden" id="decking-color" value="">
-      </div>
-
-      <!-- Treated: simple wood sample (no brand colors) -->
-      <div class="sample-panel" id="treated-sample" hidden>
-        <div class="sample-panel__head">
-          <h3>Pressure-treated lumber</h3>
-          <p class="sample-panel__hint">Standard treated decking look (demo swatch).</p>
-        </div>
-        <div class="sample-gallery sample-gallery--single">
-          <div class="sample-card is-selected" aria-selected="true">
-            <div class="sample-card__swatch sample-card__swatch--treated" aria-hidden="true"></div>
-            <div class="sample-card__meta">
-              <span class="sample-card__line">Pressure-treated</span>
-              <span class="sample-card__name">Natural green / weathers to gray</span>
+          <div class="form-row form-row--3">
+            <div class="form-group">
+              <label for="deck-sqft">Deck area (sq ft) <span class="req">*</span></label>
+              <input type="number" id="deck-sqft" min="1" max="20000" step="1" placeholder="e.g. 320" inputmode="numeric" value="300">
+              <span class="hint">Labor adjusts with size; materials stay fixed rates.</span>
+            </div>
+            <div class="form-group">
+              <label for="railing-lf">Railing (linear ft)</label>
+              <input type="number" id="railing-lf" min="0" max="5000" step="1" placeholder="e.g. 48" inputmode="numeric" value="0">
+              <span class="hint">Include deck edges + stair railing LF</span>
+            </div>
+            <div class="form-group">
+              <label for="num-steps">Number of steps</label>
+              <input type="number" id="num-steps" min="0" max="100" step="1" placeholder="e.g. 4" inputmode="numeric" value="0">
+              <span class="hint">Separate per-step cost (not in platform %)</span>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Visual sample blocks for railing -->
-      <div class="sample-panel sample-panel--railing" id="railing-sample-panel">
-        <div class="sample-panel__head">
-          <h3 id="railing-sample-title">Railing samples — pick a block</h3>
-          <p class="sample-panel__hint">
-            Click a railing style/color. Rate includes posts + rail; use total LF including stairs.
-            Previews are approximate — we’ll confirm samples on site.
-            Choose “No railing materials” if you only need labor or already have materials.
+          <fieldset class="choice-block choice-block--design">
+            <legend>How many deck platforms / levels?</legend>
+            <p class="choice-block__note">
+              Affects <strong>framing labor only</strong>. Stairs are separate. Fewer levels can free budget for better decking.
+            </p>
+            <label class="choice">
+              <input type="radio" name="platforms" value="1" checked>
+              <span>
+                <strong>1 platform</strong> — single level
+                <span class="choice-badge choice-badge--base">Framing labor · +0%</span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="platforms" value="2">
+              <span>
+                <strong>2 platforms</strong> — two levels / tiers
+                <span class="choice-badge choice-badge--up">Framing labor <strong>+25%</strong></span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="platforms" value="3">
+              <span>
+                <strong>3 or more platforms</strong>
+                <span class="choice-badge choice-badge--up">Framing labor <strong>+50%</strong></span>
+              </span>
+            </label>
+          </fieldset>
+
+          <fieldset class="choice-block choice-block--design">
+            <legend>Deck shape</legend>
+            <p class="choice-block__note">
+              A simple rectangle often costs less in labor — savings you can put toward upgraded materials.
+            </p>
+            <label class="choice">
+              <input type="radio" name="deck_shape" value="rectangle" checked>
+              <span>
+                <strong>Simple rectangle</strong> — square corners only
+                <span class="choice-badge choice-badge--base">Framing labor · +0%</span>
+              </span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="deck_shape" value="angled">
+              <span>
+                <strong>Angles or complex shape</strong> — 45° cuts, diagonals, odd angles
+                <span class="choice-badge choice-badge--up">Framing labor <strong>+20%</strong></span>
+              </span>
+            </label>
+          </fieldset>
+        </section>
+
+        <section class="card" id="section-materials" aria-labelledby="mat-title">
+          <h2 id="mat-title">2. Materials (optional)</h2>
+          <p class="panel-lead">
+            Pick decking and railing to include materials in the live total. Skip for a labor-only planning number
+            (board install is finalized when decking is chosen on site).
           </p>
-        </div>
-        <div id="railing-sample-gallery" class="railing-sample-root" role="listbox" aria-labelledby="railing-sample-title">
-          <!-- filled by JS -->
-        </div>
-        <p class="sample-selected" id="railing-sample-selected" hidden>
-          Selected railing: <strong id="railing-sample-selected-label"></strong>
-        </p>
-        <select id="railing-type" class="sr-only-select" tabindex="-1" aria-hidden="true">
-          <option value="none" selected>No railing materials</option>
-          <option value="treated_wood">Treated railing + wood spindles</option>
-          <option value="hybrid">Hybrid railing</option>
-          <option value="aluminum">Aluminum railing</option>
-          <option value="composite">Composite railing</option>
-        </select>
-        <input type="hidden" id="railing-color" value="none">
-      </div>
 
-      <div class="totals" id="materials-breakdown">
-        <!-- filled by JS -->
-      </div>
-
-      <div class="big-total big-total--stack">
-        <div>
-          <span class="big-total__label">Labor</span>
-          <span class="big-total__sub" id="mat-labor-display">$0</span>
-        </div>
-        <div>
-          <span class="big-total__label">Materials</span>
-          <span class="big-total__sub" id="mat-materials-display">$0</span>
-        </div>
-        <div>
-          <span class="big-total__label">Estimated total</span>
-          <span class="big-total__value" id="grand-total-display">$0</span>
-        </div>
-      </div>
-
-      <p class="field-error" id="err-3" hidden></p>
-      <div class="panel-actions">
-        <button type="button" class="btn btn--outline" data-back="2">Back</button>
-        <button type="button" class="btn btn--primary" id="btn-step3">Continue — lock in &amp; schedule</button>
-      </div>
-    </section>
-
-    <!-- ========== STEP 4: Lock in pricing + schedule verification ========== -->
-    <section class="card panel" id="panel-4" data-panel="4" hidden aria-labelledby="p4-title">
-      <h2 id="p4-title">Lock in your estimate &amp; schedule a visit</h2>
-      <p class="panel-lead">
-        Like the number? Enter your contact info to lock this estimate and request an appointment.
-        We’ll come verify the scope of work and have you sign the estimate on site.
-      </p>
-
-      <div class="summary" id="request-summary">
-        <!-- filled by JS -->
-      </div>
-
-      <!-- Redeck only: framing calculated in background; notice only on final page -->
-      <div class="notice-banner notice-banner--warn" id="redeck-framing-notice" hidden>
-        <!-- filled by JS -->
-      </div>
-
-      <p class="fair-price-note" id="fair-price-note">
-        This is a transparent planning total: labor for the work listed above, plus materials if you included them.
-        Final price is confirmed on site — we don’t bait-and-switch unit rates after the visit.
-      </p>
-
-      <div class="big-total big-total--stack" id="final-total-stack">
-        <div id="final-labor-row">
-          <span class="big-total__label">Labor</span>
-          <span class="big-total__sub" id="final-labor-display">$0</span>
-        </div>
-        <div id="final-materials-row" hidden>
-          <span class="big-total__label">Materials</span>
-          <span class="big-total__sub" id="final-materials-display">$0</span>
-        </div>
-        <div>
-          <span class="big-total__label" id="final-total-label">Your locked estimate total</span>
-          <span class="big-total__value" id="final-total-display">$0</span>
-        </div>
-      </div>
-
-      <form
-        id="estimate-form"
-        action="https://formsubmit.co/request@straightstudllc.com"
-        method="POST"
-        novalidate
-      >
-        <div class="hp-field" aria-hidden="true">
-          <label for="company_website">Company website</label>
-          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
-        </div>
-        <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <input type="hidden" name="_subject" value="Deck estimate LOCK-IN + site visit — Straight Stud Construction LLC">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="https://www.straightstudllc.com/deck-estimate/?sent=1">
-
-        <h3 class="lockin-heading">Your contact info</h3>
-        <div class="form-row">
           <div class="form-group">
-            <label for="cust-name">Full name <span class="req">*</span></label>
-            <input type="text" id="cust-name" name="name" autocomplete="name" maxlength="120" placeholder="Jane Smith" required>
+            <label for="decking-type">Decking type</label>
+            <select id="decking-type">
+              <option value="">Labor only — pick decking later</option>
+              <option value="treated">Pressure-treated lumber</option>
+              <option value="trex">Trex (composite)</option>
+              <option value="timbertech">TimberTech (composite)</option>
+            </select>
           </div>
-          <div class="form-group">
-            <label for="cust-email">Email <span class="req">*</span></label>
-            <input type="email" id="cust-email" name="email" autocomplete="email" maxlength="120" placeholder="you@example.com" required>
+
+          <div class="sample-panel" id="sample-panel" hidden>
+            <div class="sample-panel__head">
+              <h3 id="sample-panel-title">Choose a sample</h3>
+              <p class="sample-panel__hint">
+                Click a color block. Swatches are approximate — we confirm samples on site.
+              </p>
+            </div>
+            <div id="sample-gallery" class="sample-gallery" role="listbox" aria-labelledby="sample-panel-title"></div>
+            <p class="sample-selected" id="sample-selected" hidden>
+              Selected: <strong id="sample-selected-label"></strong>
+            </p>
+            <select id="decking-sub" class="sr-only-select" tabindex="-1" aria-hidden="true">
+              <option value="">Select line…</option>
+            </select>
+            <input type="hidden" id="decking-color" value="">
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="cust-phone">Phone <span class="req">*</span></label>
-            <input type="tel" id="cust-phone" name="phone" autocomplete="tel" maxlength="30" placeholder="(616) 555-0100" required>
+
+          <div class="sample-panel" id="treated-sample" hidden>
+            <div class="sample-panel__head">
+              <h3>Pressure-treated lumber</h3>
+              <p class="sample-panel__hint">Standard treated decking look (demo swatch).</p>
+            </div>
+            <div class="sample-gallery sample-gallery--single">
+              <div class="sample-card is-selected" aria-selected="true">
+                <div class="sample-card__swatch sample-card__swatch--treated" aria-hidden="true"></div>
+                <div class="sample-card__meta">
+                  <span class="sample-card__line">Pressure-treated</span>
+                  <span class="sample-card__name">Natural green / weathers to gray</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="cust-city">City / neighborhood</label>
-            <input type="text" id="cust-city" name="city" maxlength="100" placeholder="e.g. Ada, Kentwood, Rockford">
+
+          <div class="sample-panel sample-panel--railing" id="railing-sample-panel">
+            <div class="sample-panel__head">
+              <h3 id="railing-sample-title">Railing samples</h3>
+              <p class="sample-panel__hint">
+                Posts + rail in the rate. Use total LF including stairs. “No railing materials” = labor only or you supply materials.
+              </p>
+            </div>
+            <div id="railing-sample-gallery" class="railing-sample-root" role="listbox" aria-labelledby="railing-sample-title"></div>
+            <p class="sample-selected" id="railing-sample-selected" hidden>
+              Selected railing: <strong id="railing-sample-selected-label"></strong>
+            </p>
+            <select id="railing-type" class="sr-only-select" tabindex="-1" aria-hidden="true">
+              <option value="none" selected>No railing materials</option>
+              <option value="treated_wood">Treated railing + wood spindles</option>
+              <option value="hybrid">Hybrid railing</option>
+              <option value="aluminum">Aluminum railing</option>
+              <option value="composite">Composite railing</option>
+            </select>
+            <input type="hidden" id="railing-color" value="none">
           </div>
+        </section>
+
+        <section class="card" id="section-lockin" aria-labelledby="lockin-title">
+          <h2 id="lockin-title">3. Lock in &amp; request on-site review</h2>
+          <p class="panel-lead">
+            Happy with the number? Send it over — we’ll verify scope on site and have you sign the estimate.
+          </p>
+
+          <div class="notice-banner notice-banner--warn" id="redeck-framing-notice" hidden></div>
+
+          <form
+            id="estimate-form"
+            action="https://formsubmit.co/request@straightstudllc.com"
+            method="POST"
+            novalidate
+          >
+            <div class="hp-field" aria-hidden="true">
+              <label for="company_website">Company website</label>
+              <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+            </div>
+            <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <input type="hidden" name="_subject" value="Deck estimate LOCK-IN + site visit — Straight Stud Construction LLC">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://www.straightstudllc.com/deck-estimate/?sent=1">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cust-name">Full name <span class="req">*</span></label>
+                <input type="text" id="cust-name" name="name" autocomplete="name" maxlength="120" placeholder="Jane Smith" required>
+              </div>
+              <div class="form-group">
+                <label for="cust-email">Email <span class="req">*</span></label>
+                <input type="email" id="cust-email" name="email" autocomplete="email" maxlength="120" placeholder="you@example.com" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cust-phone">Phone <span class="req">*</span></label>
+                <input type="tel" id="cust-phone" name="phone" autocomplete="tel" maxlength="30" placeholder="(616) 555-0100" required>
+              </div>
+              <div class="form-group">
+                <label for="cust-city">City / neighborhood</label>
+                <input type="text" id="cust-city" name="city" maxlength="100" placeholder="e.g. Ada, Kentwood, Rockford">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cust-appt">Preferred visit window</label>
+              <input type="text" id="cust-appt" name="preferred_visit" maxlength="200" placeholder="e.g. Weekday mornings, next week after 3pm">
+            </div>
+            <div class="form-group">
+              <label for="cust-notes">Anything else we should know?</label>
+              <textarea id="cust-notes" name="customer_notes" maxlength="2000" placeholder="Access notes, HOA rules, budget target…"></textarea>
+            </div>
+
+            <input type="hidden" name="deck_sqft" id="f-sqft" value="">
+            <input type="hidden" name="railing_linear_ft" id="f-railing-lf" value="">
+            <input type="hidden" name="number_of_steps" id="f-steps" value="">
+            <input type="hidden" name="platforms" id="f-platforms" value="">
+            <input type="hidden" name="deck_shape" id="f-deck-shape" value="">
+            <input type="hidden" name="framing_labor_platform_factor" id="f-platform-factor" value="">
+            <input type="hidden" name="framing_labor_shape_factor" id="f-shape-factor" value="">
+            <input type="hidden" name="project_type" id="f-project-type" value="">
+            <input type="hidden" name="warranty" id="f-warranty" value="">
+            <input type="hidden" name="labor_framing" id="f-labor-framing" value="">
+            <input type="hidden" name="labor_composite_install" id="f-labor-composite" value="">
+            <input type="hidden" name="labor_treated_install" id="f-labor-treated" value="">
+            <input type="hidden" name="labor_redeck" id="f-labor-redeck" value="">
+            <input type="hidden" name="labor_demo_dispose" id="f-labor-demo" value="">
+            <input type="hidden" name="redeck_worst_case_framing_labor" id="f-worst-framing-labor" value="">
+            <input type="hidden" name="redeck_worst_case_framing_materials" id="f-worst-framing-mat" value="">
+            <input type="hidden" name="redeck_worst_case_framing_total" id="f-worst-framing-total" value="">
+            <input type="hidden" name="redeck_framing_note" id="f-redeck-framing-note" value="">
+            <input type="hidden" name="labor_railing" id="f-labor-railing" value="">
+            <input type="hidden" name="labor_steps" id="f-labor-steps" value="">
+            <input type="hidden" name="labor_hybrid_extra" id="f-labor-hybrid" value="">
+            <input type="hidden" name="labor_total" id="f-labor-total" value="">
+            <input type="hidden" name="included_materials" id="f-included-mat" value="">
+            <input type="hidden" name="decking_choice" id="f-decking" value="">
+            <input type="hidden" name="decking_color_sample" id="f-decking-color" value="">
+            <input type="hidden" name="railing_choice" id="f-railing-type" value="">
+            <input type="hidden" name="railing_color_sample" id="f-railing-color" value="">
+            <input type="hidden" name="framing_materials" id="f-framing-mat" value="">
+            <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
+            <input type="hidden" name="materials_total" id="f-mat-total" value="">
+            <input type="hidden" name="grand_total" id="f-grand" value="">
+            <input type="hidden" name="competitor_compare_total" id="f-competitor-total" value="">
+            <input type="hidden" name="estimated_savings_vs_premium" id="f-savings" value="">
+            <input type="hidden" name="estimate_summary" id="f-summary" value="">
+            <input type="hidden" name="request_type" value="Lock-in estimate + schedule verification visit">
+            <input type="hidden" name="source" value="deck-estimate-live">
+
+            <div class="form-group">
+              <label class="check-label">
+                <input type="checkbox" id="agree-rough" required>
+                I want to lock in this estimate total and schedule a site visit to verify scope and sign. I understand final work may adjust if site conditions differ.
+              </label>
+            </div>
+
+            <p class="field-error" id="err-4" hidden></p>
+            <div class="panel-actions">
+              <button type="submit" class="btn btn--primary" id="btn-submit">Lock in estimate &amp; request appointment</button>
+            </div>
+            <p class="form-note">
+              Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
+              See our <a href="../privacy.html">Privacy Policy</a>.
+            </p>
+          </form>
+        </section>
+      </div>
+
+      <!-- ========== LIVE TOTAL (sticky) ========== -->
+      <aside class="live-total" id="live-total" aria-live="polite" aria-atomic="true">
+        <div class="live-total__inner">
+          <p class="live-total__eyebrow">Your estimate · updates live</p>
+          <div class="live-total__row">
+            <span>Labor</span>
+            <strong id="live-labor">$0</strong>
+          </div>
+          <div class="live-total__row">
+            <span>Materials</span>
+            <strong id="live-materials">$0</strong>
+          </div>
+          <div class="live-total__grand">
+            <span>Estimated total</span>
+            <strong id="live-grand">$0</strong>
+          </div>
+          <p class="live-total__psf" id="live-psf"></p>
+
+          <div class="live-savings" id="live-savings" hidden>
+            <p class="live-savings__title">Compared to mainstream premium deck companies</p>
+            <p class="live-savings__body" id="live-savings-text"></p>
+            <p class="live-savings__fine">
+              Small note vs typical Green Shield–class / large remodeler quotes in our market research
+              (often much higher on composite). Not a bid from any competitor — for planning context only.
+            </p>
+          </div>
+
+          <div class="live-breakdown" id="live-breakdown">
+            <!-- filled by JS -->
+          </div>
+
+          <p class="warranty-banner" id="warranty-banner" hidden>
+            <strong>Limited lifetime workmanship warranty</strong> on new builds.
+          </p>
+
+          <a class="btn btn--primary btn--block" href="#section-lockin" id="btn-jump-lockin">Looks good — request site visit</a>
+          <p class="live-total__hint">Tweak options until the total matches your budget, then submit.</p>
         </div>
-        <div class="form-group">
-          <label for="cust-appt">Preferred visit window</label>
-          <input type="text" id="cust-appt" name="preferred_visit" maxlength="200" placeholder="e.g. Weekday mornings, next week after 3pm">
-        </div>
-
-        <!-- Hidden estimate payload (also name/email/phone/city from fields above) -->
-        <input type="hidden" name="deck_sqft" id="f-sqft" value="">
-        <input type="hidden" name="railing_linear_ft" id="f-railing-lf" value="">
-        <input type="hidden" name="number_of_steps" id="f-steps" value="">
-        <input type="hidden" name="platforms" id="f-platforms" value="">
-        <input type="hidden" name="deck_shape" id="f-deck-shape" value="">
-        <input type="hidden" name="framing_labor_platform_factor" id="f-platform-factor" value="">
-        <input type="hidden" name="framing_labor_shape_factor" id="f-shape-factor" value="">
-        <input type="hidden" name="project_type" id="f-project-type" value="">
-        <input type="hidden" name="warranty" id="f-warranty" value="">
-        <input type="hidden" name="labor_framing" id="f-labor-framing" value="">
-        <input type="hidden" name="labor_composite_install" id="f-labor-composite" value="">
-        <input type="hidden" name="labor_treated_install" id="f-labor-treated" value="">
-        <input type="hidden" name="labor_redeck" id="f-labor-redeck" value="">
-        <input type="hidden" name="labor_demo_dispose" id="f-labor-demo" value="">
-        <input type="hidden" name="redeck_worst_case_framing_labor" id="f-worst-framing-labor" value="">
-        <input type="hidden" name="redeck_worst_case_framing_materials" id="f-worst-framing-mat" value="">
-        <input type="hidden" name="redeck_worst_case_framing_total" id="f-worst-framing-total" value="">
-        <input type="hidden" name="redeck_framing_note" id="f-redeck-framing-note" value="">
-        <input type="hidden" name="labor_railing" id="f-labor-railing" value="">
-        <input type="hidden" name="labor_steps" id="f-labor-steps" value="">
-        <input type="hidden" name="labor_hybrid_extra" id="f-labor-hybrid" value="">
-        <input type="hidden" name="labor_total" id="f-labor-total" value="">
-        <input type="hidden" name="included_materials" id="f-included-mat" value="">
-        <input type="hidden" name="decking_choice" id="f-decking" value="">
-        <input type="hidden" name="decking_color_sample" id="f-decking-color" value="">
-        <input type="hidden" name="railing_choice" id="f-railing-type" value="">
-        <input type="hidden" name="railing_color_sample" id="f-railing-color" value="">
-        <input type="hidden" name="framing_materials" id="f-framing-mat" value="">
-        <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
-        <input type="hidden" name="materials_total" id="f-mat-total" value="">
-        <input type="hidden" name="grand_total" id="f-grand" value="">
-        <input type="hidden" name="estimate_summary" id="f-summary" value="">
-        <input type="hidden" name="request_type" value="Lock-in estimate + schedule verification visit">
-        <input type="hidden" name="source" value="deck-estimate">
-
-        <div class="form-group">
-          <label for="cust-notes">Anything else we should know?</label>
-          <textarea id="cust-notes" name="customer_notes" maxlength="2000" placeholder="Access notes, HOA rules, questions…"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="check-label">
-            <input type="checkbox" id="agree-rough" required>
-            I want to lock in this estimate total and schedule a site visit to verify scope and sign. I understand final work may adjust if site conditions differ.
-          </label>
-        </div>
-
-        <p class="field-error" id="err-4" hidden></p>
-
-        <div class="panel-actions">
-          <button type="button" class="btn btn--outline" id="btn-back-4">Back</button>
-          <button type="submit" class="btn btn--primary" id="btn-submit">Lock in estimate &amp; request appointment</button>
-        </div>
-
-        <p class="form-note">
-          Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
-          We use your details only to schedule verification and follow up on this estimate.
-          See our <a href="../privacy.html">Privacy Policy</a>.
-        </p>
-      </form>
-    </section>
+      </aside>
+    </div>
   </main>
 
   <footer class="site-footer">

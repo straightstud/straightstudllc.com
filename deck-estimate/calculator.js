@@ -43,6 +43,21 @@
     },
     // New builds include limited lifetime workmanship warranty (shown in UI + email)
     warrantyNewBuild: "Limited lifetime workmanship warranty included on all new builds",
+    /*
+     * Competitor context (planning only — not a bid from any company).
+     * Local research: Green Shield / large remodeler composite quotes often run
+     * much higher ($140–$250+/sf on small decks in forum samples). We use a
+     * conservative “premium mainstream” all-in $/sf for savings messaging.
+     */
+    competitor: {
+      label: "mainstream premium deck companies (e.g. Green Shield–class)",
+      // All-in rough $/sf of deck area for similar scope (labor + materials)
+      allInPerSqft: {
+        treated: 75,
+        composite: 110,
+        laborOnly: 55,
+      },
+    },
     materials: {
       // Sell rates = vendor COST × 1.20 (no second markup). Fixed — do not scale with deck size.
       // Costs from Zeeland / Carter / HD Pro + owner hardware rules (see MATERIALS-COST-LOG.md).
@@ -402,16 +417,7 @@
     },
   };
 
-  /* ---------- DOM ---------- */
-  var panels = {
-    1: document.getElementById("panel-1"),
-    2: document.getElementById("panel-2"),
-    3: document.getElementById("panel-3"),
-    4: document.getElementById("panel-4"),
-  };
-
-  var stepItems = document.querySelectorAll(".steps__item");
-
+  /* ---------- DOM helpers (single-page live calculator) ---------- */
   function money(n) {
     return (
       "$" +
@@ -427,24 +433,9 @@
     return isFinite(v) && v >= 0 ? v : fallback || 0;
   }
 
-  function showPanel(id) {
-    Object.keys(panels).forEach(function (key) {
-      var el = panels[key];
-      if (!el) return;
-      var on = String(key) === String(id);
-      el.hidden = !on;
-      el.classList.toggle("is-active", on);
-    });
-
-    // Progress indicator (1–4)
-    var stepNum = typeof id === "number" ? id : 1;
-    stepItems.forEach(function (li) {
-      var s = parseInt(li.getAttribute("data-step"), 10);
-      li.classList.toggle("is-active", s === stepNum);
-      li.classList.toggle("is-done", s < stepNum);
-    });
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  /** No multi-step panels — keep for any legacy calls. */
+  function showPanel() {
+    /* single-page live mode */
   }
 
   function setError(id, msg) {
@@ -628,16 +619,84 @@
     L.hybridExtra = 0;
   }
 
-  function renderLaborBreakdown() {
-    var L = state.labor;
-    var html = "";
+  function competitorEstimate() {
+    var c = RATES.competitor || {};
+    var rates = c.allInPerSqft || {};
+    var sqft = state.sqft || 0;
+    if (sqft < 1) return { total: 0, perSf: 0, label: c.label || "" };
+    var perSf = rates.laborOnly || 55;
+    if (state.wantMaterials && state.deckingType) {
+      if (state.deckingType === "treated") perSf = rates.treated || 75;
+      else if (isCompositeDecking()) perSf = rates.composite || 110;
+    }
+    return {
+      total: sqft * perSf,
+      perSf: perSf,
+      label: c.label || "mainstream premium deck companies",
+    };
+  }
 
-    if (isNewBuild()) {
-      html +=
-        '<div class="totals__row"><span>Framing labor</span><span>' +
-        money(L.framing) +
-        "</span></div>";
-      // Plain-view design factors so customers see tradeoffs (rectangle vs angles, etc.)
+  function renderLivePanel() {
+    var L = state.labor;
+    var M = state.materials;
+    var laborTotal = L.total || 0;
+    var matTotal = state.wantMaterials ? M.total || 0 : 0;
+    var grand = laborTotal + matTotal;
+    state.grandTotal = grand;
+
+    var elLab = document.getElementById("live-labor");
+    var elMat = document.getElementById("live-materials");
+    var elGrand = document.getElementById("live-grand");
+    var elPsf = document.getElementById("live-psf");
+    if (elLab) elLab.textContent = money(laborTotal);
+    if (elMat) elMat.textContent = money(matTotal);
+    if (elGrand) elGrand.textContent = money(grand);
+    if (elPsf) {
+      elPsf.textContent =
+        state.sqft > 0
+          ? "About " +
+            money(grand / state.sqft) +
+            " per sq ft all-in (this estimate)"
+          : "Enter square footage to see pricing";
+    }
+
+    var savBox = document.getElementById("live-savings");
+    var savText = document.getElementById("live-savings-text");
+    var comp = competitorEstimate();
+    var savings = comp.total - grand;
+    state.competitorTotal = comp.total;
+    state.savingsVsCompetitor = savings;
+    if (savBox && savText) {
+      if (state.sqft >= 50 && savings > 500) {
+        savBox.hidden = false;
+        savText.innerHTML =
+          "Compared to " +
+          escapeHtml(comp.label) +
+          " at roughly " +
+          money(comp.perSf) +
+          "/sq ft all-in, you’re looking at about <strong>" +
+          money(savings) +
+          " less</strong> with this Straight Stud estimate.";
+      } else if (state.sqft >= 50 && grand > 0) {
+        savBox.hidden = false;
+        savText.textContent =
+          "Premium mainstream quotes in our market often run higher on composite — keep adjusting options to hit your budget.";
+      } else {
+        savBox.hidden = true;
+      }
+    }
+
+    var html = "";
+    if (state.sqft < 1) {
+      html =
+        '<div class="totals__row totals__row--muted"><span>Enter deck sq ft to start</span><span></span></div>';
+    } else if (isNewBuild()) {
+      if (L.framing > 0) {
+        html +=
+          '<div class="totals__row"><span>Framing labor</span><span>' +
+          money(L.framing) +
+          "</span></div>";
+      }
       if (state.platformFactor > 1 || state.shapeFactor > 1) {
         html +=
           '<div class="totals__row totals__row--design-note"><span>' +
@@ -649,21 +708,21 @@
           "</span><span></span></div>";
       } else {
         html +=
-          '<div class="totals__row totals__row--design-note"><span>Framing: 1 platform + simple rectangle (base rate)</span><span></span></div>';
+          '<div class="totals__row totals__row--design-note"><span>1 platform + rectangle (base framing)</span><span></span></div>';
       }
       if (L.compositeInstall > 0) {
         html +=
-          '<div class="totals__row"><span>Composite decking install</span><span>' +
+          '<div class="totals__row"><span>Composite install</span><span>' +
           money(L.compositeInstall) +
           "</span></div>";
       } else if (L.treatedInstall > 0) {
         html +=
-          '<div class="totals__row"><span>Treated deck face-screw install</span><span>' +
+          '<div class="totals__row"><span>Treated face-screw install</span><span>' +
           money(L.treatedInstall) +
           "</span></div>";
-      } else if (!state.wantMaterials || !state.deckingType) {
+      } else if (!state.wantMaterials) {
         html +=
-          '<div class="totals__row totals__row--muted"><span>Board install labor</span><span>Added when you pick decking next</span></div>';
+          '<div class="totals__row totals__row--muted"><span>Board install</span><span>Pick decking to include</span></div>';
       }
     } else {
       html +=
@@ -674,18 +733,43 @@
         money(L.demoDispose) +
         "</span></div>";
     }
-
     if (L.railing > 0) {
       html +=
-        '<div class="totals__row"><span>Railing install</span><span>' +
+        '<div class="totals__row"><span>Railing labor</span><span>' +
         money(L.railing) +
         "</span></div>";
     }
     if (L.steps > 0) {
       html +=
-        '<div class="totals__row"><span>Steps (separate from platform %)</span><span>' +
+        '<div class="totals__row"><span>Steps labor</span><span>' +
         money(L.steps) +
         "</span></div>";
+    }
+    if (state.wantMaterials && matTotal > 0) {
+      if (M.framing > 0) {
+        html +=
+          '<div class="totals__row"><span>Framing materials</span><span>' +
+          money(M.framing) +
+          "</span></div>";
+      }
+      if (M.decking > 0) {
+        html +=
+          '<div class="totals__row"><span>Decking materials</span><span>' +
+          money(M.decking) +
+          "</span></div>";
+      }
+      if (M.fasteners > 0) {
+        html +=
+          '<div class="totals__row"><span>Fasteners / fascia / tape</span><span>' +
+          money(M.fasteners) +
+          "</span></div>";
+      }
+      if (M.railing > 0) {
+        html +=
+          '<div class="totals__row"><span>Railing materials</span><span>' +
+          money(M.railing) +
+          "</span></div>";
+      }
     }
     if (state.sizeLaborBand) {
       html +=
@@ -693,18 +777,14 @@
         escapeHtml(state.sizeLaborBand) +
         "</span><span></span></div>";
     }
-    document.getElementById("labor-breakdown").innerHTML = html;
-    var laborDisp = document.getElementById("labor-total-display");
-    if (laborDisp) laborDisp.textContent = money(L.total);
-
+    var br = document.getElementById("live-breakdown");
+    if (br) br.innerHTML = html;
     var ban = document.getElementById("warranty-banner");
-    var lead = document.getElementById("labor-panel-lead");
     if (ban) ban.hidden = !isNewBuild();
-    if (lead) {
-      lead.textContent = isNewBuild()
-        ? "Framing labor uses deck size, number of platforms, and shape (percentages shown on your selections). Stairs and railing are separate. Board install is added when you choose decking."
-        : "Redeck labor scales with deck size. Includes surface install plus demo & dispose. Assumes existing framing is sound — see final page for worst-case framing note.";
-    }
+  }
+
+  function renderLaborBreakdown() {
+    renderLivePanel();
   }
 
   function redeckFramingNoticeHtml() {
@@ -908,6 +988,9 @@
 
     setError("err-4", "");
     calcAndRenderMaterials();
+    if (typeof liveRecalc === "function") {
+      /* sample click already updated state; refresh totals */
+    }
   }
 
   function resolveDecking() {
@@ -1156,56 +1239,7 @@
       total: materialsTotal,
     };
     state.grandTotal = state.labor.total + state.materials.total;
-
-    var rows = "";
-    if (framingCost > 0) {
-      rows +=
-        '<div class="totals__row"><span>Framing materials</span><span>' +
-        money(framingCost) +
-        "</span></div>";
-    }
-    if (deck.label) {
-      rows +=
-        '<div class="totals__row"><span>Decking — ' +
-        escapeHtml(deck.label) +
-        "</span><span>" +
-        money(deckCost) +
-        "</span></div>";
-    }
-    if (fastenerCost > 0) {
-      var fastenerLabel =
-        state.deckingType === "treated"
-          ? "3&quot; deck screws"
-          : "Fasteners / fascia / joist tape";
-      rows +=
-        '<div class="totals__row"><span>' +
-        fastenerLabel +
-        "</span><span>" +
-        money(fastenerCost) +
-        "</span></div>";
-    }
-    if (rail.perLf > 0 || keyIsRailing(state.railingType)) {
-      rows +=
-        '<div class="totals__row"><span>Railing materials — ' +
-        escapeHtml(rail.label) +
-        "</span><span>" +
-        money(railCost) +
-        "</span></div>";
-    }
-    if (!rows) {
-      rows =
-        '<div class="totals__row totals__row--muted"><span>Select options above</span><span>—</span></div>';
-    }
-    document.getElementById("materials-breakdown").innerHTML = rows;
-    document.getElementById("mat-labor-display").textContent = money(
-      state.labor.total
-    );
-    document.getElementById("mat-materials-display").textContent = money(
-      state.materials.total
-    );
-    document.getElementById("grand-total-display").textContent = money(
-      state.grandTotal
-    );
+    renderLivePanel();
   }
 
   function keyIsRailing(k) {
@@ -1249,6 +1283,14 @@
       "Labor — Railing install ($35/LF all types): " + money(state.labor.railing),
       "Labor — Steps: " + money(state.labor.steps),
       "Labor total: " + money(state.labor.total),
+      "Materials total: " +
+        (state.wantMaterials ? money(state.materials.total || 0) : "n/a"),
+      "Grand total: " + money(state.grandTotal || 0),
+      "Competitor-class compare (~): " + money(state.competitorTotal || 0),
+      "Est. savings vs premium mainstream: " +
+        (state.savingsVsCompetitor > 0
+          ? money(state.savingsVsCompetitor)
+          : "$0"),
     ];
     if (!isNewBuild()) {
       var w = state.worstCase || calcWorstCaseFraming();
@@ -1401,129 +1443,26 @@
     document.getElementById("f-mat-total").value = state.wantMaterials
       ? money(state.materials.total)
       : "n/a";
-    document.getElementById("f-grand").value = state.wantMaterials
-      ? money(state.grandTotal)
-      : money(state.labor.total);
+    var total = state.wantMaterials
+      ? state.labor.total + (state.materials.total || 0)
+      : state.labor.total;
+    state.grandTotal = total;
+    document.getElementById("f-grand").value = money(total);
+    var fCompT = document.getElementById("f-competitor-total");
+    if (fCompT) fCompT.value = money(state.competitorTotal || 0);
+    var fSav = document.getElementById("f-savings");
+    if (fSav) {
+      fSav.value =
+        state.savingsVsCompetitor > 0
+          ? money(state.savingsVsCompetitor)
+          : "$0";
+    }
     document.getElementById("f-summary").value = buildSummaryText();
 
-    // Prefer live thank-you URL; fall back to current path + ?sent=1
     var next = document.querySelector('#estimate-form input[name="_next"]');
     if (next && !next.value) {
       next.value = window.location.href.split("?")[0] + "?sent=1";
     }
-
-    var total = state.wantMaterials ? state.grandTotal : state.labor.total;
-    state.grandTotal = total;
-    document.getElementById("final-total-display").textContent = money(total);
-    document.getElementById("final-total-label").textContent = state.wantMaterials
-      ? "Locked estimate (labor + materials)"
-      : "Locked estimate (labor only)";
-
-    // Split labor / materials on lock-in so the total never looks like one opaque fee
-    var finLab = document.getElementById("final-labor-display");
-    var finMat = document.getElementById("final-materials-display");
-    var finMatRow = document.getElementById("final-materials-row");
-    if (finLab) finLab.textContent = money(state.labor.total);
-    if (finMatRow && finMat) {
-      if (state.wantMaterials) {
-        finMatRow.hidden = false;
-        finMat.textContent = money(state.materials.total || 0);
-      } else {
-        finMatRow.hidden = true;
-        finMat.textContent = money(0);
-      }
-    }
-
-    var sumEl = document.getElementById("request-summary");
-    var html =
-      '<dl class="summary__dl">' +
-      row("Project type", isNewBuild() ? "New build" : "Redeck") +
-      row(
-        "Warranty",
-        isNewBuild()
-          ? "Limited lifetime workmanship warranty"
-          : "Per contract (redeck)"
-      ) +
-      row("Deck area", state.sqft + " sq ft") +
-      row("Platforms", platformLabel(state.platforms)) +
-      row("Deck shape", shapeLabel(state.deckShape)) +
-      row("Railing", state.railingLf + " linear ft") +
-      row("Steps", String(state.steps) + " (separate cost)");
-    // Only list labor lines that apply (no $0 noise that looks like padding)
-    if (isNewBuild()) {
-      if (state.labor.framing > 0) {
-        html += row("Framing labor", money(state.labor.framing));
-      }
-      if (state.labor.compositeInstall > 0) {
-        html += row(
-          "Composite install labor",
-          money(state.labor.compositeInstall)
-        );
-      }
-      if (state.labor.treatedInstall > 0) {
-        html += row(
-          "Treated face-screw install",
-          money(state.labor.treatedInstall)
-        );
-      }
-      if (
-        !state.wantMaterials &&
-        !state.labor.compositeInstall &&
-        !state.labor.treatedInstall
-      ) {
-        html += row(
-          "Board install labor",
-          "Not in this total — confirmed when decking is chosen on site"
-        );
-      }
-    } else {
-      if (state.labor.redeck > 0) {
-        html += row("Redeck labor", money(state.labor.redeck));
-      }
-      if (state.labor.demoDispose > 0) {
-        html += row("Demo & dispose", money(state.labor.demoDispose));
-      }
-    }
-    if (state.labor.railing > 0) {
-      html += row("Railing labor", money(state.labor.railing));
-    }
-    if (state.labor.steps > 0) {
-      html += row("Steps labor", money(state.labor.steps));
-    }
-    html += row("Labor total", money(state.labor.total));
-    if (state.wantMaterials) {
-      if (state.materials.framing > 0) {
-        html += row("Framing materials", money(state.materials.framing));
-      }
-      html +=
-        row("Decking", state.deckingLabel || "—") +
-        row(
-          "Color sample",
-          state.deckingColorName ||
-            (state.deckingType === "treated" ? "Pressure-treated" : "—")
-        );
-      if (state.materials.fasteners > 0) {
-        html += row(
-          state.deckingType === "treated"
-            ? "3\" deck screws"
-            : "Fasteners / fascia / joist tape",
-          money(state.materials.fasteners)
-        );
-      }
-      if (state.materials.railing > 0 || keyIsRailing(state.railingType)) {
-        html +=
-          row("Railing materials", state.railingLabel || "—") +
-          row("Railing sample", state.railingColorName || "—");
-      }
-      html += row("Materials total", money(state.materials.total));
-    } else {
-      html += row(
-        "Materials",
-        "Not included (labor-only estimate)"
-      );
-    }
-    html += row("Estimate total", money(total)) + "</dl>";
-    sumEl.innerHTML = html;
     updateRedeckFramingNotice();
   }
 
@@ -1537,19 +1476,12 @@
     );
   }
 
-  /* ---------- Step handlers ---------- */
-  // Step 1: Build deck → labor
-  document.getElementById("btn-step1").addEventListener("click", function () {
-    setError("err-1", "");
-    var sqft = num(document.getElementById("deck-sqft"), 0);
-    if (sqft < 1) {
-      setError("err-1", "Enter deck area in square feet (at least 1).");
-      return;
-    }
+  /* ---------- Live single-page: sync DOM -> state -> totals ---------- */
+  function syncStateFromDom() {
     var pType = document.querySelector('input[name="project_type"]:checked');
     state.projectType =
       pType && pType.value === "redeck" ? "redeck" : "new_build";
-    state.sqft = Math.round(sqft);
+    state.sqft = Math.round(num(document.getElementById("deck-sqft"), 0));
     state.railingLf = Math.round(num(document.getElementById("railing-lf"), 0));
     state.steps = Math.round(num(document.getElementById("num-steps"), 0));
     var platEl = document.querySelector('input[name="platforms"]:checked');
@@ -1558,28 +1490,15 @@
     var shapeEl = document.querySelector('input[name="deck_shape"]:checked');
     state.deckShape =
       shapeEl && shapeEl.value === "angled" ? "angled" : "rectangle";
-    // Reset decking until materials step
-    state.deckingType = "";
-    state.deckingSub = "";
-    state.deckingColor = "";
-    state.deckingColorName = "";
-    state.deckingLabel = "";
-    calcLabor();
-    renderLaborBreakdown();
-    showPanel(2);
-  });
 
-  // Step 2: Labor → materials or lock-in
-  document.getElementById("btn-step2").addEventListener("click", function () {
-    var want = document.querySelector('input[name="want_materials"]:checked');
-    state.wantMaterials = !want || want.value === "yes";
-    if (state.wantMaterials) {
-      state.cameFromMaterials = true;
-      calcAndRenderMaterials();
-      showPanel(3);
-    } else {
-      state.cameFromMaterials = false;
-      state.deckingType = "";
+    var dtype = deckingTypeEl ? deckingTypeEl.value : "";
+    state.deckingType = dtype || "";
+    if (!dtype) {
+      state.wantMaterials = false;
+      state.deckingSub = "";
+      state.deckingColor = "";
+      state.deckingColorName = "";
+      state.deckingLabel = "";
       state.materials = {
         framing: 0,
         decking: 0,
@@ -1587,60 +1506,65 @@
         railing: 0,
         total: 0,
       };
-      state.deckingLabel = "";
-      state.railingLabel = "";
-      calcLabor();
-      state.grandTotal = state.labor.total;
-      fillRequestForm();
-      showPanel(4);
-    }
-  });
-
-  // Step 3: Materials → lock-in
-  document.getElementById("btn-step3").addEventListener("click", function () {
-    setError("err-3", "");
-    var type = deckingTypeEl.value;
-    if (!type) {
-      setError("err-3", "Select a decking type.");
-      return;
-    }
-    if (type === "trex" || type === "timbertech") {
-      if (!state.deckingSub || !state.deckingColor) {
-        setError(
-          "err-3",
-          "Click a sample color block for Trex or TimberTech to continue."
-        );
-        return;
-      }
-    }
-    state.wantMaterials = true;
-    state.cameFromMaterials = true;
-    calcAndRenderMaterials();
-    fillRequestForm();
-    showPanel(4);
-  });
-
-  document.getElementById("btn-back-4").addEventListener("click", function () {
-    if (state.cameFromMaterials || state.wantMaterials) {
-      showPanel(3);
+    } else if (dtype === "treated") {
+      state.wantMaterials = true;
+      state.deckingSub = "";
+      state.deckingColor = "treated";
+      state.deckingColorName = "Pressure-treated";
     } else {
-      showPanel(2);
+      state.wantMaterials = true;
     }
-  });
+  }
 
-  document.querySelectorAll("[data-back]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var to = btn.getAttribute("data-back");
-      showPanel(parseInt(to, 10));
+  function liveRecalc() {
+    syncStateFromDom();
+    if (state.wantMaterials && state.deckingType) {
+      calcAndRenderMaterials();
+    } else {
+      calcLabor();
+      renderLivePanel();
+    }
+    updateRedeckFramingNotice();
+  }
+
+  function bindLiveInputs() {
+    var ids = ["deck-sqft", "railing-lf", "num-steps"];
+    ids.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", liveRecalc);
+      el.addEventListener("change", liveRecalc);
     });
-  });
+    document.querySelectorAll('input[name="project_type"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="platforms"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="deck_shape"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    if (deckingTypeEl) {
+      deckingTypeEl.addEventListener("change", function () {
+        fillDeckingSub();
+        liveRecalc();
+      });
+    }
+  }
 
-  deckingTypeEl.addEventListener("change", fillDeckingSub);
+  bindLiveInputs();
   renderRailingGallery();
+  liveRecalc();
 
   document.getElementById("estimate-form").addEventListener("submit", function (e) {
     setError("err-4", "");
+    liveRecalc();
     readContactFromForm();
+    if (state.sqft < 1) {
+      e.preventDefault();
+      setError("err-4", "Enter deck area in square feet before submitting.");
+      return;
+    }
     if (!state.name) {
       e.preventDefault();
       setError("err-4", "Please enter your full name.");
@@ -1653,7 +1577,10 @@
     }
     if (!state.phone) {
       e.preventDefault();
-      setError("err-4", "Please enter a phone number so we can schedule your visit.");
+      setError(
+        "err-4",
+        "Please enter a phone number so we can schedule your visit."
+      );
       return;
     }
     if (!document.getElementById("agree-rough").checked) {
@@ -1680,5 +1607,4 @@
     }
   }
 
-  showPanel(1);
 })();
