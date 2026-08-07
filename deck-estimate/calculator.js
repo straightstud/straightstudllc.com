@@ -110,15 +110,15 @@
        *   PT: 1x10 ripped to rise (~$2.00/LF cost)
        *   Composite: ~1/2 x 7-1/4 x 12' matching collection
        *
-       * Riser $/LF derived from REAL decking board $/LF (vendor invoices) prorated
-       * against known matching riser sticks:
-       *   Enhance riser Zeeland/Carter ~$72/12' = $6.00/LF
-       *   Transcend Lineage Carmel riser Carter 5780 Arroyo 6/11/26:
-       *     1x8x12' Riser Carmel @ $91.21 = $7.60/LF
-       *     Trex 16' Carmel Grooved @ $108.59 = $6.79/LF
-       *     1x12x12' Fascia Carmel @ $149.92 = $12.49/LF
-       * Formula (composite): riserLf = enhanceRiserLf + slope × (boardLf − enhanceBoardLf)
-       *   slope = (7.60 − 6.00) / (6.79 − 2.98) ≈ 0.420
+       * Riser $/LF derived from REAL decking board $/LF prorated against known
+       * matching riser sticks. Use NON-DISCOUNTED / list-class anchors for
+       * estimating (Carter 5780 Arroyo Carmel was a discounted job price — keep
+       * higher legend so quotes stay safe):
+       *   Enhance riser ~$72/12' = $6.00/LF | board ~$2.98/LF
+       *   Transcend riser ~$102/12' = $8.50/LF | board ~$7.24/LF (Zeeland-class)
+       *   (Discounted Carter Carmel was board $6.79/LF, riser $91.21 = $7.60/LF — do not use as sell base)
+       * Formula: riserLf = enhanceRiserLf + slope × (boardLf − enhanceBoardLf)
+       *   slope = (8.50 − 6.00) / (7.24 − 2.98) ≈ 0.587
        */
       stairs: {
         twoByTwelveCostPerLf: 2.5, // Zeeland-class 2x12 tread base
@@ -126,40 +126,37 @@
         stringerBoard12: 29.94,
         stringerBoard16: 39.64,
         stringerHardwareEach: 8,
-        // Footing: prefer 16" when available; Carter 12" pad $16.79 (5780 misc)
         footingPackageCost: 83.61,
-        footingPad12Cost: 16.79, // Carter FP-12 6/11/26
+        footingPad12Cost: 16.79, // Carter FP-12 reference only
         markup: 1.2,
-        // Real decking BOARD cost $/LF (5.5" face) — vendor invoices
+        // Real decking BOARD cost $/LF — non-discounted legend
         realBoardCostPerLf: {
           treated: 2.2,
           enhance: 2.98, // Zeeland Enhance Naturals 16' @ $47.60
           select: 4.5,
-          // Carter 5780 Arroyo 6/11/26 Trex Carmel (Transcend Lineage):
-          // 16' grooved $108.59 → $6.79/LF; 12' grooved $81.39 → $6.78/LF
-          transcend: 6.79,
-          signature: 8.0, // premium over Transcend Carmel
+          transcend: 7.24, // Zeeland Lineage-class (higher than discounted Carter Carmel $6.79)
+          signature: 8.5,
           terrain: 4.0,
-          legacy: 6.79, // Transcend-class
+          legacy: 7.24,
           reserve: 6.5,
         },
-        // Matching riser anchors (cost $/LF of riser face)
+        // Matching riser anchors — keep HIGHER non-discounted rates
         riserAnchor: {
           enhanceBoardLf: 2.98,
           enhanceRiserLf: 6.0, // ~$72/12'
-          transcendBoardLf: 6.79, // Carter Carmel 16'
-          transcendRiserLf: 7.6, // Carter 1x8x12' Riser Carmel $91.21
+          transcendBoardLf: 7.24,
+          transcendRiserLf: 8.5, // ~$102/12' (not discounted Carter $7.60)
           treatedRiserLf: 2.0, // 1x10 PT ripped
         },
-        // Matching fascia (12" skirt) — Carter Carmel 1x12x12' $149.92
+        // Matching fascia 12" — use higher than discounted Carter Carmel $12.49
         fasciaCostPerLfByLine: {
-          enhance: 9.9, // ~$119/12' class
+          enhance: 9.9,
           select: 11.0,
-          transcend: 12.49, // Carter $149.92/12'
-          signature: 14.0,
+          transcend: 13.5, // above discounted $12.49 Carmel
+          signature: 15.0,
           terrain: 9.5,
-          legacy: 12.49,
-          reserve: 12.0,
+          legacy: 13.5,
+          reserve: 12.5,
         },
       },
       compositeHardware: {
@@ -641,8 +638,8 @@
 
     var eBoard = a.enhanceBoardLf != null ? a.enhanceBoardLf : 2.98;
     var eRiser = a.enhanceRiserLf != null ? a.enhanceRiserLf : 6;
-    var tBoard = a.transcendBoardLf != null ? a.transcendBoardLf : 6.79;
-    var tRiser = a.transcendRiserLf != null ? a.transcendRiserLf : 7.6;
+    var tBoard = a.transcendBoardLf != null ? a.transcendBoardLf : 7.24;
+    var tRiser = a.transcendRiserLf != null ? a.transcendRiserLf : 8.5;
     var slope = (tRiser - eRiser) / Math.max(0.01, tBoard - eBoard);
     // Prorate matching riser $/LF from real decking board $/LF (Carter/Zeeland ladder)
     var riserLf = eRiser + slope * (boardLf - eBoard);
