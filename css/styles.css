@@ -377,8 +377,14 @@ ul {
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  /* Lighter veil so Arroyo / Pentwater photos read clearly while text stays legible */
   background:
-    linear-gradient(115deg, rgba(6, 24, 40, 0.92) 0%, rgba(10, 37, 64, 0.78) 48%, rgba(10, 37, 64, 0.45) 100%);
+    linear-gradient(
+      115deg,
+      rgba(6, 24, 40, 0.72) 0%,
+      rgba(10, 37, 64, 0.48) 42%,
+      rgba(10, 37, 64, 0.22) 100%
+    );
 }
 
 .hero__content {
@@ -386,6 +392,7 @@ ul {
   z-index: 2;
   padding: 100px 0 90px;
   max-width: 700px;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
 .hero__project {
@@ -479,14 +486,16 @@ ul {
   line-height: 1.12;
   margin-bottom: 18px;
   letter-spacing: -0.02em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
 }
 
 .hero__lead {
   font-size: 1.15rem;
-  opacity: 0.9;
+  opacity: 0.95;
   margin-bottom: 32px;
   max-width: 540px;
   line-height: 1.7;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5);
 }
 
 .hero__actions {
