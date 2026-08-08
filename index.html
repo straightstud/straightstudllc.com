@@ -71,7 +71,16 @@
   </header>
 
   <main id="main">
-    <section class="hero">
+    <section class="hero" aria-roledescription="carousel" aria-label="Featured deck projects">
+      <div class="hero__slides" id="hero-slides" aria-hidden="true">
+        <div class="hero__slide is-active" style="background-image:url('assets/hero/arroyo-01-exterior.jpg')" data-label="Arroyo Vista · Lake Belle Vista"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/arroyo-03-lakeview.jpg')" data-label="Arroyo Vista · Lake living deck"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/arroyo-04-outdoor-kitchen.jpg')" data-label="Arroyo Vista · Outdoor kitchen"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/arroyo-05-kitchen-lake.jpg')" data-label="Arroyo Vista · Composite &amp; stone"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/arroyo-02-exterior.jpg')" data-label="Arroyo Vista · Multi-level deck"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/pentwater-01-beach-stairs.jpg')" data-label="Pentwater · Lake Michigan beach access"></div>
+        <div class="hero__slide" style="background-image:url('assets/hero/pentwater-02-beach-stairs.jpg')" data-label="Pentwater · Dune stairs to the beach"></div>
+      </div>
       <div class="hero__bg" aria-hidden="true"></div>
       <div class="container hero__content">
         <span class="hero__badge">Licensed &amp; Insured · Greater Grand Rapids</span>
@@ -96,6 +105,19 @@
             <strong>GR</strong>
             <span>Greater Grand Rapids</span>
           </div>
+        </div>
+        <div class="hero__project" id="hero-project-label">
+          <span class="hero__project-eyebrow">Featured projects</span>
+          <span class="hero__project-name" id="hero-project-name">Arroyo Vista · Lake Belle Vista</span>
+        </div>
+        <div class="hero__controls">
+          <button type="button" class="hero__dot is-active" data-hero-index="0" aria-label="Show slide 1: Arroyo Vista exterior"></button>
+          <button type="button" class="hero__dot" data-hero-index="1" aria-label="Show slide 2: Arroyo Vista lake view"></button>
+          <button type="button" class="hero__dot" data-hero-index="2" aria-label="Show slide 3: Arroyo outdoor kitchen"></button>
+          <button type="button" class="hero__dot" data-hero-index="3" aria-label="Show slide 4: Arroyo kitchen and lake"></button>
+          <button type="button" class="hero__dot" data-hero-index="4" aria-label="Show slide 5: Arroyo multi-level"></button>
+          <button type="button" class="hero__dot" data-hero-index="5" aria-label="Show slide 6: Pentwater beach access"></button>
+          <button type="button" class="hero__dot" data-hero-index="6" aria-label="Show slide 7: Pentwater dune stairs"></button>
         </div>
       </div>
     </section>
@@ -137,63 +159,63 @@
         <div class="section__header">
           <span class="section__eyebrow">Portfolio</span>
           <h2 class="section__title" id="featured-title">Featured Work</h2>
-          <p class="section__lead">A snapshot of recent projects. Explore the full gallery organized by project type.</p>
+          <p class="section__lead">Highlighting our latest builds — Arroyo Vista and Pentwater on Lake Michigan — plus more from the full gallery.</p>
         </div>
         <div class="portfolio-grid" id="featured-grid">
           <article
             class="portfolio-item"
             data-category="decks"
-            data-full="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg"
-            data-title="Custom deck project"
+            data-full="assets/portfolio/decks/decks-arroyo-01-exterior.jpg"
+            data-title="Arroyo Vista — multi-level lake deck"
             tabindex="0"
             role="button"
-            aria-label="View Custom deck project">
-            <img src="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg" alt="Custom deck project" loading="lazy" width="600" height="450">
+            aria-label="View Arroyo Vista multi-level lake deck">
+            <img src="assets/portfolio/decks/decks-arroyo-01-exterior.jpg" alt="Arroyo Vista multi-level composite deck with glass rail and outdoor kitchen" loading="lazy" width="600" height="450">
             <div class="portfolio-item__overlay">
-              <span class="portfolio-item__cat">Decks</span>
-              <span class="portfolio-item__title">Custom deck project</span>
+              <span class="portfolio-item__cat">Decks · Arroyo Vista</span>
+              <span class="portfolio-item__title">Lake Belle Vista multi-level deck</span>
             </div>
           </article>
           <article
             class="portfolio-item"
-            data-category="additions"
-            data-full="assets/portfolio/additions/additions-12-20250405-193327-10671c.jpg"
-            data-title="Home addition project"
+            data-category="decks"
+            data-full="assets/portfolio/decks/decks-arroyo-03-lakeview.jpg"
+            data-title="Arroyo Vista — lake view outdoor living"
             tabindex="0"
             role="button"
-            aria-label="View Home addition project">
-            <img src="assets/portfolio/additions/additions-12-20250405-193327-10671c.jpg" alt="Home addition project" loading="lazy" width="600" height="450">
+            aria-label="View Arroyo Vista lake view outdoor living">
+            <img src="assets/portfolio/decks/decks-arroyo-03-lakeview.jpg" alt="Arroyo Vista deck overlooking the lake with stone outdoor kitchen" loading="lazy" width="600" height="450">
             <div class="portfolio-item__overlay">
-              <span class="portfolio-item__cat">Additions</span>
-              <span class="portfolio-item__title">Home addition project</span>
+              <span class="portfolio-item__cat">Decks · Arroyo Vista</span>
+              <span class="portfolio-item__title">Lake view &amp; outdoor kitchen</span>
             </div>
           </article>
           <article
             class="portfolio-item"
-            data-category="siding"
-            data-full="assets/portfolio/siding/siding-01-1712-4ed9f3.jpg"
-            data-title="Siding & exterior project"
+            data-category="decks"
+            data-full="assets/portfolio/decks/decks-02-20240802-181546-0fcd5e.jpg"
+            data-title="Pentwater — Lake Michigan beach access"
             tabindex="0"
             role="button"
-            aria-label="View Siding & exterior project">
-            <img src="assets/portfolio/siding/siding-01-1712-4ed9f3.jpg" alt="Siding & exterior project" loading="lazy" width="600" height="450">
+            aria-label="View Pentwater Lake Michigan beach access deck">
+            <img src="assets/portfolio/decks/decks-02-20240802-181546-0fcd5e.jpg" alt="Pentwater dune deck and stairs to Lake Michigan beach" loading="lazy" width="600" height="450">
             <div class="portfolio-item__overlay">
-              <span class="portfolio-item__cat">Siding</span>
-              <span class="portfolio-item__title">Siding & exterior project</span>
+              <span class="portfolio-item__cat">Decks · Pentwater</span>
+              <span class="portfolio-item__title">Lake Michigan beach access</span>
             </div>
           </article>
           <article
             class="portfolio-item"
-            data-category="custom-homes"
-            data-full="assets/portfolio/custom-homes/custom-homes-01-20241112-124613-65b222.jpg"
-            data-title="Custom home project"
+            data-category="decks"
+            data-full="assets/portfolio/decks/decks-05-20240802-181546-2-0bf5ed.jpg"
+            data-title="Pentwater — dune stairs to the beach"
             tabindex="0"
             role="button"
-            aria-label="View Custom home project">
-            <img src="assets/portfolio/custom-homes/custom-homes-01-20241112-124613-65b222.jpg" alt="Custom home project" loading="lazy" width="600" height="450">
+            aria-label="View Pentwater dune stairs to the beach">
+            <img src="assets/portfolio/decks/decks-05-20240802-181546-2-0bf5ed.jpg" alt="Pentwater composite stairs through sand dunes to the beach" loading="lazy" width="600" height="450">
             <div class="portfolio-item__overlay">
-              <span class="portfolio-item__cat">Custom Homes</span>
-              <span class="portfolio-item__title">Custom home project</span>
+              <span class="portfolio-item__cat">Decks · Pentwater</span>
+              <span class="portfolio-item__title">Dune stairs to the beach</span>
             </div>
           </article>
         </div>
@@ -207,7 +229,7 @@
       <div class="container">
         <div class="about-grid">
           <div class="about-grid__media">
-            <img src="assets/portfolio/decks/decks-01-20230520-104854-6af335.jpg" alt="Straight Stud Construction project" loading="lazy" width="640" height="480" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
+            <img src="assets/portfolio/decks/decks-arroyo-04-outdoor-kitchen.jpg" alt="Arroyo Vista outdoor kitchen and composite deck by Straight Stud Construction" loading="lazy" width="640" height="480" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
           </div>
           <div class="about-grid__body">
             <span class="section__eyebrow">Why Straight Stud</span>

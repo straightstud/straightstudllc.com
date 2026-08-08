@@ -5,6 +5,103 @@
 (function () {
   "use strict";
 
+  /* ---------- Hero project photo reel (Arroyo + Pentwater) ---------- */
+  (function initHeroReel() {
+    const slides = Array.from(document.querySelectorAll(".hero__slide"));
+    const dots = Array.from(document.querySelectorAll(".hero__dot"));
+    const labelEl = document.getElementById("hero-project-name");
+    if (!slides.length) return;
+
+    let index = slides.findIndex(function (s) {
+      return s.classList.contains("is-active");
+    });
+    if (index < 0) index = 0;
+
+    const INTERVAL_MS = 4500;
+    const reduceMotion =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let timer = null;
+    let paused = false;
+
+    function setLabel(slide) {
+      if (!labelEl || !slide) return;
+      const next = slide.getAttribute("data-label") || "";
+      if (labelEl.textContent === next) return;
+      labelEl.classList.add("is-fading");
+      window.setTimeout(function () {
+        labelEl.textContent = next;
+        labelEl.classList.remove("is-fading");
+      }, 180);
+    }
+
+    function goTo(i) {
+      index = ((i % slides.length) + slides.length) % slides.length;
+      slides.forEach(function (slide, n) {
+        slide.classList.toggle("is-active", n === index);
+      });
+      dots.forEach(function (dot, n) {
+        const on = n === index;
+        dot.classList.toggle("is-active", on);
+        dot.setAttribute("aria-current", on ? "true" : "false");
+      });
+      setLabel(slides[index]);
+    }
+
+    function next() {
+      goTo(index + 1);
+    }
+
+    function start() {
+      if (reduceMotion || slides.length < 2) return;
+      stop();
+      timer = window.setInterval(function () {
+        if (!paused) next();
+      }, INTERVAL_MS);
+    }
+
+    function stop() {
+      if (timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener("click", function () {
+        const i = parseInt(dot.getAttribute("data-hero-index"), 10);
+        if (!isNaN(i)) {
+          goTo(i);
+          start();
+        }
+      });
+    });
+
+    const hero = document.querySelector(".hero");
+    if (hero) {
+      hero.addEventListener("mouseenter", function () {
+        paused = true;
+      });
+      hero.addEventListener("mouseleave", function () {
+        paused = false;
+      });
+      hero.addEventListener("focusin", function () {
+        paused = true;
+      });
+      hero.addEventListener("focusout", function () {
+        paused = false;
+      });
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    goTo(index);
+    start();
+  })();
+
   /* ---------- Mobile navigation ---------- */
   const toggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".nav");
