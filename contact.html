@@ -44,8 +44,9 @@
         <a class="nav__link" href="portfolio/">Portfolio</a>
         <a class="nav__link" href="about.html">About</a>
         <a class="nav__link" href="deck-estimate/">Deck Estimate</a>
+        <a class="nav__link" href="book.html">Book</a>
         <a class="nav__link" href="contact.html">Contact</a>
-        <a class="nav__cta btn btn--primary btn--sm" href="contact.html">Free Quote</a>
+        <a class="nav__cta btn btn--primary btn--sm" href="book.html">Book Visit</a>
       </nav>
     </div>
   </header>
@@ -54,9 +55,39 @@
     <div class="page-hero">
       <div class="container">
         <h1>Contact Us</h1>
-        <p>Free quotes · Customer service · Project questions</p>
+        <p>Free quotes · Book a visit · Customer service</p>
       </div>
     </div>
+
+    <section class="section section--alt" id="book-online" aria-labelledby="book-online-title">
+      <div class="container">
+        <div class="section__header">
+          <span class="section__eyebrow">Google Calendar</span>
+          <h2 class="section__title" id="book-online-title">Book online</h2>
+          <p class="section__lead">
+            Choose a time that works for you —
+            <strong data-booking-hours>Monday – Sunday · 9:00 AM – 5:00 PM</strong>
+            Eastern. Open slots sync with our Google Calendar.
+          </p>
+        </div>
+        <div class="booking-panel booking-panel--contact">
+          <p class="booking-status" id="gcal-booking-status" role="status"></p>
+          <div id="gcal-booking-mount" class="booking-embed" hidden></div>
+          <div id="gcal-booking-setup" class="booking-setup">
+            <p>
+              <strong>Live booking calendar</strong> appears here after the Google Appointment schedule link is added
+              (Mon–Sun 9–5). Until then, use the quote form below or
+              <a href="book.html">see setup steps on the Book page</a>.
+            </p>
+            <a class="btn btn--primary" href="book.html">Go to Book page</a>
+            <a class="btn btn--outline" href="mailto:request@straightstudllc.com?subject=Appointment%20request">Email an appointment request</a>
+          </div>
+          <p style="margin-top:16px;">
+            <a class="btn btn--primary" id="gcal-booking-open" href="#" target="_blank" rel="noopener" hidden>Open full booking page</a>
+          </p>
+        </div>
+      </div>
+    </section>
 
     <section class="section">
       <div class="container">
@@ -82,6 +113,14 @@
             </div>
 
             <div class="contact-detail">
+              <div class="contact-detail__icon" aria-hidden="true">📅</div>
+              <div>
+                <strong>Book a visit</strong>
+                <a href="book.html">Online scheduling (Mon–Sun 9–5)</a>
+              </div>
+            </div>
+
+            <div class="contact-detail">
               <div class="contact-detail__icon" aria-hidden="true">⏱</div>
               <div>
                 <strong>Response time</strong>
@@ -90,11 +129,10 @@
             </div>
 
             <div class="contact-hours">
-              <h3>Typical hours</h3>
+              <h3>Appointment hours</h3>
               <ul>
-                <li><span>Monday – Friday</span><span>8:00 AM – 5:00 PM</span></li>
-                <li><span>Saturday</span><span>By appointment</span></li>
-                <li><span>Sunday</span><span>Closed</span></li>
+                <li><span>Monday – Sunday</span><span>9:00 AM – 5:00 PM</span></li>
+                <li><span>Time zone</span><span>Eastern (Grand Rapids)</span></li>
               </ul>
             </div>
           </aside>
@@ -197,6 +235,7 @@
           <a href="portfolio/">Portfolio</a>
           <a href="about.html">About</a>
           <a href="deck-estimate/">Deck Estimate</a>
+          <a href="book.html">Book</a>
           <a href="contact.html">Contact</a>
         </div>
         <div class="footer-col">
@@ -224,6 +263,8 @@
     </div>
   </footer>
 
+  <script src="js/booking-config.js"></script>
+  <script src="js/booking.js"></script>
   <script src="js/main.js" defer></script>
 </body>
 </html>

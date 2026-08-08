@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Book a free site visit or quote call with Straight Stud Construction LLC. Available Monday–Sunday, 9:00 AM–5:00 PM Eastern. Greater Grand Rapids.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a2540">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>Book an Appointment | Straight Stud Construction LLC</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSX8FN3QLS"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XSX8FN3QLS');
+  </script>
+  <script src="js/analytics.js"></script>
+</head>
+<body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="brand" aria-label="Straight Stud Construction LLC home">
+        <img src="assets/logo/logo.jpg" alt="Straight Stud Construction LLC" class="brand__logo" width="180" height="48">
+        <span class="brand__text">
+          <span class="brand__name">Straight Stud Construction LLC</span>
+          <span class="brand__tag">Est. 2021 · Grand Rapids Area</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav" id="site-nav" aria-label="Primary">
+        <a class="nav__link" href="index.html">Home</a>
+        <a class="nav__link" href="portfolio/">Portfolio</a>
+        <a class="nav__link" href="about.html">About</a>
+        <a class="nav__link" href="deck-estimate/">Deck Estimate</a>
+        <a class="nav__link" href="contact.html">Contact</a>
+        <a class="nav__link is-active" href="book.html">Book</a>
+        <a class="nav__cta btn btn--primary btn--sm" href="book.html">Book Visit</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-hero">
+      <div class="container">
+        <h1>Book an appointment</h1>
+        <p>Site visits &amp; quote calls · <span data-booking-hours>Monday – Sunday · 9:00 AM – 5:00 PM</span></p>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="container">
+        <div class="booking-layout">
+          <aside class="booking-aside">
+            <h2>When we’re available</h2>
+            <p>Pick a time that works for you. Open slots come straight from our Google Calendar so you only see times we’re free.</p>
+            <ul class="booking-facts">
+              <li>
+                <strong>Hours</strong>
+                <span data-booking-hours>Monday – Sunday · 9:00 AM – 5:00 PM</span>
+              </li>
+              <li>
+                <strong>Time zone</strong>
+                <span data-booking-tz>Eastern Time (Grand Rapids)</span>
+              </li>
+              <li>
+                <strong>Length</strong>
+                <span data-booking-duration>Typically 30–60 minutes</span>
+              </li>
+              <li>
+                <strong>Service area</strong>
+                <span>Greater Grand Rapids, Michigan</span>
+              </li>
+            </ul>
+            <p class="booking-aside__note">
+              Prefer email first? Use our <a href="contact.html">contact form</a>
+              or write <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
+              Pricing a deck? Try the <a href="deck-estimate/">deck estimate calculator</a>.
+            </p>
+            <a class="btn btn--primary" id="gcal-booking-open" href="#" target="_blank" rel="noopener" hidden>Open booking page</a>
+          </aside>
+
+          <div class="booking-panel">
+            <p class="booking-status" id="gcal-booking-status" role="status"></p>
+
+            <div id="gcal-booking-mount" class="booking-embed" hidden></div>
+
+            <div id="gcal-booking-setup" class="booking-setup">
+              <h2>Connect Google Calendar (owner setup)</h2>
+              <p>
+                This page is ready to show live Mon–Sun 9–5 availability. Create a Google Calendar
+                <strong>Appointment schedule</strong>, then paste the booking link into
+                <code>js/booking-config.js</code>.
+              </p>
+              <ol class="booking-setup__steps">
+                <li>Open <a href="https://calendar.google.com/calendar/u/0/r/appointment" target="_blank" rel="noopener">Google Calendar → Appointment schedules</a> (computer browser).</li>
+                <li>Create schedule: <strong>Site visit / free quote — Straight Stud Construction</strong>.</li>
+                <li>Duration: <strong>60 minutes</strong> (or 30).</li>
+                <li>Availability: <strong>Monday through Sunday, 9:00 AM – 5:00 PM</strong>, Eastern Time.</li>
+                <li>Meeting type: in-person (job site) or phone.</li>
+                <li>Save → <strong>Copy link</strong> (or Website embed → copy iframe URL).</li>
+                <li>Paste into <code>bookingPageUrl</code> in <code>js/booking-config.js</code> and push the site.</li>
+              </ol>
+              <p>
+                Until the link is added, customers can still request a time by email:
+                <a href="mailto:request@straightstudllc.com?subject=Appointment%20request%20(Mon%E2%80%93Sun%209%E2%80%935)">request@straightstudllc.com</a>
+              </p>
+              <a class="btn btn--outline" href="contact.html">Request a quote by form</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand__name">Straight Stud Construction LLC</div>
+          <p>Custom decks, home additions, siding, and custom homes serving the Greater Grand Rapids area since 2021.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="index.html">Home</a>
+          <a href="portfolio/">Portfolio</a>
+          <a href="about.html">About</a>
+          <a href="deck-estimate/">Deck Estimate</a>
+          <a href="book.html">Book</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="portfolio/?filter=decks">Custom Decks</a>
+          <a href="portfolio/?filter=additions">Home Additions</a>
+          <a href="portfolio/?filter=siding">Siding &amp; Exterior</a>
+          <a href="portfolio/?filter=custom-homes">Custom Homes</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Use</a>
+          <a href="liability.html">Liability Disclaimer</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2021–<span data-year>2026</span> Straight Stud Construction LLC. All rights reserved.</span>
+        <span>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="liability.html">Disclaimer</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/booking-config.js"></script>
+  <script src="js/booking.js"></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
