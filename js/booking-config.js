@@ -14,13 +14,11 @@
  * 9. Commit & push — the Book page will show live open slots from your calendar
  */
 window.SSC_BOOKING = {
-  /* Paste your Google Calendar booking page URL here, e.g.
-     https://calendar.google.com/calendar/appointments/schedules/AcZssZ0...
-     or https://calendar.app.google/... */
-  bookingPageUrl: "",
+  /* Google Calendar appointment booking page (Mon–Sun 9–5) */
+  bookingPageUrl: "https://calendar.app.google/PDGg3w4BPEKquLrL6",
 
-  /* Optional: iframe src from Google “Website embed”. Leave blank to use bookingPageUrl. */
-  embedSrc: "",
+  /* Embed uses the same booking page URL */
+  embedSrc: "https://calendar.app.google/PDGg3w4BPEKquLrL6",
 
   /* Display copy for the site */
   title: "Book a site visit or quote call",
