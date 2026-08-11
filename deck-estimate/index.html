@@ -17,7 +17,7 @@
     gtag('config', 'G-XSX8FN3QLS');
   </script>
   <script src="../js/analytics.js"></script>
-  <link rel="stylesheet" href="calculator.css?v=20260811-defaults">
+  <link rel="stylesheet" href="calculator.css?v=20260811-footings">
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -139,6 +139,20 @@
                 <input type="radio" name="stair_extra_footings" value="2">
                 <span><strong>+2 footings</strong> — landing / freestanding</span>
               </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="choice-block choice-block--design" id="footing-options">
+            <legend>Deck post footings (new build)</legend>
+            <p class="choice-block__note">
+              <strong>Included in framing:</strong> 16″ composite pads on compacted gravel with 6×6 posts.
+              That is the standard full-build footing package — not an add-on.
+              <strong>Sonotube / pier frost footings</strong> are optional if you want them or a city requires them.
+            </p>
+            <div class="form-group" style="margin-top:10px;max-width:280px">
+              <label for="pier-count">Optional pier / sonotube footings (count)</label>
+              <input type="number" id="pier-count" min="0" max="40" step="1" value="0" inputmode="numeric">
+              <span class="hint">Leave 0 for standard pad system. Each pier is an upgrade (dig, tube, concrete, labor).</span>
             </div>
           </fieldset>
 
@@ -361,6 +375,8 @@
             <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
             <input type="hidden" name="materials_total" id="f-mat-total" value="">
             <input type="hidden" name="building_zoning_permits" id="f-permit" value="">
+            <input type="hidden" name="pier_sonotube_count" id="f-pier-count" value="">
+            <input type="hidden" name="pier_sonotube_upgrade" id="f-pier-total" value="">
             <input type="hidden" name="grand_total" id="f-grand" value="">
             <input type="hidden" name="competitor_compare_total" id="f-competitor-total" value="">
             <input type="hidden" name="estimated_savings_vs_premium" id="f-savings" value="">
@@ -419,14 +435,14 @@
           <div class="live-exclusions" id="live-exclusions">
             <p class="live-exclusions__title">Not included in this total</p>
             <ul class="live-exclusions__list">
-              <li>Frost-depth footing upgrades if required by your city</li>
+              <li>Sonotube / pier frost footings (optional upgrade — pad footings are already in framing)</li>
               <li>Electrical, lighting, or gas lines</li>
               <li>Skirting, privacy walls, pergolas, or roofs</li>
               <li>Unforeseen framing repairs (redeck) or poor soil / access</li>
               <li>HOA fees or engineer stamps if required</li>
             </ul>
             <p class="live-exclusions__fine">
-              Building &amp; zoning permit allowance ($350) is included; final city fees vary by township.
+              New-build framing includes 16″ composite pads, gravel, and 6×6 posts. Building &amp; zoning permit allowance ($350) is included; final city fees vary by township.
             </p>
           </div>
 
@@ -498,6 +514,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator.js?v=20260811-defaults" defer></script>
+  <script src="calculator.js?v=20260811-footings" defer></script>
 </body>
 </html>

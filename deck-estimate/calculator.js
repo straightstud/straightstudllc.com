@@ -29,6 +29,15 @@
       permitZoningBuilding: 350,
       permitLabel: "Building & zoning permits",
     },
+    /*
+     * Footings (new build):
+     * - STANDARD (included in framing materials $/sf): 16" composite pads + gravel + 6x6 posts
+     * - OPTIONAL UPGRADE: sonotube / pier frost footings (extra $ each) when preferred or required
+     */
+    pierFrostFooting: {
+      sellEach: 295, // dig + sonotube + concrete + labor (planning sell)
+      label: "Pier / sonotube frost footing upgrade",
+    },
     labor: {
       // Base rates = median band (200–350 sf). Scaled by sizeLaborFactor(sqft).
       framingPerSqft: 10, // new build framing labor (base; × size × platform × shape)
@@ -57,9 +66,9 @@
     warrantyNewBuild: "Limited lifetime workmanship warranty included on all new builds",
     // Scope notes for checkout / email (framing finalized)
     framingScopeNotes:
-      "Framing scope: 6x6 pressure-treated posts set on top of compacted gravel with 16\" composite footing pads. " +
-      "Joists typically 2x10 @ 16\" O.C.; double 2x12 carrier beams; hangers, hurricane ties, and structural fasteners included in framing package. " +
-      "Final layout confirmed on site.",
+      "Framing scope (new build): footings included as 16\" composite pads on compacted gravel with 6x6 PT posts — this is the standard full-build footing package in the framing rate. " +
+      "Joists typically 2x10 @ 16\" O.C.; double 2x12 carrier beams; hangers, hurricane ties, and structural fasteners included. " +
+      "Sonotube / pier frost footings are NOT included (optional upgrade if required or preferred). Final layout confirmed on site.",
     stairScopeNotes:
       "Stair structure: PT 2x12 tread bases; color-matched risers (same brand/line as decking — PT 1x10 ripped or composite ~7.25\" riser); " +
       "stringers; extra 16\" composite footings when selected. Riser $/LF prorated from real decking board cost by line. " +
@@ -456,6 +465,7 @@
     steps: 0,
     stairWidthFt: 4, // 3 | 4 | 5 | 6
     stairExtraFootings: 0, // long run / landing pads
+    pierCount: 0, // optional sonotube/pier upgrades (new build only)
     platforms: 1, // 1 | 2 | 3+
     deckShape: "rectangle", // rectangle | angled
     platformFactor: 1,
@@ -487,6 +497,7 @@
       fasteners: 0,
       railing: 0,
       stairs: 0,
+      pierUpgrade: 0,
       total: 0,
     },
     fees: {
@@ -888,19 +899,46 @@
     return state.fees;
   }
 
+  /**
+   * Optional sonotube/pier frost footings (new build only).
+   * Standard pad footings are already inside framing materials — this is upgrade only.
+   */
+  function calcPierUpgrade() {
+    var cfg = RATES.pierFrostFooting || {};
+    var each = cfg.sellEach != null ? cfg.sellEach : 295;
+    var label = cfg.label || "Pier / sonotube frost footing upgrade";
+    var n = isNewBuild() ? Math.max(0, Math.round(Number(state.pierCount) || 0)) : 0;
+    var total = n * each;
+    state.pierUpgrade = {
+      count: n,
+      each: each,
+      total: total,
+      label: label,
+    };
+    return state.pierUpgrade;
+  }
+
   function renderLivePanel() {
     var L = state.labor;
     var M = state.materials;
     var F = calcPermitFee();
+    var pier = calcPierUpgrade();
     var laborTotal = L.total || 0;
     // Stair structure mats always count when steps > 0; other mats when decking chosen
     var matTotal = M.total || 0;
     if (!state.wantMaterials) {
-      matTotal = M.stairs || 0;
+      // Still include optional pier upgrade + stairs when labor-only
+      matTotal = (M.stairs || 0) + (M.pierUpgrade || 0);
     }
     var permitTotal = F.permit || 0;
     var grand = laborTotal + matTotal + permitTotal;
     state.grandTotal = grand;
+
+    // Show pier option only on new builds
+    var footingBlock = document.getElementById("footing-options");
+    if (footingBlock) {
+      footingBlock.hidden = !isNewBuild();
+    }
 
     var elLab = document.getElementById("live-labor");
     var elMat = document.getElementById("live-materials");
@@ -1088,6 +1126,18 @@
           "</span></div>";
       }
     }
+    if (pier && pier.total > 0) {
+      html +=
+        '<div class="totals__row"><span>' +
+        escapeHtml(pier.label || "Pier / sonotube upgrade") +
+        " × " +
+        pier.count +
+        "</span><span>" +
+        money(pier.total) +
+        "</span></div>";
+      html +=
+        '<div class="totals__row totals__row--design-note"><span>Standard pad footings stay in framing; this is pier upgrade only</span><span></span></div>';
+    }
     if (permitTotal > 0) {
       html +=
         '<div class="totals__row"><span>' +
@@ -1113,12 +1163,13 @@
     var scopeHtml = "";
     if (isNewBuild() && state.sqft > 0) {
       scopeHtml =
-        "<strong>Framing (included in estimate)</strong> — " +
+        "<strong>Framing &amp; pad footings (included)</strong> — " +
         escapeHtml(RATES.framingScopeNotes || "");
     } else if (!isNewBuild() && state.sqft > 0) {
       scopeHtml =
         "<strong>Framing</strong> — Redeck path assumes existing structure stays. " +
-        "New posts/footings are not in the main total unless added after site visit.";
+        "New posts/pad footings are not in the main total unless added after site visit. " +
+        "Pier/sonotube upgrades are new-build options only.";
     }
     ["scope-framing-notes", "scope-framing-notes-checkout"].forEach(function (id) {
       var scopeEl = document.getElementById(id);
@@ -1591,13 +1642,22 @@
     state.stairMaterialsDetail = stairDetail;
     var stairCost = stairDetail.sell || 0;
 
+    // Optional pier/sonotube upgrade (new build only; pads already in framing)
+    var pier = calcPierUpgrade();
+    var pierCost = pier.total || 0;
+
     // Rail install labor is flat $35/LF for all types (no hybrid premium)
     // Refresh framing + composite install from current decking choice
     calcLabor();
     renderLaborBreakdown();
 
     var materialsTotal =
-      framingCost + deckCost + fastenerCost + railCost + stairCost;
+      framingCost +
+      deckCost +
+      fastenerCost +
+      railCost +
+      stairCost +
+      pierCost;
 
     state.materials = {
       framing: framingCost,
@@ -1605,12 +1665,13 @@
       fasteners: fastenerCost,
       railing: railCost,
       stairs: stairCost,
+      pierUpgrade: pierCost,
       total: materialsTotal,
     };
     var permitFee = calcPermitFee().permit || 0;
     var matForGrand = state.wantMaterials
       ? materialsTotal
-      : stairCost;
+      : stairCost + pierCost;
     state.grandTotal = state.labor.total + matForGrand + permitFee;
     renderLivePanel();
   }
@@ -1653,6 +1714,12 @@
         (state.stairExtraFootings || 0),
       "Stair structure materials (sell): " +
         money((state.materials && state.materials.stairs) || 0),
+      "Pier/sonotube footing upgrades: " +
+        (state.pierCount || 0) +
+        " × " +
+        money((state.pierUpgrade && state.pierUpgrade.each) || 295) +
+        " = " +
+        money((state.materials && state.materials.pierUpgrade) || 0),
       "",
       "SCOPE — FRAMING:",
       RATES.framingScopeNotes || "",
@@ -1839,20 +1906,21 @@
         ? money(state.materials.fasteners || 0)
         : "n/a";
     }
-    document.getElementById("f-mat-total").value = money(
-      state.wantMaterials
-        ? state.materials.total || 0
-        : (state.materials && state.materials.stairs) || 0
-    );
+    var matPart = state.wantMaterials
+      ? state.materials.total || 0
+      : ((state.materials && state.materials.stairs) || 0) +
+        ((state.materials && state.materials.pierUpgrade) || 0);
+    document.getElementById("f-mat-total").value = money(matPart);
     var permitFee = calcPermitFee().permit || 0;
     var fPermit = document.getElementById("f-permit");
     if (fPermit) fPermit.value = money(permitFee);
-    var total =
-      state.labor.total +
-      (state.wantMaterials
-        ? state.materials.total || 0
-        : (state.materials && state.materials.stairs) || 0) +
-      permitFee;
+    var pier = calcPierUpgrade();
+    var fPierN = document.getElementById("f-pier-count");
+    var fPierT = document.getElementById("f-pier-total");
+    if (fPierN) fPierN.value = String(pier.count || 0);
+    if (fPierT) fPierT.value = money(pier.total || 0);
+    // Pier upgrade is inside materials.total when full materials; added with stairs when labor-only
+    var total = state.labor.total + matPart + permitFee;
     state.grandTotal = total;
     document.getElementById("f-grand").value = money(total);
     var fCompT = document.getElementById("f-competitor-total");
@@ -1903,6 +1971,9 @@
       swVal === 3 || swVal === 5 || swVal === 6 ? swVal : 4;
     var sf = document.querySelector('input[name="stair_extra_footings"]:checked');
     state.stairExtraFootings = sf ? parseInt(sf.value, 10) || 0 : 0;
+    state.pierCount = Math.round(
+      num(document.getElementById("pier-count"), 0)
+    );
 
     var dtype = deckingTypeEl ? deckingTypeEl.value : "";
     state.deckingType = dtype || "";
@@ -1930,7 +2001,7 @@
   }
 
   function bindLiveInputs() {
-    var ids = ["deck-sqft", "railing-lf", "num-steps"];
+    var ids = ["deck-sqft", "railing-lf", "num-steps", "pier-count"];
     ids.forEach(function (id) {
       var el = document.getElementById(id);
       if (!el) return;
