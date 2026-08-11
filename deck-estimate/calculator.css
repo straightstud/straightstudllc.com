@@ -928,6 +928,58 @@ body {
   color: var(--text-muted);
   margin: 0 0 14px;
 }
+.live-incomplete {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.live-incomplete__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #e65100;
+  margin: 0 0 4px;
+}
+.live-incomplete__body {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #5d4037;
+  margin: 0;
+}
+.live-exclusions {
+  background: #f5f7fa;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.live-exclusions__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+.live-exclusions__list {
+  margin: 0 0 6px;
+  padding-left: 1.1rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.live-exclusions__list li {
+  margin-bottom: 2px;
+}
+.live-exclusions__fine {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  margin: 0;
+}
 .live-savings {
   background: #e8f5e9;
   border: 1px solid #c8e6c9;

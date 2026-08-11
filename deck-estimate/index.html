@@ -17,7 +17,7 @@
     gtag('config', 'G-XSX8FN3QLS');
   </script>
   <script src="../js/analytics.js"></script>
-  <link rel="stylesheet" href="calculator.css">
+  <link rel="stylesheet" href="calculator.css?v=20260811-defaults">
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -52,11 +52,11 @@
       <h1>Deck estimate calculator</h1>
       <p>
         Change any option below — <strong>price updates live</strong>.
-        Labor and materials stay separate. When the total hits what you want to spend,
-        lock it in and request an on-site review.
+        Labor and materials stay separate. When the total is in your budget range,
+        request an on-site review so we can verify scope and finalize the number.
       </p>
       <p class="disclaimer">
-        Rough planning estimate only — not a final contract until we verify on site and you sign.
+        Rough planning estimate only — not a final contract or locked price until we verify on site and you sign.
         Design choices (platforms, angles) show plain % on framing labor so you can trade shape for upgraded materials.
       </p>
     </div>
@@ -193,19 +193,19 @@
         </section>
 
         <section class="card" id="section-materials" aria-labelledby="mat-title">
-          <h2 id="mat-title">2. Materials (optional)</h2>
+          <h2 id="mat-title">2. Materials</h2>
           <p class="panel-lead">
-            Pick decking and railing to include materials in the live total. Skip for a labor-only planning number
-            (board install is finalized when decking is chosen on site).
+            Starts with a common West Michigan package (Trex Enhance + hybrid rail) so the total looks like a real project.
+            Change anything — or switch to labor-only if you only want a labor planning number.
           </p>
 
           <div class="form-group">
             <label for="decking-type">Decking type</label>
             <select id="decking-type">
-              <option value="">Labor only — pick decking later</option>
+              <option value="trex" selected>Trex (composite)</option>
               <option value="treated">Pressure-treated lumber</option>
-              <option value="trex">Trex (composite)</option>
               <option value="timbertech">TimberTech (composite)</option>
+              <option value="">Labor only — pick decking later</option>
             </select>
           </div>
 
@@ -254,20 +254,20 @@
               Selected railing: <strong id="railing-sample-selected-label"></strong>
             </p>
             <select id="railing-type" class="sr-only-select" tabindex="-1" aria-hidden="true">
-              <option value="none" selected>No railing materials</option>
+              <option value="none">No railing materials</option>
               <option value="treated_wood">Treated railing + wood spindles</option>
-              <option value="hybrid">Hybrid railing</option>
+              <option value="hybrid" selected>Hybrid railing</option>
               <option value="aluminum">Aluminum railing</option>
               <option value="composite">Composite railing</option>
             </select>
-            <input type="hidden" id="railing-color" value="none">
+            <input type="hidden" id="railing-color" value="hybrid_black">
           </div>
         </section>
 
         <section class="card" id="section-lockin" aria-labelledby="lockin-title">
-          <h2 id="lockin-title">3. Lock in &amp; request on-site review</h2>
+          <h2 id="lockin-title">3. Request on-site review</h2>
           <p class="panel-lead">
-            Happy with the number? Send it over — we’ll verify scope on site and have you sign the estimate.
+            Happy with the planning total? Send it over — we’ll verify scope on site, adjust if needed, and only then finalize what you sign.
           </p>
 
           <div class="scope-block card-inset" id="scope-summary-block">
@@ -291,7 +291,7 @@
               <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
             </div>
             <input type="text" name="_honey" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <input type="hidden" name="_subject" value="Deck estimate LOCK-IN + site visit — Straight Stud Construction LLC">
+            <input type="hidden" name="_subject" value="Deck estimate site visit request — Straight Stud Construction LLC">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_next" value="https://www.straightstudllc.com/deck-estimate/?sent=1">
@@ -365,19 +365,19 @@
             <input type="hidden" name="competitor_compare_total" id="f-competitor-total" value="">
             <input type="hidden" name="estimated_savings_vs_premium" id="f-savings" value="">
             <input type="hidden" name="estimate_summary" id="f-summary" value="">
-            <input type="hidden" name="request_type" value="Lock-in estimate + schedule verification visit">
+            <input type="hidden" name="request_type" value="Planning estimate + schedule verification visit">
             <input type="hidden" name="source" value="deck-estimate-live">
 
             <div class="form-group">
               <label class="check-label">
                 <input type="checkbox" id="agree-rough" required>
-                I want to lock in this estimate total and schedule a site visit to verify scope and sign. I understand final work may adjust if site conditions differ.
+                I want to schedule a site visit using this planning total. I understand it is not a final price until we verify scope on site and I sign a written estimate.
               </label>
             </div>
 
             <p class="field-error" id="err-4" hidden></p>
             <div class="panel-actions">
-              <button type="submit" class="btn btn--primary" id="btn-submit">Lock in estimate &amp; request appointment</button>
+              <button type="submit" class="btn btn--primary" id="btn-submit">Request site visit with this total</button>
             </div>
             <p class="form-note">
               Submissions go to <a href="mailto:request@straightstudllc.com">request@straightstudllc.com</a>.
@@ -404,17 +404,38 @@
             <strong id="live-permit">$0</strong>
           </div>
           <div class="live-total__grand">
-            <span>Estimated total</span>
+            <span>Planning total</span>
             <strong id="live-grand">$0</strong>
           </div>
           <p class="live-total__psf" id="live-psf"></p>
+
+          <div class="live-incomplete" id="live-incomplete" hidden>
+            <p class="live-incomplete__title">Incomplete package</p>
+            <p class="live-incomplete__body" id="live-incomplete-text">
+              Pick decking to include board install labor and materials. Labor-only totals are not a full project price.
+            </p>
+          </div>
+
+          <div class="live-exclusions" id="live-exclusions">
+            <p class="live-exclusions__title">Not included in this total</p>
+            <ul class="live-exclusions__list">
+              <li>Frost-depth footing upgrades if required by your city</li>
+              <li>Electrical, lighting, or gas lines</li>
+              <li>Skirting, privacy walls, pergolas, or roofs</li>
+              <li>Unforeseen framing repairs (redeck) or poor soil / access</li>
+              <li>HOA fees or engineer stamps if required</li>
+            </ul>
+            <p class="live-exclusions__fine">
+              Building &amp; zoning permit allowance ($350) is included; final city fees vary by township.
+            </p>
+          </div>
 
           <div class="live-savings" id="live-savings" hidden>
             <p class="live-savings__title">Compared to mainstream premium deck companies</p>
             <p class="live-savings__body" id="live-savings-text"></p>
             <p class="live-savings__fine">
-              Small note vs typical Green Shield–class / large remodeler quotes in our market research
-              (often much higher on composite). Not a bid from any competitor — for planning context only.
+              Planning context only vs typical large remodeler all-in ranges in our market research.
+              Not a bid from any competitor.
             </p>
           </div>
 
@@ -429,7 +450,7 @@
           </p>
 
           <a class="btn btn--primary btn--block" href="#section-lockin" id="btn-jump-lockin">Looks good — request site visit</a>
-          <p class="live-total__hint">Tweak options until the total matches your budget, then submit.</p>
+          <p class="live-total__hint">Tweak options until the planning total matches your budget, then request a site visit.</p>
         </div>
       </aside>
     </div>
@@ -477,6 +498,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator.js?v=20260811-permit350" defer></script>
+  <script src="calculator.js?v=20260811-defaults" defer></script>
 </body>
 </html>

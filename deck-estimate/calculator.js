@@ -71,7 +71,7 @@
      * conservative “premium mainstream” all-in $/sf for savings messaging.
      */
     competitor: {
-      label: "mainstream premium deck companies (e.g. Green Shield–class)",
+      label: "mainstream premium deck companies",
       // All-in rough $/sf of deck area for similar scope (labor + materials)
       allInPerSqft: {
         treated: 75,
@@ -477,10 +477,10 @@
     deckingColor: "",
     deckingColorName: "",
     deckingLabel: "",
-    railingType: "none",
-    railingColor: "none",
-    railingColorName: "Skip / labor only",
-    railingLabel: "No railing materials",
+    railingType: "hybrid",
+    railingColor: "hybrid_black",
+    railingColorName: "Wood top + black metal",
+    railingLabel: "Hybrid (wood posts/rails + alum spindles)",
     materials: {
       framing: 0,
       decking: 0,
@@ -916,8 +916,28 @@
         state.sqft > 0
           ? "About " +
             money(grand / state.sqft) +
-            " per sq ft all-in (this estimate)"
+            " per sq ft planning total (this estimate)"
           : "Enter square footage to see pricing";
+    }
+
+    // Warn when labor-only / no decking — incomplete package for ad traffic
+    var incBox = document.getElementById("live-incomplete");
+    var incText = document.getElementById("live-incomplete-text");
+    var packageComplete =
+      !!state.deckingType &&
+      (state.deckingType === "treated" ||
+        !!(state.deckingSub && state.deckingSub.length));
+    if (incBox) {
+      if (state.sqft > 0 && !packageComplete) {
+        incBox.hidden = false;
+        if (incText) {
+          incText.textContent = state.deckingType
+            ? "Pick a decking line/color sample so board install and materials are in the total."
+            : "Labor-only mode: board install and decking materials are not included. Pick decking for a full project planning total.";
+        }
+      } else {
+        incBox.hidden = true;
+      }
     }
 
     var savBox = document.getElementById("live-savings");
@@ -1457,8 +1477,8 @@
           selectRailingSample(btn);
         });
 
-        // Default selection: none
-        if (typeKey === "none" && sample.id === "none") {
+        // Default selection: hybrid black (realistic package for ads)
+        if (typeKey === "hybrid" && sample.id === "hybrid_black") {
           btn.classList.add("is-selected");
           btn.setAttribute("aria-selected", "true");
         }
@@ -1473,13 +1493,18 @@
     railingSampleGallery.innerHTML = "";
     railingSampleGallery.appendChild(frag);
 
-    // Sync default UI label
+    // Sync default UI label + state (hybrid package)
+    state.railingType = "hybrid";
+    state.railingColor = "hybrid_black";
+    state.railingColorName = "Wood top + black metal";
+    if (railingTypeEl) railingTypeEl.value = "hybrid";
+    if (railingColorEl) railingColorEl.value = "hybrid_black";
     if (railingSampleSelected) {
       railingSampleSelected.hidden = false;
     }
     if (railingSampleSelectedLabel) {
       railingSampleSelectedLabel.textContent =
-        "No railing materials — Skip / labor only";
+        "Hybrid (wood posts/rails + alum spindles) — Wood top + black metal";
     }
   }
 
@@ -1935,8 +1960,49 @@
     }
   }
 
+  /**
+   * Default realistic package for ad traffic:
+   * Trex Enhance (first sample) + hybrid rail — not labor-only $0 materials.
+   */
+  function applyDefaultPackage() {
+    if (deckingTypeEl) {
+      if (!deckingTypeEl.value) {
+        deckingTypeEl.value = "trex";
+      }
+      if (deckingTypeEl.value === "trex" || deckingTypeEl.value === "timbertech") {
+        fillDeckingSub();
+        var brandKey = deckingTypeEl.value;
+        var defaultLine = brandKey === "trex" ? "enhance" : "terrain";
+        var sampleBtn =
+          sampleGallery &&
+          sampleGallery.querySelector(
+            '.sample-card[data-line="' + defaultLine + '"]'
+          );
+        if (!sampleBtn && sampleGallery) {
+          sampleBtn = sampleGallery.querySelector(".sample-card");
+        }
+        if (sampleBtn) {
+          selectSample(sampleBtn);
+        } else if (deckingSubEl) {
+          // Fallback: set line even if gallery not ready
+          deckingSubEl.value = defaultLine;
+          state.deckingSub = defaultLine;
+          state.deckingType = brandKey;
+          state.wantMaterials = true;
+          if (brandKey === "trex") {
+            state.deckingColorName = "Beach Dune";
+            state.deckingColor = "beach_dune";
+          }
+        }
+      } else if (deckingTypeEl.value === "treated") {
+        fillDeckingSub();
+      }
+    }
+  }
+
   bindLiveInputs();
   renderRailingGallery();
+  applyDefaultPackage();
   liveRecalc();
 
   document.getElementById("estimate-form").addEventListener("submit", function (e) {
