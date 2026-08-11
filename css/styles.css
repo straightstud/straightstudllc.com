@@ -1344,6 +1344,19 @@ ul {
   opacity: 0.8;
 }
 
+.footer-brand .footer-license {
+  margin-top: 16px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.footer-brand .footer-license strong {
+  color: #fff;
+  font-weight: 700;
+}
+
 .footer-col h4 {
   color: #fff;
   font-size: 0.95rem;
