@@ -360,6 +360,7 @@
             <input type="hidden" name="framing_materials" id="f-framing-mat" value="">
             <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
             <input type="hidden" name="materials_total" id="f-mat-total" value="">
+            <input type="hidden" name="building_zoning_permits" id="f-permit" value="">
             <input type="hidden" name="grand_total" id="f-grand" value="">
             <input type="hidden" name="competitor_compare_total" id="f-competitor-total" value="">
             <input type="hidden" name="estimated_savings_vs_premium" id="f-savings" value="">
@@ -397,6 +398,10 @@
           <div class="live-total__row">
             <span>Materials</span>
             <strong id="live-materials">$0</strong>
+          </div>
+          <div class="live-total__row">
+            <span>Building &amp; zoning permits</span>
+            <strong id="live-permit">$0</strong>
           </div>
           <div class="live-total__grand">
             <span>Estimated total</span>
@@ -472,6 +477,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator.js" defer></script>
+  <script src="calculator.js?v=20260811-permit350" defer></script>
 </body>
 </html>

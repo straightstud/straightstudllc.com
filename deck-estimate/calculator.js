@@ -5,6 +5,8 @@
  * Labor $/sf scales with deck size (small-job premium, large-deck efficiency).
  * Material rates: sell with markup + small buffer; do NOT scale with sq ft.
  * No separate markup line — materials total is final sell price.
+ * Permit fee: flat building + zoning allowance, auto-added when sq ft is entered.
+ * All math runs locally in the browser — no pricing API on each keystroke.
  *
  * Railing LF includes stairs. Unit rates are never displayed to customers.
  *
@@ -21,6 +23,12 @@
    * Materials = cost × 1.20 + small buffer. Do not add another markup.
    * ------------------------------------------------------------------ */
   var RATES = {
+    // Flat project fees (not size-scaled). Auto-added once deck sq ft is entered.
+    fees: {
+      // Building + zoning permit allowance (typical MI city package + handling buffer)
+      permitZoningBuilding: 350,
+      permitLabel: "Building & zoning permits",
+    },
     labor: {
       // Base rates = median band (200–350 sf). Scaled by sizeLaborFactor(sqft).
       framingPerSqft: 10, // new build framing labor (base; × size × platform × shape)
@@ -481,6 +489,10 @@
       stairs: 0,
       total: 0,
     },
+    fees: {
+      permit: 0,
+      permitLabel: "Building & zoning permits",
+    },
     stairMaterialsDetail: null,
     grandTotal: 0,
     cameFromMaterials: false,
@@ -863,24 +875,41 @@
     };
   }
 
+  /** Flat building + zoning permit — auto when project has sq ft (local math, no API). */
+  function calcPermitFee() {
+    var fees = RATES.fees || {};
+    var amount = fees.permitZoningBuilding != null ? fees.permitZoningBuilding : 350;
+    var label = fees.permitLabel || "Building & zoning permits";
+    var permit = state.sqft > 0 ? amount : 0;
+    state.fees = {
+      permit: permit,
+      permitLabel: label,
+    };
+    return state.fees;
+  }
+
   function renderLivePanel() {
     var L = state.labor;
     var M = state.materials;
+    var F = calcPermitFee();
     var laborTotal = L.total || 0;
     // Stair structure mats always count when steps > 0; other mats when decking chosen
     var matTotal = M.total || 0;
     if (!state.wantMaterials) {
       matTotal = M.stairs || 0;
     }
-    var grand = laborTotal + matTotal;
+    var permitTotal = F.permit || 0;
+    var grand = laborTotal + matTotal + permitTotal;
     state.grandTotal = grand;
 
     var elLab = document.getElementById("live-labor");
     var elMat = document.getElementById("live-materials");
+    var elPermit = document.getElementById("live-permit");
     var elGrand = document.getElementById("live-grand");
     var elPsf = document.getElementById("live-psf");
     if (elLab) elLab.textContent = money(laborTotal);
     if (elMat) elMat.textContent = money(matTotal);
+    if (elPermit) elPermit.textContent = money(permitTotal);
     if (elGrand) elGrand.textContent = money(grand);
     if (elPsf) {
       elPsf.textContent =
@@ -1038,6 +1067,16 @@
           money(sd.risersCost * (sd.markup || 1.2)) +
           "</span></div>";
       }
+    }
+    if (permitTotal > 0) {
+      html +=
+        '<div class="totals__row"><span>' +
+        escapeHtml(F.permitLabel || "Building & zoning permits") +
+        "</span><span>" +
+        money(permitTotal) +
+        "</span></div>";
+      html +=
+        '<div class="totals__row totals__row--design-note"><span>Flat allowance for building + zoning permit (final city fee may vary)</span><span></span></div>';
     }
     if (state.sizeLaborBand) {
       html +=
@@ -1543,7 +1582,11 @@
       stairs: stairCost,
       total: materialsTotal,
     };
-    state.grandTotal = state.labor.total + state.materials.total;
+    var permitFee = calcPermitFee().permit || 0;
+    var matForGrand = state.wantMaterials
+      ? materialsTotal
+      : stairCost;
+    state.grandTotal = state.labor.total + matForGrand + permitFee;
     renderLivePanel();
   }
 
@@ -1602,6 +1645,8 @@
       "Labor total: " + money(state.labor.total),
       "Materials total: " +
         (state.wantMaterials ? money(state.materials.total || 0) : "n/a"),
+      "Building & zoning permits: " +
+        money((state.fees && state.fees.permit) || 0),
       "Grand total: " + money(state.grandTotal || 0),
       "Competitor-class compare (~): " + money(state.competitorTotal || 0),
       "Est. savings vs premium mainstream: " +
@@ -1774,11 +1819,15 @@
         ? state.materials.total || 0
         : (state.materials && state.materials.stairs) || 0
     );
+    var permitFee = calcPermitFee().permit || 0;
+    var fPermit = document.getElementById("f-permit");
+    if (fPermit) fPermit.value = money(permitFee);
     var total =
       state.labor.total +
       (state.wantMaterials
         ? state.materials.total || 0
-        : (state.materials && state.materials.stairs) || 0);
+        : (state.materials && state.materials.stairs) || 0) +
+      permitFee;
     state.grandTotal = total;
     document.getElementById("f-grand").value = money(total);
     var fCompT = document.getElementById("f-competitor-total");
