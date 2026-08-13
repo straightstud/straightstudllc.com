@@ -5,103 +5,6 @@
 (function () {
   "use strict";
 
-  /* ---------- Hero project photo reel (Arroyo + Pentwater) ---------- */
-  (function initHeroReel() {
-    const slides = Array.from(document.querySelectorAll(".hero__slide"));
-    const dots = Array.from(document.querySelectorAll(".hero__dot"));
-    const labelEl = document.getElementById("hero-project-name");
-    if (!slides.length) return;
-
-    let index = slides.findIndex(function (s) {
-      return s.classList.contains("is-active");
-    });
-    if (index < 0) index = 0;
-
-    const INTERVAL_MS = 4500;
-    const reduceMotion =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let timer = null;
-    let paused = false;
-
-    function setLabel(slide) {
-      if (!labelEl || !slide) return;
-      const next = slide.getAttribute("data-label") || "";
-      if (labelEl.textContent === next) return;
-      labelEl.classList.add("is-fading");
-      window.setTimeout(function () {
-        labelEl.textContent = next;
-        labelEl.classList.remove("is-fading");
-      }, 180);
-    }
-
-    function goTo(i) {
-      index = ((i % slides.length) + slides.length) % slides.length;
-      slides.forEach(function (slide, n) {
-        slide.classList.toggle("is-active", n === index);
-      });
-      dots.forEach(function (dot, n) {
-        const on = n === index;
-        dot.classList.toggle("is-active", on);
-        dot.setAttribute("aria-current", on ? "true" : "false");
-      });
-      setLabel(slides[index]);
-    }
-
-    function next() {
-      goTo(index + 1);
-    }
-
-    function start() {
-      if (reduceMotion || slides.length < 2) return;
-      stop();
-      timer = window.setInterval(function () {
-        if (!paused) next();
-      }, INTERVAL_MS);
-    }
-
-    function stop() {
-      if (timer) {
-        window.clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    dots.forEach(function (dot) {
-      dot.addEventListener("click", function () {
-        const i = parseInt(dot.getAttribute("data-hero-index"), 10);
-        if (!isNaN(i)) {
-          goTo(i);
-          start();
-        }
-      });
-    });
-
-    const hero = document.querySelector(".hero");
-    if (hero) {
-      hero.addEventListener("mouseenter", function () {
-        paused = true;
-      });
-      hero.addEventListener("mouseleave", function () {
-        paused = false;
-      });
-      hero.addEventListener("focusin", function () {
-        paused = true;
-      });
-      hero.addEventListener("focusout", function () {
-        paused = false;
-      });
-    }
-
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) stop();
-      else start();
-    });
-
-    goTo(index);
-    start();
-  })();
-
   /* ---------- Mobile navigation ---------- */
   const toggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".nav");
@@ -133,25 +36,19 @@
   /* ---------- Active nav link ---------- */
   (function () {
     const path = window.location.pathname.toLowerCase();
-    const isHome =
-      (path === "/" || path.endsWith("/index.html")) &&
-      !path.includes("/portfolio") &&
-      !path.includes("/deck-estimate");
+    const isHome = path === "/" || path.endsWith("/index.html") && !path.includes("/portfolio");
     const isPortfolio = path.includes("/portfolio");
-    const isDeckEstimate = path.includes("/deck-estimate");
     // Basename without .html, e.g. about, contact
     const page = (path.split("/").filter(Boolean).pop() || "").replace(/\.html$/, "");
 
     document.querySelectorAll(".nav__link").forEach(function (link) {
       const href = (link.getAttribute("href") || "").toLowerCase();
       let active = false;
-      if (isDeckEstimate && href.includes("deck-estimate")) {
+      if (isPortfolio && href.includes("portfolio")) {
         active = true;
-      } else if (isPortfolio && href.includes("portfolio")) {
+      } else if (isHome && (href === "index.html" || href === "../index.html" || href === "/" || href.endsWith("/index.html"))) {
         active = true;
-      } else if (isHome && (href === "index.html" || href === "../index.html" || href === "/" || href.endsWith("/index.html")) && !href.includes("deck-estimate") && !href.includes("portfolio")) {
-        active = true;
-      } else if (!isHome && !isPortfolio && !isDeckEstimate && page && href.includes(page)) {
+      } else if (!isHome && !isPortfolio && page && href.includes(page)) {
         active = true;
       }
       if (active) link.classList.add("is-active");
@@ -163,6 +60,19 @@
   const items = document.querySelectorAll(".portfolio-item[data-category]");
 
   if (filterBtns.length && items.length) {
+    const emptyMsg = document.getElementById("portfolio-empty");
+
+    function applyFilter(filter) {
+      let visible = 0;
+      items.forEach(function (item) {
+        const cat = item.getAttribute("data-category");
+        const show = filter === "all" || cat === filter;
+        item.classList.toggle("is-hidden", !show);
+        if (show) visible += 1;
+      });
+      if (emptyMsg) emptyMsg.hidden = visible > 0;
+    }
+
     filterBtns.forEach(function (btn) {
       btn.addEventListener("click", function () {
         const filter = btn.getAttribute("data-filter") || "all";
@@ -173,12 +83,7 @@
         });
         btn.classList.add("is-active");
         btn.setAttribute("aria-pressed", "true");
-
-        items.forEach(function (item) {
-          const cat = item.getAttribute("data-category");
-          const show = filter === "all" || cat === filter;
-          item.classList.toggle("is-hidden", !show);
-        });
+        applyFilter(filter);
       });
     });
   }
