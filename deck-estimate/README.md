@@ -20,6 +20,11 @@
 Labor and materials rates are final sell prices (materials already include 20% upcharge).  
 Edit only `RATES` in `calculator.js` if prices change.
 
+- **No materials:** board install + steps priced as TimberTech Advanced PVC Vintage; framing labor × 1.20.
+- **Advanced PVC colors (official TimberTech):** Harvest (3), Harvest+ (2), Landmark (4), Vintage (6).
+- **Board $:** Advanced PVC ~$180 / 20′ 1x6 grooved, prorated to $/sf (8% waste × 1.20) = $25.45/sf sell.
+- **Piers:** (tube + bags + #5 rebar) × 1.06 tax × 1.20 markup + 1 hr @ $80. User enters count including stairs.
+
 ## Files
 
 | File | Role |

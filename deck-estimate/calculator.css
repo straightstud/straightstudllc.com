@@ -949,6 +949,16 @@ body {
   color: #5d4037;
   margin: 0;
 }
+.live-incomplete--info {
+  background: #e8eef5;
+  border-color: #b7c6d6;
+}
+.live-incomplete--info .live-incomplete__title {
+  color: var(--primary, #0a2540);
+}
+.live-incomplete--info .live-incomplete__body {
+  color: #2c3e50;
+}
 .live-exclusions {
   background: #f5f7fa;
   border: 1px solid var(--border);

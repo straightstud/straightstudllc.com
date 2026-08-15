@@ -17,7 +17,7 @@
     gtag('config', 'G-XSX8FN3QLS');
   </script>
   <script src="../js/analytics.js"></script>
-  <link rel="stylesheet" href="calculator.css?v=20260811-footings">
+  <link rel="stylesheet" href="calculator.css?v=20260814-pvc-180">
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -148,11 +148,26 @@
               <strong>Included in framing:</strong> 16″ composite pads on compacted gravel with 6×6 posts.
               That is the standard full-build footing package — not an add-on.
               <strong>Sonotube / pier frost footings</strong> are optional if you want them or a city requires them.
+              Price per pier = tube + 80&nbsp;lb bags + #5 rebar, plus 6% sales tax on materials,
+              plus 20% markup on that taxed materials total, plus 1 hour labor at $80.
             </p>
-            <div class="form-group" style="margin-top:10px;max-width:280px">
-              <label for="pier-count">Optional pier / sonotube footings (count)</label>
+            <p class="choice-block__note" style="margin-top:8px"><strong>Pier size</strong> (4′ tube — Michigan frost depth)</p>
+            <label class="choice choice--inline">
+              <input type="radio" name="pier_size" value="12">
+              <span><strong>12″</strong> — 6 bags + 1 #5 stick</span>
+            </label>
+            <label class="choice choice--inline">
+              <input type="radio" name="pier_size" value="16" checked>
+              <span><strong>16″</strong> (typical) — 10 bags + 2 #5 sticks</span>
+            </label>
+            <label class="choice choice--inline">
+              <input type="radio" name="pier_size" value="24">
+              <span><strong>24″</strong> — 21 bags + 2 #5 sticks</span>
+            </label>
+            <div class="form-group" style="margin-top:12px;max-width:320px">
+              <label for="pier-count">Estimated number of piers (including stairs)</label>
               <input type="number" id="pier-count" min="0" max="40" step="1" value="0" inputmode="numeric">
-              <span class="hint">Leave 0 for standard pad system. Each pier is an upgrade (dig, tube, concrete, labor).</span>
+              <span class="hint">Leave 0 for the standard pad system. Count every deck post pier plus stair piers — we multiply by the marked-up price for the size you picked.</span>
             </div>
           </fieldset>
 
@@ -210,7 +225,8 @@
           <h2 id="mat-title">2. Materials</h2>
           <p class="panel-lead">
             Starts with a common West Michigan package (Trex Enhance + hybrid rail) so the total looks like a real project.
-            Change anything — or switch to labor-only if you only want a labor planning number.
+            Change anything — or leave all materials off. If materials are off, labor is priced as TimberTech Advanced PVC
+            and framing labor gets an extra 20% per sq&nbsp;ft.
           </p>
 
           <div class="form-group">
@@ -218,8 +234,8 @@
             <select id="decking-type">
               <option value="trex" selected>Trex (composite)</option>
               <option value="treated">Pressure-treated lumber</option>
-              <option value="timbertech">TimberTech (composite)</option>
-              <option value="">Labor only — pick decking later</option>
+              <option value="timbertech">TimberTech (composite &amp; Advanced PVC)</option>
+              <option value="">No materials — labor priced as Advanced PVC</option>
             </select>
           </div>
 
@@ -376,6 +392,8 @@
             <input type="hidden" name="materials_total" id="f-mat-total" value="">
             <input type="hidden" name="building_zoning_permits" id="f-permit" value="">
             <input type="hidden" name="pier_sonotube_count" id="f-pier-count" value="">
+            <input type="hidden" name="pier_sonotube_size" id="f-pier-size" value="">
+            <input type="hidden" name="pier_sonotube_each" id="f-pier-each" value="">
             <input type="hidden" name="pier_sonotube_upgrade" id="f-pier-total" value="">
             <input type="hidden" name="grand_total" id="f-grand" value="">
             <input type="hidden" name="competitor_compare_total" id="f-competitor-total" value="">
@@ -428,14 +446,14 @@
           <div class="live-incomplete" id="live-incomplete" hidden>
             <p class="live-incomplete__title">Incomplete package</p>
             <p class="live-incomplete__body" id="live-incomplete-text">
-              Pick decking to include board install labor and materials. Labor-only totals are not a full project price.
+              Pick decking to include board install labor and materials, or leave materials off to price labor as Advanced PVC.
             </p>
           </div>
 
           <div class="live-exclusions" id="live-exclusions">
             <p class="live-exclusions__title">Not included in this total</p>
             <ul class="live-exclusions__list">
-              <li>Sonotube / pier frost footings (optional upgrade — pad footings are already in framing)</li>
+              <li id="excl-piers">Sonotube / pier frost footings (optional upgrade — pad footings are already in framing)</li>
               <li>Electrical, lighting, or gas lines</li>
               <li>Skirting, privacy walls, pergolas, or roofs</li>
               <li>Unforeseen framing repairs (redeck) or poor soil / access</li>
@@ -521,6 +539,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator.js?v=20260811-footings" defer></script>
+  <script src="calculator.js?v=20260814-pvc-180" defer></script>
 </body>
 </html>

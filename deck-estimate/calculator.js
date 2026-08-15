@@ -32,15 +32,48 @@
     /*
      * Footings (new build):
      * - STANDARD (included in framing materials $/sf): 16" composite pads + gravel + 6x6 posts
-     * - OPTIONAL UPGRADE: sonotube / pier frost footings (extra $ each) when preferred or required
+     * - OPTIONAL UPGRADE: sonotube / pier frost footings — user enters count (incl. stairs)
+     *   and picks 12" / 16" / 24".
+     *
+     * Cost per pier (owner formula):
+     *   materials = tube + 80lb bags + #5 rebar   (materials only)
+     *   + 6% sales tax on materials
+     *   + 20% markup on (materials + tax)
+     *   + 1 hour labor @ $80
+     *   sell = (materials × 1.06 × 1.20) + 80
+     *
+     * Volume = π × (dia/2)² × 4' (48" tube; Kent County frost ~42").
+     * 80 lb Quikrete ≈ 0.60 cu ft. Bags always rounded up.
+     *   12" → 3.14 cu ft → 6 bags
+     *   16" → 5.59 cu ft → 10 bags
+     *   24" → 12.57 cu ft → 21 bags
+     * Sources: Menards Sonotube 12x4 $19.53 / 16x4 $24.99 (Aug 2026);
+     *   24x48 Sonotube $74.26 (EMI Supply); HD Quikrete 80lb ~$6.47;
+     *   #5 × 10' Grade 40 ~$12.98 HD-class (online HD hides local price).
      */
     pierFrostFooting: {
-      sellEach: 295, // dig + sonotube + concrete + labor (planning sell)
-      label: "Pier / sonotube frost footing upgrade",
+      label: "Pier / sonotube frost footing",
+      markup: 1.2,
+      tax: 1.06, // MI 6% on materials only
+      laborHours: 1,
+      laborRate: 80, // $80/hr × 1 hr extra labor
+      tubeHeightFt: 4,
+      bag80CuFt: 0.6,
+      bag80Cost: 6.47, // HD Quikrete 80 lb
+      rebar10Cost: 12.98, // #5 × 10' Grade 40
+      defaultSize: 16,
+      sizes: {
+        12: { tubeCost: 19.53, rebarSticks10: 1 },
+        16: { tubeCost: 24.99, rebarSticks10: 2 },
+        24: { tubeCost: 74.26, rebarSticks10: 2 },
+      },
     },
     labor: {
       // Base rates = median band (200–350 sf). Scaled by sizeLaborFactor(sqft).
       framingPerSqft: 10, // new build framing labor (base; × size × platform × shape)
+      // When customer leaves ALL materials off: extra 20% on framing labor $/sf
+      // (customer-supplied / TBD boards — priced as if Advanced PVC)
+      materialsOffFramingFactor: 1.2,
       // Platform count → framing labor only (stairs are separate $/step)
       // 1 → +0% | 2 → +25% | 3+ → +50%
       platformFactor: { 1: 1.0, 2: 1.25, 3: 1.5 },
@@ -156,6 +189,10 @@
           terrain: 4.0,
           legacy: 7.24,
           reserve: 6.5,
+          harvest_pvc: 9.0, // owner: Advanced PVC ~$180 / 20'
+          harvest_plus: 9.0,
+          landmark_pvc: 9.0,
+          vintage: 9.0,
         },
         // Matching riser anchors — keep HIGHER non-discounted rates
         riserAnchor: {
@@ -174,6 +211,10 @@
           terrain: 9.5,
           legacy: 13.5,
           reserve: 12.5,
+          harvest_pvc: 12.7, // Advanced PVC fascia scaled to $180/20' board
+          harvest_plus: 12.7,
+          landmark_pvc: 12.7,
+          vintage: 12.7,
         },
       },
       compositeHardware: {
@@ -296,6 +337,71 @@
                 { id: "american_walnut", name: "American Walnut", grain: ["#5c4033", "#4c3023", "#6c5043", "#3c2013"] },
                 { id: "boardwalk", name: "Boardwalk", grain: ["#c4a882", "#b49872", "#d4b892", "#a48862"] },
                 { id: "slate_gray", name: "Slate Gray", grain: ["#6a6e72", "#5a5e62", "#7a7e82", "#4a4e52"] },
+              ],
+            },
+            /*
+             * TimberTech Advanced PVC — official colors from timbertech.com
+             * collections page (Vintage, Landmark, Harvest+, Harvest).
+             * Owner board $: ~$180 / 20' 1x6 grooved (all Advanced PVC lines).
+             * Sell $/sf = (180 / (20 × 5.5/12)) × 1.08 waste × 1.20 markup = $25.45.
+             */
+            harvest_pvc: {
+              label: "TimberTech Advanced PVC — Harvest",
+              perSqft: 25.45,
+              boardCost: 180,
+              boardLengthFt: 20,
+              boardWidthIn: 5.5,
+              waste: 1.08,
+              markup: 1.2,
+              samples: [
+                { id: "pvc_slate_gray", name: "Slate Gray", grain: ["#6a6e72", "#5a5e62", "#7a7e82", "#4a4e52"] },
+                { id: "pvc_kona", name: "Kona", grain: ["#3a2820", "#2a1810", "#4a3830", "#1a0800"] },
+                { id: "pvc_brownstone", name: "Brownstone", grain: ["#8a5a38", "#7a4a28", "#9a6a48", "#6a3a18"] },
+              ],
+            },
+            harvest_plus: {
+              label: "TimberTech Advanced PVC — Harvest+",
+              perSqft: 25.45,
+              boardCost: 180,
+              boardLengthFt: 20,
+              boardWidthIn: 5.5,
+              waste: 1.08,
+              markup: 1.2,
+              samples: [
+                { id: "pvc_toasted_wheat", name: "Toasted Wheat", grain: ["#c4b080", "#b4a070", "#d4c090", "#a49060"] },
+                { id: "pvc_timber_gray", name: "Timber Gray", grain: ["#8a8680", "#7a7670", "#9a9690", "#6a6660"] },
+              ],
+            },
+            landmark_pvc: {
+              label: "TimberTech Advanced PVC — Landmark",
+              perSqft: 25.45,
+              boardCost: 180,
+              boardLengthFt: 20,
+              boardWidthIn: 5.5,
+              waste: 1.08,
+              markup: 1.2,
+              samples: [
+                { id: "pvc_french_white_oak", name: "French White Oak", grain: ["#d8c8b0", "#c8b8a0", "#e8d8c0", "#b8a890"] },
+                { id: "pvc_american_walnut", name: "American Walnut", grain: ["#5c4033", "#4c3023", "#6c5043", "#3c2013"] },
+                { id: "pvc_castle_gate", name: "Castle Gate", grain: ["#7a6a58", "#6a5a48", "#8a7a68", "#5a4a38"] },
+                { id: "pvc_boardwalk", name: "Boardwalk", grain: ["#c4a882", "#b49872", "#d4b892", "#a48862"] },
+              ],
+            },
+            vintage: {
+              label: "TimberTech Advanced PVC — Vintage",
+              perSqft: 25.45,
+              boardCost: 180,
+              boardLengthFt: 20,
+              boardWidthIn: 5.5,
+              waste: 1.08,
+              markup: 1.2,
+              samples: [
+                { id: "pvc_weathered_teak", name: "Weathered Teak", grain: ["#9a8e78", "#8a7e68", "#aa9e88", "#7a6e58"] },
+                { id: "pvc_cypress", name: "Cypress", grain: ["#c8b898", "#b8a888", "#d8c8a8", "#a89878"] },
+                { id: "pvc_coastline", name: "Coastline", grain: ["#b0b8b8", "#a0a8a8", "#c0c8c8", "#909898"] },
+                { id: "pvc_mahogany", name: "Mahogany", grain: ["#6b2e1e", "#5b1e0e", "#7b3e2e", "#4b0e00"] },
+                { id: "pvc_english_walnut", name: "English Walnut", grain: ["#6b4a32", "#5b3a22", "#7b5a42", "#4b2a12"] },
+                { id: "pvc_dark_hickory", name: "Dark Hickory", grain: ["#4a3020", "#3a2000", "#5a4030", "#2a1000"] },
               ],
             },
           },
@@ -466,6 +572,7 @@
     stairWidthFt: 4, // 3 | 4 | 5 | 6
     stairExtraFootings: 0, // long run / landing pads
     pierCount: 0, // optional sonotube/pier upgrades (new build only)
+    pierSize: 16, // 12 | 16 | 24 inch sonotube
     platforms: 1, // 1 | 2 | 3+
     deckShape: "rectangle", // rectangle | angled
     platformFactor: 1,
@@ -551,6 +658,81 @@
   /* ---------- Labor math (rates never rendered as unit prices) ---------- */
   function isCompositeDecking() {
     return state.deckingType === "trex" || state.deckingType === "timbertech";
+  }
+
+  /** Customer left all materials off — labor priced as Advanced PVC. */
+  function isMaterialsOff() {
+    return !state.deckingType;
+  }
+
+  /**
+   * Board install / step labor uses the premium (composite / Advanced PVC) rate
+   * when a composite/PVC line is picked OR when materials are left off.
+   */
+  function usesPremiumInstallLabor() {
+    return isCompositeDecking() || isMaterialsOff();
+  }
+
+  /**
+   * Prorate a real decking BOARD price to sell $/sf of deck.
+   * sell = (board$ / (lengthFt × widthIn/12)) × waste × markup
+   */
+  function prorateBoardToSellPerSqft(boardCost, lengthFt, widthIn, waste, markup) {
+    var faceSf = (Number(lengthFt) || 16) * ((Number(widthIn) || 5.5) / 12);
+    if (faceSf <= 0) return 0;
+    var costSf = (Number(boardCost) || 0) / faceSf;
+    return costSf * (waste != null ? waste : 1.08) * (markup != null ? markup : 1.2);
+  }
+
+  /**
+   * Bags of 80 lb concrete to fill a sonotube (always round up).
+   * V = π r² h  with r in feet.
+   */
+  function pierBags80(diameterIn, heightFt, bagCuFt) {
+    var rFt = (Number(diameterIn) || 16) / 24;
+    var h = Number(heightFt) || 4;
+    var bag = Number(bagCuFt) || 0.6;
+    var cuFt = Math.PI * rFt * rFt * h;
+    return Math.ceil(cuFt / bag);
+  }
+
+  /** True cost + 20% markup (+ tax) + set/pour labor for one pier of a given size. */
+  function computePierUnit(sizeIn) {
+    var cfg = RATES.pierFrostFooting || {};
+    var size = parseInt(sizeIn, 10);
+    if (size !== 12 && size !== 24) size = 16;
+    var spec = (cfg.sizes && cfg.sizes[size]) || {};
+    var heightFt = cfg.tubeHeightFt != null ? cfg.tubeHeightFt : 4;
+    var bagCuFt = cfg.bag80CuFt != null ? cfg.bag80CuFt : 0.6;
+    var bagCost = cfg.bag80Cost != null ? cfg.bag80Cost : 6.75;
+    var rebarCost = cfg.rebar10Cost != null ? cfg.rebar10Cost : 14.5;
+    var markup = cfg.markup != null ? cfg.markup : 1.2;
+    var tax = cfg.tax != null ? cfg.tax : 1.06;
+    var bags = pierBags80(size, heightFt, bagCuFt);
+    var sticks = spec.rebarSticks10 != null ? spec.rebarSticks10 : size === 12 ? 1 : 2;
+    var tubeCost = spec.tubeCost != null ? spec.tubeCost : 24.99;
+    var laborHours = cfg.laborHours != null ? cfg.laborHours : 1;
+    var laborRate = cfg.laborRate != null ? cfg.laborRate : 80;
+    var laborEach = laborHours * laborRate;
+    var concreteCost = bags * bagCost;
+    var rebarTotal = sticks * rebarCost;
+    var materialsOnly = tubeCost + concreteCost + rebarTotal;
+    var materialsCost = materialsOnly * tax; // materials + 6% sales tax
+    var materialsSell = materialsCost * markup; // 20% of materials including tax
+    var sellEach = materialsSell + laborEach; // + 1 hr @ $80
+    return {
+      size: size,
+      bags: bags,
+      rebarSticks: sticks,
+      tubeCost: tubeCost,
+      concreteCost: concreteCost,
+      rebarCost: rebarTotal,
+      materialsCost: materialsCost,
+      materialsSell: materialsSell,
+      laborEach: laborEach,
+      sellEach: sellEach,
+      markup: markup,
+    };
   }
 
   function isNewBuild() {
@@ -653,6 +835,10 @@
     } else if (type === "timbertech") {
       if (sub === "legacy") key = "legacy";
       else if (sub === "reserve") key = "reserve";
+      else if (sub === "harvest_pvc") key = "harvest_pvc";
+      else if (sub === "harvest_plus") key = "harvest_plus";
+      else if (sub === "landmark_pvc") key = "landmark_pvc";
+      else if (sub === "vintage" || sub === "advance_pvc") key = "vintage";
       else key = "terrain";
     }
 
@@ -678,6 +864,11 @@
       terrain: "TimberTech Terrain matching riser",
       legacy: "TimberTech Legacy matching riser",
       reserve: "TimberTech Reserve / AZEK matching riser",
+      harvest_pvc: "TimberTech Harvest matching riser",
+      harvest_plus: "TimberTech Harvest+ matching riser",
+      landmark_pvc: "TimberTech Landmark matching riser",
+      vintage: "TimberTech Vintage matching riser",
+      advance_pvc: "TimberTech Vintage matching riser",
     };
 
     return {
@@ -804,8 +995,14 @@
     if (isNewBuild()) {
       // Framing: size × platform × shape (customer-visible design choices)
       framing = sqft * RATES.labor.framingPerSqft * m.combined;
-      // Board install: size only (not platform/shape)
-      compositeInstall = isCompositeDecking()
+      // Materials off: extra 20% on framing labor $/sf (customer-supplied / TBD boards)
+      if (isMaterialsOff()) {
+        var offF = RATES.labor.materialsOffFramingFactor || 1.2;
+        framing = framing * offF;
+      }
+      // Board install: size only (not platform/shape).
+      // Materials-off is priced as Advanced PVC (premium composite/PVC rate).
+      compositeInstall = usesPremiumInstallLabor()
         ? sqft * RATES.labor.compositeInstallPerSqft * f
         : 0;
       treatedInstall =
@@ -821,9 +1018,9 @@
 
     // Rail LF + steps: fixed unit rates (not size/platform/shape scaled)
     var railing = lf * RATES.labor.railingPerLf;
-    // Steps: composite much more labor than PT; default PT rate until decking chosen
+    // Steps: composite/PVC much more labor than PT; materials-off uses PVC rate
     var stepRate = RATES.labor.perStepTreated || RATES.labor.perStep || 100;
-    if (isCompositeDecking()) {
+    if (usesPremiumInstallLabor()) {
       stepRate = RATES.labor.perStepComposite || 175;
     } else if (state.deckingType === "treated") {
       stepRate = RATES.labor.perStepTreated || 100;
@@ -875,7 +1072,9 @@
     var sqft = state.sqft || 0;
     if (sqft < 1) return { total: 0, perSf: 0, label: c.label || "" };
     var perSf = rates.laborOnly || 55;
-    if (state.wantMaterials && state.deckingType) {
+    if (isMaterialsOff()) {
+      perSf = rates.composite || 110;
+    } else if (state.wantMaterials && state.deckingType) {
       if (state.deckingType === "treated") perSf = rates.treated || 75;
       else if (isCompositeDecking()) perSf = rates.composite || 110;
     }
@@ -902,18 +1101,25 @@
   /**
    * Optional sonotube/pier frost footings (new build only).
    * Standard pad footings are already inside framing materials — this is upgrade only.
+   * Unit = true materials (tube + bags + #5 rebar) × tax × 1.20 + set/pour labor.
+   * Total = estimated pier count (including stairs) × unit sell.
    */
   function calcPierUpgrade() {
     var cfg = RATES.pierFrostFooting || {};
-    var each = cfg.sellEach != null ? cfg.sellEach : 295;
-    var label = cfg.label || "Pier / sonotube frost footing upgrade";
+    var label = cfg.label || "Pier / sonotube frost footing";
     var n = isNewBuild() ? Math.max(0, Math.round(Number(state.pierCount) || 0)) : 0;
-    var total = n * each;
+    var unit = computePierUnit(state.pierSize || cfg.defaultSize || 16);
+    var total = n * unit.sellEach;
     state.pierUpgrade = {
       count: n,
-      each: each,
+      size: unit.size,
+      each: unit.sellEach,
       total: total,
       label: label,
+      bags: unit.bags,
+      rebarSticks: unit.rebarSticks,
+      materialsSell: unit.materialsSell,
+      laborEach: unit.laborEach,
     };
     return state.pierUpgrade;
   }
@@ -924,11 +1130,10 @@
     var F = calcPermitFee();
     var pier = calcPierUpgrade();
     var laborTotal = L.total || 0;
-    // Stair structure mats always count when steps > 0; other mats when decking chosen
+    // All materials off: only optional pier package stays (customer supplies boards)
     var matTotal = M.total || 0;
     if (!state.wantMaterials) {
-      // Still include optional pier upgrade + stairs when labor-only
-      matTotal = (M.stairs || 0) + (M.pierUpgrade || 0);
+      matTotal = M.pierUpgrade || 0;
     }
     var permitTotal = F.permit || 0;
     var grand = laborTotal + matTotal + permitTotal;
@@ -958,24 +1163,41 @@
           : "Enter square footage to see pricing";
     }
 
-    // Warn when labor-only / no decking — incomplete package for ad traffic
+    // Warn when a brand is picked but no line/color yet.
+    // Materials-off is a complete labor package (priced as Advanced PVC).
     var incBox = document.getElementById("live-incomplete");
+    var incTitle = incBox ? incBox.querySelector(".live-incomplete__title") : null;
     var incText = document.getElementById("live-incomplete-text");
     var packageComplete =
-      !!state.deckingType &&
-      (state.deckingType === "treated" ||
-        !!(state.deckingSub && state.deckingSub.length));
+      isMaterialsOff() ||
+      state.deckingType === "treated" ||
+      !!(state.deckingSub && state.deckingSub.length);
     if (incBox) {
-      if (state.sqft > 0 && !packageComplete) {
+      if (state.sqft > 0 && isMaterialsOff()) {
         incBox.hidden = false;
+        incBox.classList.add("live-incomplete--info");
+        if (incTitle) incTitle.textContent = "Materials left off";
         if (incText) {
-          incText.textContent = state.deckingType
-            ? "Pick a decking line/color sample so board install and materials are in the total."
-            : "Labor-only mode: board install and decking materials are not included. Pick decking for a full project planning total.";
+          incText.textContent =
+            "No materials in this total. Board install and steps are priced as TimberTech Advanced PVC, and framing labor includes an extra 20% per sq ft.";
+        }
+      } else if (state.sqft > 0 && !packageComplete) {
+        incBox.hidden = false;
+        incBox.classList.remove("live-incomplete--info");
+        if (incTitle) incTitle.textContent = "Incomplete package";
+        if (incText) {
+          incText.textContent =
+            "Pick a decking line/color sample so board install and materials are in the total.";
         }
       } else {
         incBox.hidden = true;
+        incBox.classList.remove("live-incomplete--info");
       }
+    }
+
+    var pierExcl = document.getElementById("excl-piers");
+    if (pierExcl) {
+      pierExcl.hidden = !!(pier && pier.count > 0);
     }
 
     var savBox = document.getElementById("live-savings");
@@ -1011,7 +1233,9 @@
     } else if (isNewBuild()) {
       if (L.framing > 0) {
         html +=
-          '<div class="totals__row"><span>Framing labor</span><span>' +
+          '<div class="totals__row"><span>Framing labor' +
+          (isMaterialsOff() ? " <em>(+20% no-materials)</em>" : "") +
+          "</span><span>" +
           money(L.framing) +
           "</span></div>";
       }
@@ -1030,7 +1254,11 @@
       }
       if (L.compositeInstall > 0) {
         html +=
-          '<div class="totals__row"><span>Composite install</span><span>' +
+          '<div class="totals__row"><span>' +
+          (isMaterialsOff()
+            ? "Advanced PVC install (materials not included)"
+            : "Composite / PVC install") +
+          "</span><span>" +
           money(L.compositeInstall) +
           "</span></div>";
       } else if (L.treatedInstall > 0) {
@@ -1038,9 +1266,6 @@
           '<div class="totals__row"><span>Treated face-screw install</span><span>' +
           money(L.treatedInstall) +
           "</span></div>";
-      } else if (!state.wantMaterials) {
-        html +=
-          '<div class="totals__row totals__row--muted"><span>Board install</span><span>Pick decking to include</span></div>';
       }
     } else {
       html +=
@@ -1059,8 +1284,10 @@
     }
     if (L.steps > 0) {
       var stepNote = "";
-      if (isCompositeDecking()) {
-        stepNote = " (composite rate)";
+      if (isMaterialsOff()) {
+        stepNote = " (Advanced PVC rate)";
+      } else if (isCompositeDecking()) {
+        stepNote = " (composite / PVC rate)";
       } else if (state.deckingType === "treated") {
         stepNote = " (treated rate)";
       } else {
@@ -1099,7 +1326,7 @@
           "</span></div>";
       }
     }
-    if (M.stairs > 0) {
+    if (state.wantMaterials && M.stairs > 0) {
       var sd = state.stairMaterialsDetail || {};
       html +=
         '<div class="totals__row"><span>Stair structure mats (' +
@@ -1129,14 +1356,18 @@
     if (pier && pier.total > 0) {
       html +=
         '<div class="totals__row"><span>' +
-        escapeHtml(pier.label || "Pier / sonotube upgrade") +
-        " × " +
+        escapeHtml(pier.label || "Pier / sonotube") +
+        " — " +
+        pier.size +
+        "″ × " +
         pier.count +
         "</span><span>" +
         money(pier.total) +
         "</span></div>";
       html +=
-        '<div class="totals__row totals__row--design-note"><span>Standard pad footings stay in framing; this is pier upgrade only</span><span></span></div>';
+        '<div class="totals__row totals__row--design-note"><span>' +
+        pier.bags +
+        " bags 80 lb + #5 rebar; materials + 6% tax + 20% + 1 hr @ $80</span><span></span></div>";
     }
     if (permitTotal > 0) {
       html +=
@@ -1280,7 +1511,7 @@
       samplePanelTitle.textContent =
         type === "trex"
           ? "Trex sample colors — pick a block"
-          : "TimberTech sample colors — pick a block";
+          : "TimberTech / Advanced PVC sample colors — pick a block";
       renderSampleGallery(type);
     } else if (type === "treated") {
       samplePanel.hidden = true;
@@ -1417,7 +1648,17 @@
           label = line.label + " — " + state.deckingColorName;
         }
         state.deckingLabel = label;
-        return { perSqft: line.perSqft, label: label };
+        var per = line.perSqft || 0;
+        if (line.boardCost && line.boardLengthFt) {
+          per = prorateBoardToSellPerSqft(
+            line.boardCost,
+            line.boardLengthFt,
+            line.boardWidthIn,
+            line.waste,
+            line.markup
+          );
+        }
+        return { perSqft: per, label: label };
       }
     }
     state.deckingLabel = RATES.materials.decking[type]
@@ -1669,9 +1910,7 @@
       total: materialsTotal,
     };
     var permitFee = calcPermitFee().permit || 0;
-    var matForGrand = state.wantMaterials
-      ? materialsTotal
-      : stairCost + pierCost;
+    var matForGrand = state.wantMaterials ? materialsTotal : pierCost;
     state.grandTotal = state.labor.total + matForGrand + permitFee;
     renderLivePanel();
   }
@@ -1717,7 +1956,11 @@
       "Pier/sonotube footing upgrades: " +
         (state.pierCount || 0) +
         " × " +
-        money((state.pierUpgrade && state.pierUpgrade.each) || 295) +
+        (state.pierUpgrade && state.pierUpgrade.size
+          ? state.pierUpgrade.size + "″ "
+          : "") +
+        "@ " +
+        money((state.pierUpgrade && state.pierUpgrade.each) || 0) +
         " = " +
         money((state.materials && state.materials.pierUpgrade) || 0),
       "",
@@ -1780,7 +2023,11 @@
         "Grand total: " + money(state.grandTotal)
       );
     } else {
-      lines.push("", "Materials: not included in this estimate");
+      lines.push(
+        "",
+        "Materials: not included — labor priced as TimberTech Advanced PVC",
+        "Framing labor includes extra 20% per sq ft (no-materials premium)"
+      );
     }
     lines.push("", "Source: deck-estimate");
     return lines.join("\n");
@@ -1908,8 +2155,7 @@
     }
     var matPart = state.wantMaterials
       ? state.materials.total || 0
-      : ((state.materials && state.materials.stairs) || 0) +
-        ((state.materials && state.materials.pierUpgrade) || 0);
+      : (state.materials && state.materials.pierUpgrade) || 0;
     document.getElementById("f-mat-total").value = money(matPart);
     var permitFee = calcPermitFee().permit || 0;
     var fPermit = document.getElementById("f-permit");
@@ -1917,8 +2163,12 @@
     var pier = calcPierUpgrade();
     var fPierN = document.getElementById("f-pier-count");
     var fPierT = document.getElementById("f-pier-total");
+    var fPierS = document.getElementById("f-pier-size");
+    var fPierE = document.getElementById("f-pier-each");
     if (fPierN) fPierN.value = String(pier.count || 0);
     if (fPierT) fPierT.value = money(pier.total || 0);
+    if (fPierS) fPierS.value = pier.size ? pier.size + " in" : "";
+    if (fPierE) fPierE.value = money(pier.each || 0);
     // Pier upgrade is inside materials.total when full materials; added with stairs when labor-only
     var total = state.labor.total + matPart + permitFee;
     state.grandTotal = total;
@@ -1974,6 +2224,9 @@
     state.pierCount = Math.round(
       num(document.getElementById("pier-count"), 0)
     );
+    var pierSizeEl = document.querySelector('input[name="pier_size"]:checked');
+    var pierSizeVal = pierSizeEl ? parseInt(pierSizeEl.value, 10) : 16;
+    state.pierSize = pierSizeVal === 12 || pierSizeVal === 24 ? pierSizeVal : 16;
 
     var dtype = deckingTypeEl ? deckingTypeEl.value : "";
     state.deckingType = dtype || "";
@@ -2021,6 +2274,9 @@
       el.addEventListener("change", liveRecalc);
     });
     document.querySelectorAll('input[name="stair_extra_footings"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="pier_size"]').forEach(function (el) {
       el.addEventListener("change", liveRecalc);
     });
     if (deckingTypeEl) {
