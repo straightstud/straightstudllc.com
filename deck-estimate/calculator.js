@@ -662,7 +662,6 @@
     railingColorName: "",
     railingLabel: "No railing",
     railingVariant: "", // cable: wood|aluminum ; glass: spigot|enclosed
-    railingLfTouched: false,
     materials: {
       framing: 0,
       decking: 0,
@@ -1965,7 +1964,6 @@
     if (railingColorEl) railingColorEl.value = "";
     readRailingVariantFromDom();
     updateRailingSubUi();
-    maybeFillRailingLf();
     liveRecalc();
   }
 
@@ -2075,30 +2073,6 @@
     var s = String(label || "");
     var cut = s.indexOf(" — ");
     return cut > 0 ? s.slice(0, cut) : s;
-  }
-
-  function suggestedRailingLf(sqft) {
-    if (!(sqft > 0)) return 0;
-    return Math.max(8, Math.round(4 * Math.sqrt(sqft)));
-  }
-
-  function maybeFillRailingLf() {
-    var lfEl = document.getElementById("railing-lf");
-    if (!lfEl) return;
-    if (state.railingLfTouched) return;
-    if (!keyIsRailing(state.railingType)) return;
-    if (state.railingLf > 0) return;
-    var suggested = suggestedRailingLf(state.sqft);
-    if (suggested <= 0) return;
-    lfEl.value = String(suggested);
-    state.railingLf = suggested;
-    var hint = document.getElementById("railing-lf-hint");
-    if (hint) {
-      hint.textContent =
-        "Filled " +
-        suggested +
-        " LF from a square deck that size. Edit to your real perimeter + stair rail.";
-    }
   }
 
   function syncRailingLfHighlight() {
@@ -2487,12 +2461,6 @@
     document.querySelectorAll('input[name="glass_system"]').forEach(function (el) {
       el.addEventListener("change", liveRecalc);
     });
-    var lfEl = document.getElementById("railing-lf");
-    if (lfEl) {
-      lfEl.addEventListener("input", function () {
-        state.railingLfTouched = true;
-      });
-    }
   }
 
   /**

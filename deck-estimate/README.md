@@ -20,7 +20,7 @@
 Labor and materials rates are final sell prices (materials already include 20% upcharge).  
 Edit only `RATES` in `calculator.js` if prices change.
 
-- **Railing:** dropdown (none / treated / composite / aluminum / cable / glass). Cable asks wood vs aluminum posts. Glass asks spigots vs enclosed frame. Labor is per system. Selecting a system with 0 LF auto-fills a square-deck perimeter from sq ft.
+- **Railing:** dropdown (none / treated / composite / aluminum / cable / glass). Cable asks wood vs aluminum posts. Glass asks spigots vs enclosed frame. Labor is per system. Linear feet starts at 0 and stays 0 until the user types it.
 - **Alum posts:** floor $100 each (Westbury 2x2 kit $103, Trex Select from $119). Cable alum posts Feeney $243–$281. Glass spigot HD kit ~$166/LF materials.
 - **No materials:** board install + steps priced as TimberTech Advanced PVC Vintage; framing labor × 1.20. Railing materials still add if a railing type is selected.
 - **Advanced PVC colors (official TimberTech):** Harvest (3), Harvest+ (2), Landmark (4), Vintage (6).
