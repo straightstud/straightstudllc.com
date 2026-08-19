@@ -87,8 +87,8 @@
       // Redeck path
       redeckPerSqft: 18, // redeck labor (new surface on existing structure)
       demoDisposePerSqft: 9, // demo & dispose old decking
-      // Same install labor for every rail type (wood / hybrid / aluminum / composite)
-      railingPerLf: 35, // not size-scaled; no type premium
+      // Fallback rail labor if a type omits laborPerLf
+      railingPerLf: 35,
       // Steps — separate from platform % (composite is much slower: blocking, risers, plugs)
       perStepTreated: 100,
       perStepComposite: 175,
@@ -407,25 +407,21 @@
           },
         },
       },
-      // Railing: sell $/LF (cost × 1.20) — posts + rail; include stair LF
+      // Railing: sell $/LF (cost × 1.20) — posts + rail; include stair LF.
+      // Labor is per type (not the old flat $35 for every system).
       railing: {
         none: {
-          label: "No railing materials",
+          label: "No railing",
           perLf: 0,
-          samples: [
-            {
-              id: "none",
-              name: "Skip / labor only",
-              style: "none",
-              rail: "#c5cdd6",
-              baluster: "#c5cdd6",
-            },
-          ],
+          laborPerLf: 0,
+          samples: [],
         },
-        // Wood: cost × 1.20 (+ small buffer)
+        // Wood: 4x4 @ 6' OC + 2x4 top/bottom + wood spindles @ 4.5" + hw
+        // cost ~$17.25 → sell $20.70
         treated_wood: {
-          label: "Wood rail (4x4 posts + wood spindles)",
-          perLf: 20.7, // cost 17 × 1.20
+          label: "Treated rail / spindles / posts",
+          perLf: 20.7,
+          laborPerLf: 35,
           samples: [
             {
               id: "pt_green",
@@ -450,73 +446,11 @@
             },
           ],
         },
-        // Hybrid materials: cost × 1.20 (rail labor is flat $35/LF all types)
-        hybrid: {
-          label: "Hybrid (wood posts/rails + alum spindles)",
-          perLf: 36.3, // cost 30 × 1.20
-          samples: [
-            {
-              id: "hybrid_black",
-              name: "Wood top + black metal",
-              style: "hybrid",
-              rail: "#8b6f47",
-              baluster: "#1a1a1a",
-            },
-            {
-              id: "hybrid_bronze",
-              name: "Wood top + bronze metal",
-              style: "hybrid",
-              rail: "#8b6f47",
-              baluster: "#6b5428",
-            },
-            {
-              id: "hybrid_silver",
-              name: "Wood top + silver metal",
-              style: "hybrid",
-              rail: "#a89070",
-              baluster: "#9aa0a6",
-            },
-          ],
-        },
-        // Aluminum: cost ~$58 × 1.20 → $69.60; kept prior buffer sell
-        aluminum: {
-          label: "Aluminum railing",
-          perLf: 75,
-          samples: [
-            {
-              id: "alum_black",
-              name: "Black",
-              style: "metal",
-              rail: "#1c1c1c",
-              baluster: "#2a2a2a",
-            },
-            {
-              id: "alum_bronze",
-              name: "Bronze",
-              style: "metal",
-              rail: "#5c4a28",
-              baluster: "#6b5428",
-            },
-            {
-              id: "alum_white",
-              name: "White",
-              style: "metal",
-              rail: "#f0f0f0",
-              baluster: "#e8e8e8",
-            },
-            {
-              id: "alum_silver",
-              name: "Silver / clear",
-              style: "metal",
-              rail: "#b0b6bc",
-              baluster: "#9aa0a6",
-            },
-          ],
-        },
-        // Composite: cost × 1.20 + buffer (kits + sleeves + caps + 4x4 core)
+        // Kits + sleeves + caps + 4x4 core. cost ~$55 → sell $66
         composite: {
-          label: "Composite rail (kits + sleeves + caps)",
+          label: "Composite rail / spindles / sleeves",
           perLf: 66,
+          laborPerLf: 40,
           samples: [
             {
               id: "comp_black",
@@ -552,6 +486,135 @@
               style: "composite",
               rail: "#5c4030",
               baluster: "#4a3224",
+            },
+          ],
+        },
+        // Full alum panel system.
+        // Posts: Westbury 2x2 kit $103.42 (D&RS), Trex Select post kit from $118.99
+        //   (DecksDirect), Westbury 3-pc from $103.99. Floor $100/post @ 6' OC = $16.67/LF.
+        // Panels: HD Tuscany 6' $278.99 ($46.50/LF), Trex Select 6' ~$260 ($43.33),
+        //   Westbury C10 4' kit $212.57 ($53.14/LF). Use $48/LF mid.
+        // + brackets/hw $5. COST $69.67 → sell $83.60. Lock $86.
+        aluminum: {
+          label: "Aluminum rail / posts",
+          perLf: 86,
+          laborPerLf: 45,
+          samples: [
+            {
+              id: "alum_black",
+              name: "Black",
+              style: "metal",
+              rail: "#1c1c1c",
+              baluster: "#2a2a2a",
+            },
+            {
+              id: "alum_bronze",
+              name: "Bronze",
+              style: "metal",
+              rail: "#5c4a28",
+              baluster: "#6b5428",
+            },
+            {
+              id: "alum_white",
+              name: "White",
+              style: "metal",
+              rail: "#f0f0f0",
+              baluster: "#e8e8e8",
+            },
+            {
+              id: "alum_silver",
+              name: "Silver / clear",
+              style: "metal",
+              rail: "#b0b6bc",
+              baluster: "#9aa0a6",
+            },
+          ],
+        },
+        // Cable: 11 stainless lines. Posts closer than baluster rail.
+        // Wood posts: 4x4 PT @ 4–6' OC (~$4/LF) + 2x6 top + Feeney 1/8" kits
+        //   (HD 15' $50.60, CableRailDirect 15' $48.24, 10' $40.68) ≈ $42/LF cables + hw $5.
+        //   COST ~$65 → sell $78.
+        // Alum posts: Feeney DesignRail newel $243–$281 (DecksDirect / D&RS $252–$268).
+        //   Lock $250/post. @ 6' OC + end-post share ≈ $42/LF posts.
+        //   DesignRail 6' rail kit $198–$283 ≈ $40/LF. Cables ~$36–$45/LF.
+        //   24' example: 5 posts × $250 + 4 rail kits × $240 + 11 × $65 cable = $122/LF.
+        //   COST $130 → sell $156.
+        cable: {
+          label: "Cable rail system",
+          perLf: 78,
+          laborPerLf: 55,
+          variants: {
+            wood: {
+              id: "wood",
+              name: "Wood posts",
+              perLf: 78,
+              laborPerLf: 55,
+            },
+            aluminum: {
+              id: "aluminum",
+              name: "Aluminum posts",
+              perLf: 156,
+              laborPerLf: 58,
+            },
+          },
+          samples: [
+            {
+              id: "cable_black",
+              name: "Black cable",
+              style: "cable",
+              rail: "#1c1c1c",
+              baluster: "#9aa0a6",
+            },
+            {
+              id: "cable_stainless",
+              name: "Stainless cable",
+              style: "cable",
+              rail: "#5c6166",
+              baluster: "#c5cdd6",
+            },
+          ],
+        },
+        // Glass:
+        // Spigot: HD ClearView 48" panel + 2 SS spigots $665.83 = $166.50/LF.
+        //   42" kit $665.83. Peak CA spigot CAD $122 (~$90 USD).
+        //   Pro Deck 12mm glass only 36" $196.60 / 3' = $65.50/LF glass.
+        //   + top cap $18 + fasteners $4. COST $188.50 → sell $226.
+        //   Installed market (HomeGuide / Berwyn 2026 / Viewrail): $150–$600/LF.
+        // Enclosed: alum posts $100–$137 (Westbury 2x2 $103 / 3x3 $138) @ 6' OC
+        //   + framed glass kit ~$280–$360/6' (Fortress Pure View list ~$341).
+        //   COST ~$90 → sell $108.
+        glass: {
+          label: "Glass rail",
+          perLf: 108,
+          laborPerLf: 70,
+          variants: {
+            spigot: {
+              id: "spigot",
+              name: "Spigots — exposed glass edges",
+              perLf: 226,
+              laborPerLf: 90,
+            },
+            enclosed: {
+              id: "enclosed",
+              name: "Enclosed — framed glass infill",
+              perLf: 108,
+              laborPerLf: 70,
+            },
+          },
+          samples: [
+            {
+              id: "glass_clear",
+              name: "Clear glass",
+              style: "glass",
+              rail: "#2a2a2a",
+              baluster: "#b6d4e8",
+            },
+            {
+              id: "glass_bronze",
+              name: "Bronze frame / clear glass",
+              style: "glass",
+              rail: "#6b5428",
+              baluster: "#b6d4e8",
             },
           ],
         },
@@ -594,10 +657,12 @@
     deckingColor: "",
     deckingColorName: "",
     deckingLabel: "",
-    railingType: "hybrid",
-    railingColor: "hybrid_black",
-    railingColorName: "Wood top + black metal",
-    railingLabel: "Hybrid (wood posts/rails + alum spindles)",
+    railingType: "none",
+    railingColor: "",
+    railingColorName: "",
+    railingLabel: "No railing",
+    railingVariant: "", // cable: wood|aluminum ; glass: spigot|enclosed
+    railingLfTouched: false,
     materials: {
       framing: 0,
       decking: 0,
@@ -1016,8 +1081,16 @@
       framing = 0;
     }
 
-    // Rail LF + steps: fixed unit rates (not size/platform/shape scaled)
-    var railing = lf * RATES.labor.railingPerLf;
+    // Rail LF: per-type labor. "No railing" is $0 even if LF is filled.
+    var railSpec = resolveRailing();
+    var railing = 0;
+    if (keyIsRailing(state.railingType) && lf > 0) {
+      var laborLf =
+        railSpec.laborPerLf != null
+          ? railSpec.laborPerLf
+          : RATES.labor.railingPerLf;
+      railing = lf * laborLf;
+    }
     // Steps: composite/PVC much more labor than PT; materials-off uses PVC rate
     var stepRate = RATES.labor.perStepTreated || RATES.labor.perStep || 100;
     if (usesPremiumInstallLabor()) {
@@ -1130,10 +1203,10 @@
     var F = calcPermitFee();
     var pier = calcPierUpgrade();
     var laborTotal = L.total || 0;
-    // All materials off: only optional pier package stays (customer supplies boards)
+    // Labor-only decking: still include railing materials + optional piers
     var matTotal = M.total || 0;
     if (!state.wantMaterials) {
-      matTotal = M.pierUpgrade || 0;
+      matTotal = (M.railing || 0) + (M.pierUpgrade || 0);
     }
     var permitTotal = F.permit || 0;
     var grand = laborTotal + matTotal + permitTotal;
@@ -1276,9 +1349,14 @@
         money(L.demoDispose) +
         "</span></div>";
     }
-    if (L.railing > 0) {
+    if (keyIsRailing(state.railingType) && state.railingLf <= 0) {
       html +=
-        '<div class="totals__row"><span>Railing labor</span><span>' +
+        '<div class="totals__row totals__row--warn"><span>Railing selected — enter linear feet to add it</span><span>$0</span></div>';
+    } else if (L.railing > 0) {
+      html +=
+        '<div class="totals__row"><span>Railing labor' +
+        (state.railingLabel ? " — " + escapeHtml(shortRailLabel(state.railingLabel)) : "") +
+        "</span><span>" +
         money(L.railing) +
         "</span></div>";
     }
@@ -1300,7 +1378,7 @@
         money(L.steps) +
         "</span></div>";
     }
-    if (state.wantMaterials && matTotal > 0) {
+    if ((state.wantMaterials && matTotal > 0) || (M.railing > 0 && !state.wantMaterials)) {
       if (M.framing > 0) {
         html +=
           '<div class="totals__row"><span>Framing materials</span><span>' +
@@ -1321,7 +1399,9 @@
       }
       if (M.railing > 0) {
         html +=
-          '<div class="totals__row"><span>Railing materials</span><span>' +
+          '<div class="totals__row"><span>Railing materials' +
+          (state.railingLabel ? " — " + escapeHtml(shortRailLabel(state.railingLabel)) : "") +
+          "</span><span>" +
           money(M.railing) +
           "</span></div>";
       }
@@ -1513,6 +1593,9 @@
           ? "Trex sample colors — pick a block"
           : "TimberTech / Advanced PVC sample colors — pick a block";
       renderSampleGallery(type);
+      var firstCard =
+        sampleGallery && sampleGallery.querySelector(".sample-card");
+      if (firstCard) selectSample(firstCard);
     } else if (type === "treated") {
       samplePanel.hidden = true;
       treatedSample.hidden = false;
@@ -1680,6 +1763,50 @@
       );
     }
 
+    if (style === "cable") {
+      var cables = "";
+      for (var c = 0; c < 8; c++) {
+        cables +=
+          '<span class="rail-preview__cable" style="color:' +
+          bal +
+          '"></span>';
+      }
+      return (
+        '<div class="rail-preview rail-preview--cable" aria-hidden="true">' +
+        '<span class="rail-preview__top" style="background:' +
+        rail +
+        '"></span>' +
+        '<span class="rail-preview__cables">' +
+        cables +
+        "</span>" +
+        '<span class="rail-preview__posts">' +
+        '<span class="rail-preview__baluster" style="background:' +
+        rail +
+        '"></span>' +
+        '<span class="rail-preview__baluster" style="background:' +
+        rail +
+        '"></span>' +
+        "</span>" +
+        "</div>"
+      );
+    }
+
+    if (style === "glass" || style === "spigot") {
+      return (
+        '<div class="rail-preview rail-preview--glass rail-preview--' +
+        escapeHtml(style) +
+        '" aria-hidden="true">' +
+        '<span class="rail-preview__top" style="background:' +
+        rail +
+        '"></span>' +
+        '<span class="rail-preview__glass"></span>' +
+        '<span class="rail-preview__bottom" style="background:' +
+        rail +
+        '"></span>' +
+        "</div>"
+      );
+    }
+
     // Mini elevation: top rail + vertical balusters + bottom rail
     var posts = "";
     for (var i = 0; i < 7; i++) {
@@ -1705,98 +1832,104 @@
     );
   }
 
-  function renderRailingGallery() {
+  function readRailingVariantFromDom() {
+    if (state.railingType === "cable") {
+      var cp = document.querySelector('input[name="cable_post"]:checked');
+      state.railingVariant = cp && cp.value === "aluminum" ? "aluminum" : "wood";
+    } else if (state.railingType === "glass") {
+      var gs = document.querySelector('input[name="glass_system"]:checked');
+      state.railingVariant = gs && gs.value === "spigot" ? "spigot" : "enclosed";
+    } else {
+      state.railingVariant = "";
+    }
+  }
+
+  function updateRailingSubUi() {
+    var key = state.railingType || "none";
+    var cableBox = document.getElementById("cable-post-options");
+    var glassBox = document.getElementById("glass-system-options");
+    var samplePanel = document.getElementById("railing-sample-panel");
+    if (cableBox) cableBox.hidden = key !== "cable";
+    if (glassBox) glassBox.hidden = key !== "glass";
+    var type = RATES.materials.railing[key];
+    var hasSamples = !!(type && type.samples && type.samples.length);
+    if (samplePanel) samplePanel.hidden = !hasSamples;
+    if (hasSamples) {
+      renderRailingGallery(key);
+    } else if (railingSampleGallery) {
+      railingSampleGallery.innerHTML = "";
+      if (railingSampleSelected) railingSampleSelected.hidden = true;
+    }
+  }
+
+  function renderRailingGallery(typeKey) {
     if (!railingSampleGallery) return;
-    var types = RATES.materials.railing;
+    var type = RATES.materials.railing[typeKey];
+    if (!type) return;
     var frag = document.createDocumentFragment();
-    var order = ["none", "treated_wood", "hybrid", "aluminum", "composite"];
 
-    order.forEach(function (typeKey) {
-      var type = types[typeKey];
-      if (!type) return;
+    var grid = document.createElement("div");
+    grid.className = "sample-gallery";
+    grid.setAttribute("role", "group");
+    grid.setAttribute("aria-label", type.label);
 
-      var group = document.createElement("div");
-      group.className = "sample-line-group";
+    (type.samples || []).forEach(function (sample, idx) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "sample-card sample-card--railing";
+      btn.setAttribute("role", "option");
+      btn.setAttribute("aria-selected", "false");
+      btn.setAttribute("aria-label", type.label + " — " + sample.name);
+      btn.dataset.type = typeKey;
+      btn.dataset.color = sample.id;
+      btn.dataset.colorName = sample.name;
+      btn.dataset.typeLabel = type.label;
 
-      var title = document.createElement("div");
-      title.className = "sample-line-group__title";
-      title.textContent = type.label;
-      group.appendChild(title);
+      var swatch = document.createElement("div");
+      swatch.className = "sample-card__swatch sample-card__swatch--railing";
+      swatch.innerHTML =
+        renderRailingPreview(sample) +
+        '<span class="sample-card__check" aria-hidden="true">✓</span>';
 
-      var grid = document.createElement("div");
-      grid.className = "sample-gallery";
-      grid.setAttribute("role", "group");
-      grid.setAttribute("aria-label", type.label);
+      var meta = document.createElement("div");
+      meta.className = "sample-card__meta";
+      meta.innerHTML =
+        '<span class="sample-card__line">' +
+        escapeHtml(type.label) +
+        "</span>" +
+        '<span class="sample-card__name">' +
+        escapeHtml(sample.name) +
+        "</span>";
 
-      (type.samples || []).forEach(function (sample) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "sample-card sample-card--railing";
-        btn.setAttribute("role", "option");
-        btn.setAttribute("aria-selected", "false");
-        btn.setAttribute(
-          "aria-label",
-          type.label + " — " + sample.name
-        );
-        btn.dataset.type = typeKey;
-        btn.dataset.color = sample.id;
-        btn.dataset.colorName = sample.name;
-        btn.dataset.typeLabel = type.label;
-
-        var swatch = document.createElement("div");
-        swatch.className = "sample-card__swatch sample-card__swatch--railing";
-        swatch.innerHTML =
-          renderRailingPreview(sample) +
-          '<span class="sample-card__check" aria-hidden="true">✓</span>';
-
-        var meta = document.createElement("div");
-        meta.className = "sample-card__meta";
-        var shortType = type.label
-          .replace(/ railing.*/i, "")
-          .replace(/^No railing materials$/, "None");
-        meta.innerHTML =
-          '<span class="sample-card__line">' +
-          escapeHtml(shortType) +
-          "</span>" +
-          '<span class="sample-card__name">' +
-          escapeHtml(sample.name) +
-          "</span>";
-
-        btn.appendChild(swatch);
-        btn.appendChild(meta);
-
-        btn.addEventListener("click", function () {
-          selectRailingSample(btn);
-        });
-
-        // Default selection: hybrid black (realistic package for ads)
-        if (typeKey === "hybrid" && sample.id === "hybrid_black") {
-          btn.classList.add("is-selected");
-          btn.setAttribute("aria-selected", "true");
-        }
-
-        grid.appendChild(btn);
+      btn.appendChild(swatch);
+      btn.appendChild(meta);
+      btn.addEventListener("click", function () {
+        selectRailingSample(btn);
       });
 
-      group.appendChild(grid);
-      frag.appendChild(group);
+      if (
+        (state.railingColor && sample.id === state.railingColor) ||
+        (!state.railingColor && idx === 0)
+      ) {
+        btn.classList.add("is-selected");
+        btn.setAttribute("aria-selected", "true");
+        state.railingColor = sample.id;
+        state.railingColorName = sample.name;
+        if (railingColorEl) railingColorEl.value = sample.id;
+      }
+
+      grid.appendChild(btn);
     });
 
     railingSampleGallery.innerHTML = "";
-    railingSampleGallery.appendChild(frag);
+    railingSampleGallery.appendChild(grid);
 
-    // Sync default UI label + state (hybrid package)
-    state.railingType = "hybrid";
-    state.railingColor = "hybrid_black";
-    state.railingColorName = "Wood top + black metal";
-    if (railingTypeEl) railingTypeEl.value = "hybrid";
-    if (railingColorEl) railingColorEl.value = "hybrid_black";
-    if (railingSampleSelected) {
+    if (state.railingColorName && railingSampleSelected) {
       railingSampleSelected.hidden = false;
-    }
-    if (railingSampleSelectedLabel) {
-      railingSampleSelectedLabel.textContent =
-        "Hybrid (wood posts/rails + alum spindles) — Wood top + black metal";
+      if (railingSampleSelectedLabel) {
+        railingSampleSelectedLabel.textContent =
+          type.label + " — " + state.railingColorName;
+      }
     }
   }
 
@@ -1810,10 +1943,8 @@
     btn.classList.add("is-selected");
     btn.setAttribute("aria-selected", "true");
 
-    state.railingType = btn.dataset.type || "none";
     state.railingColor = btn.dataset.color || "";
     state.railingColorName = btn.dataset.colorName || "";
-    if (railingTypeEl) railingTypeEl.value = state.railingType;
     if (railingColorEl) railingColorEl.value = state.railingColor;
 
     var full =
@@ -1824,22 +1955,40 @@
       railingSampleSelectedLabel.textContent = full;
     }
 
-    calcAndRenderMaterials();
+    liveRecalc();
+  }
+
+  function onRailingTypeChange() {
+    state.railingType = (railingTypeEl && railingTypeEl.value) || "none";
+    state.railingColor = "";
+    state.railingColorName = "";
+    if (railingColorEl) railingColorEl.value = "";
+    readRailingVariantFromDom();
+    updateRailingSubUi();
+    maybeFillRailingLf();
+    liveRecalc();
   }
 
   function resolveRailing() {
     var key =
       (railingTypeEl && railingTypeEl.value) || state.railingType || "none";
     state.railingType = key;
+    readRailingVariantFromDom();
     var r = RATES.materials.railing[key] || RATES.materials.railing.none;
+    var perLf = r.perLf || 0;
+    var laborPerLf = r.laborPerLf != null ? r.laborPerLf : 0;
     var label = r.label;
+    if (r.variants && state.railingVariant && r.variants[state.railingVariant]) {
+      var v = r.variants[state.railingVariant];
+      perLf = v.perLf;
+      laborPerLf = v.laborPerLf != null ? v.laborPerLf : laborPerLf;
+      label = r.label + " — " + v.name;
+    }
     if (state.railingColorName && key !== "none") {
-      label = r.label + " — " + state.railingColorName;
-    } else if (key === "none") {
-      label = r.label;
+      label = label + " — " + state.railingColorName;
     }
     state.railingLabel = label;
-    return r;
+    return { perLf: perLf, laborPerLf: laborPerLf, label: label };
   }
 
   function calcAndRenderMaterials() {
@@ -1869,10 +2018,10 @@
         fastenerCost = state.sqft * (RATES.materials.fastenersPerSqft || 0);
       }
     }
-    var railCost =
-      hasDecking || keyIsRailing(state.railingType)
-        ? state.railingLf * (rail.perLf || 0)
-        : state.railingLf * (rail.perLf || 0);
+    var railCost = 0;
+    if (keyIsRailing(state.railingType) && state.railingLf > 0) {
+      railCost = state.railingLf * (rail.perLf || 0);
+    }
 
     // Stair STRUCTURE materials always when steps > 0 (face boards in deck sf)
     var stairDetail = calcStairMaterials(
@@ -1887,9 +2036,9 @@
     var pier = calcPierUpgrade();
     var pierCost = pier.total || 0;
 
-    // Rail install labor is flat $35/LF for all types (no hybrid premium)
-    // Refresh framing + composite install from current decking choice
+    // Refresh framing + board install from current decking choice
     calcLabor();
+    syncRailingLfHighlight();
     renderLaborBreakdown();
 
     var materialsTotal =
@@ -1910,13 +2059,53 @@
       total: materialsTotal,
     };
     var permitFee = calcPermitFee().permit || 0;
-    var matForGrand = state.wantMaterials ? materialsTotal : pierCost;
+    // Railing materials follow the railing dropdown, even if decking is labor-only.
+    var matForGrand = state.wantMaterials
+      ? materialsTotal
+      : railCost + pierCost;
     state.grandTotal = state.labor.total + matForGrand + permitFee;
     renderLivePanel();
   }
 
   function keyIsRailing(k) {
     return k && k !== "none";
+  }
+
+  function shortRailLabel(label) {
+    var s = String(label || "");
+    var cut = s.indexOf(" — ");
+    return cut > 0 ? s.slice(0, cut) : s;
+  }
+
+  function suggestedRailingLf(sqft) {
+    if (!(sqft > 0)) return 0;
+    return Math.max(8, Math.round(4 * Math.sqrt(sqft)));
+  }
+
+  function maybeFillRailingLf() {
+    var lfEl = document.getElementById("railing-lf");
+    if (!lfEl) return;
+    if (state.railingLfTouched) return;
+    if (!keyIsRailing(state.railingType)) return;
+    if (state.railingLf > 0) return;
+    var suggested = suggestedRailingLf(state.sqft);
+    if (suggested <= 0) return;
+    lfEl.value = String(suggested);
+    state.railingLf = suggested;
+    var hint = document.getElementById("railing-lf-hint");
+    if (hint) {
+      hint.textContent =
+        "Filled " +
+        suggested +
+        " LF from a square deck that size. Edit to your real perimeter + stair rail.";
+    }
+  }
+
+  function syncRailingLfHighlight() {
+    var lfEl = document.getElementById("railing-lf");
+    if (!lfEl) return;
+    var need = keyIsRailing(state.railingType) && state.railingLf <= 0;
+    lfEl.classList.toggle("is-needed", need);
   }
 
   function escapeHtml(s) {
@@ -1975,7 +2164,9 @@
         money(state.labor.treatedInstall || 0),
       "Labor — Redeck: " + money(state.labor.redeck || 0),
       "Labor — Demo & dispose: " + money(state.labor.demoDispose || 0),
-      "Labor — Railing install ($35/LF all types): " + money(state.labor.railing),
+      "Labor — Railing install: " + money(state.labor.railing),
+      "Railing system: " + (state.railingLabel || "No railing"),
+      "Railing variant: " + (state.railingVariant || "—"),
       "Labor — Steps: " + money(state.labor.steps),
       "Labor total: " + money(state.labor.total),
       "Materials total: " +
@@ -2131,14 +2322,14 @@
           (state.deckingType === "treated" ? "Pressure-treated" : "—")
         : "n/a";
     }
-    document.getElementById("f-railing-type").value = state.wantMaterials
-      ? state.railingLabel || "—"
-      : "n/a";
+    document.getElementById("f-railing-type").value = state.railingLabel || "—";
     var railColorField = document.getElementById("f-railing-color");
     if (railColorField) {
-      railColorField.value = state.wantMaterials
-        ? state.railingColorName || "—"
-        : "n/a";
+      railColorField.value = state.railingColorName || "—";
+    }
+    var railVarField = document.getElementById("f-railing-variant");
+    if (railVarField) {
+      railVarField.value = state.railingVariant || "—";
     }
     var fFraming = document.getElementById("f-framing-mat");
     if (fFraming) {
@@ -2207,6 +2398,9 @@
       pType && pType.value === "redeck" ? "redeck" : "new_build";
     state.sqft = Math.round(num(document.getElementById("deck-sqft"), 0));
     state.railingLf = Math.round(num(document.getElementById("railing-lf"), 0));
+    state.railingType =
+      (railingTypeEl && railingTypeEl.value) || state.railingType || "none";
+    readRailingVariantFromDom();
     state.steps = Math.round(num(document.getElementById("num-steps"), 0));
     var platEl = document.querySelector('input[name="platforms"]:checked');
     var platVal = platEl ? parseInt(platEl.value, 10) : 1;
@@ -2284,11 +2478,26 @@
         liveRecalc();
       });
     }
+    if (railingTypeEl) {
+      railingTypeEl.addEventListener("change", onRailingTypeChange);
+    }
+    document.querySelectorAll('input[name="cable_post"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    document.querySelectorAll('input[name="glass_system"]').forEach(function (el) {
+      el.addEventListener("change", liveRecalc);
+    });
+    var lfEl = document.getElementById("railing-lf");
+    if (lfEl) {
+      lfEl.addEventListener("input", function () {
+        state.railingLfTouched = true;
+      });
+    }
   }
 
   /**
    * Default realistic package for ad traffic:
-   * Trex Enhance (first sample) + hybrid rail — not labor-only $0 materials.
+   * Trex Enhance (first sample). Railing starts at "No railing" until they pick a system.
    */
   function applyDefaultPackage() {
     if (deckingTypeEl) {
@@ -2327,7 +2536,9 @@
   }
 
   bindLiveInputs();
-  renderRailingGallery();
+  if (railingTypeEl) railingTypeEl.value = "none";
+  state.railingType = "none";
+  updateRailingSubUi();
   applyDefaultPackage();
   liveRecalc();
 

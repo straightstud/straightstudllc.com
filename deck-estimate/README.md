@@ -20,7 +20,9 @@
 Labor and materials rates are final sell prices (materials already include 20% upcharge).  
 Edit only `RATES` in `calculator.js` if prices change.
 
-- **No materials:** board install + steps priced as TimberTech Advanced PVC Vintage; framing labor × 1.20.
+- **Railing:** dropdown (none / treated / composite / aluminum / cable / glass). Cable asks wood vs aluminum posts. Glass asks spigots vs enclosed frame. Labor is per system. Selecting a system with 0 LF auto-fills a square-deck perimeter from sq ft.
+- **Alum posts:** floor $100 each (Westbury 2x2 kit $103, Trex Select from $119). Cable alum posts Feeney $243–$281. Glass spigot HD kit ~$166/LF materials.
+- **No materials:** board install + steps priced as TimberTech Advanced PVC Vintage; framing labor × 1.20. Railing materials still add if a railing type is selected.
 - **Advanced PVC colors (official TimberTech):** Harvest (3), Harvest+ (2), Landmark (4), Vintage (6).
 - **Board $:** Advanced PVC ~$180 / 20′ 1x6 grooved, prorated to $/sf (8% waste × 1.20) = $25.45/sf sell.
 - **Piers:** (tube + bags + #5 rebar) × 1.06 tax × 1.20 markup + 1 hr @ $80. User enters count including stairs.
@@ -30,5 +32,5 @@ Edit only `RATES` in `calculator.js` if prices change.
 | File | Role |
 |------|------|
 | `index.html` | Wizard UI + forms |
-| `calculator.js` | Rates + math + FormSubmit payload |
+| `calculator.js` | Rates + math + FormSubmit payload (`?v=20260819` on index) |
 | `calculator.css` | Calculator layout (uses site header/footer styles too) |

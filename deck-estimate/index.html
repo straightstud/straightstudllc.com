@@ -17,7 +17,7 @@
     gtag('config', 'G-XSX8FN3QLS');
   </script>
   <script src="../js/analytics.js"></script>
-  <link rel="stylesheet" href="calculator-20260814.css">
+  <link rel="stylesheet" href="calculator.css?v=20260819b">
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -90,7 +90,7 @@
             <div class="form-group">
               <label for="railing-lf">Railing (linear ft)</label>
               <input type="number" id="railing-lf" min="0" max="5000" step="1" placeholder="e.g. 48" inputmode="numeric" value="0">
-              <span class="hint">Include deck edges + stair railing LF</span>
+              <span class="hint" id="railing-lf-hint">Deck edges + stair rail. Pick a railing type below — this number is what gets priced.</span>
             </div>
             <div class="form-group">
               <label for="num-steps">Number of steps</label>
@@ -224,8 +224,8 @@
         <section class="card" id="section-materials" aria-labelledby="mat-title">
           <h2 id="mat-title">2. Materials</h2>
           <p class="panel-lead">
-            Starts with a common West Michigan package (Trex Enhance + hybrid rail) so the total looks like a real project.
-            Change anything — or choose labor only if you are providing the materials.
+            Starts with Trex Enhance so the total looks like a real project.
+            Pick a railing type to add rail labor and materials — or leave “No railing.”
           </p>
 
           <div class="form-group">
@@ -271,25 +271,59 @@
             </div>
           </div>
 
-          <div class="sample-panel sample-panel--railing" id="railing-sample-panel">
+          <div class="form-group">
+            <label for="railing-type">Railing type</label>
+            <select id="railing-type">
+              <option value="none" selected>No railing</option>
+              <option value="treated_wood">Treated rail / spindles / posts</option>
+              <option value="composite">Composite rail / spindles / sleeves</option>
+              <option value="aluminum">Aluminum rail / posts</option>
+              <option value="cable">Cable rail system</option>
+              <option value="glass">Glass rail</option>
+            </select>
+            <span class="hint">Posts + rail are in the rate. Enter linear feet above (deck edges + stairs) or we fill a square-deck estimate when you pick a system.</span>
+          </div>
+
+          <div id="cable-post-options" class="choice-block choice-block--rail-sub" hidden>
+            <p class="choice-block__sublegend">Cable posts</p>
+            <div class="choice-row">
+              <label class="choice choice--inline">
+                <input type="radio" name="cable_post" value="wood" checked>
+                <span><strong>Wood posts</strong> — PT 4×4 with wood top rail + stainless cable</span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="cable_post" value="aluminum">
+                <span><strong>Aluminum posts</strong> — powder-coated posts + cable</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="glass-system-options" class="choice-block choice-block--rail-sub" hidden>
+            <p class="choice-block__sublegend">Glass system</p>
+            <div class="choice-row">
+              <label class="choice choice--inline">
+                <input type="radio" name="glass_system" value="spigot">
+                <span><strong>Spigots</strong> — exposed glass edges, floor-mount clamps</span>
+              </label>
+              <label class="choice choice--inline">
+                <input type="radio" name="glass_system" value="enclosed" checked>
+                <span><strong>Enclosed</strong> — aluminum frame with glass infill</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sample-panel sample-panel--railing" id="railing-sample-panel" hidden>
             <div class="sample-panel__head">
-              <h3 id="railing-sample-title">Railing samples</h3>
+              <h3 id="railing-sample-title">Railing look</h3>
               <p class="sample-panel__hint">
-                Posts + rail in the rate. Use total LF including stairs. “No railing materials” = labor only or you supply materials.
+                Click a block. Swatches are approximate — we confirm on site.
               </p>
             </div>
             <div id="railing-sample-gallery" class="railing-sample-root" role="listbox" aria-labelledby="railing-sample-title"></div>
             <p class="sample-selected" id="railing-sample-selected" hidden>
               Selected railing: <strong id="railing-sample-selected-label"></strong>
             </p>
-            <select id="railing-type" class="sr-only-select" tabindex="-1" aria-hidden="true">
-              <option value="none">No railing materials</option>
-              <option value="treated_wood">Treated railing + wood spindles</option>
-              <option value="hybrid" selected>Hybrid railing</option>
-              <option value="aluminum">Aluminum railing</option>
-              <option value="composite">Composite railing</option>
-            </select>
-            <input type="hidden" id="railing-color" value="hybrid_black">
+            <input type="hidden" id="railing-color" value="">
           </div>
         </section>
 
@@ -386,6 +420,7 @@
             <input type="hidden" name="decking_color_sample" id="f-decking-color" value="">
             <input type="hidden" name="railing_choice" id="f-railing-type" value="">
             <input type="hidden" name="railing_color_sample" id="f-railing-color" value="">
+            <input type="hidden" name="railing_variant" id="f-railing-variant" value="">
             <input type="hidden" name="framing_materials" id="f-framing-mat" value="">
             <input type="hidden" name="fasteners_hardware" id="f-fasteners" value="">
             <input type="hidden" name="materials_total" id="f-mat-total" value="">
@@ -529,6 +564,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator-20260815.js" defer></script>
+  <script src="calculator.js?v=20260819b" defer></script>
 </body>
 </html>
