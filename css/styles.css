@@ -450,6 +450,17 @@ ul {
   color: var(--text-muted);
   font-size: 0.98rem;
 }
+.service-card__cta {
+  margin-top: 16px;
+}
+.service-card__cta a {
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+.service-card__cta a:hover {
+  text-decoration: underline;
+}
 
 /* ---------- Portfolio ---------- */
 .portfolio-filters {
@@ -787,6 +798,14 @@ ul {
 
 .cta-banner .btn--primary {
   box-shadow: 0 6px 24px rgba(230, 81, 0, 0.4);
+}
+.cta-banner .hero__actions {
+  justify-content: center;
+}
+.cta-banner .btn--secondary {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.65);
 }
 
 /* ---------- Contact ---------- */
