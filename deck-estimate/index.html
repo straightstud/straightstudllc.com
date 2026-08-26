@@ -17,7 +17,7 @@
     gtag('config', 'G-XSX8FN3QLS');
   </script>
   <script src="../js/analytics.js"></script>
-  <link rel="stylesheet" href="calculator.css?v=20260819c">
+  <link rel="stylesheet" href="calculator.css?v=20260826a">
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T583DK7D" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -52,8 +52,10 @@
       <h1>Deck estimate calculator</h1>
       <p>
         Change any option below — <strong>price updates live</strong>.
-        Labor and materials stay separate. When the total is in your budget range,
-        request an on-site review so we can verify scope and finalize the number.
+        Labor and materials stay separate. Railing-only is fine: enter linear feet,
+        pick a railing type, and leave deck square footage at 0.
+        When the total is in your budget range, request an on-site review so we can
+        verify scope and finalize the number.
       </p>
       <p class="disclaimer">
         Rough planning estimate only — not a final contract or locked price until we verify on site and you sign.
@@ -83,14 +85,14 @@
 
           <div class="form-row form-row--3">
             <div class="form-group">
-              <label for="deck-sqft">Deck area (sq ft) <span class="req">*</span></label>
+              <label for="deck-sqft">Deck area (sq ft)</label>
               <input type="number" id="deck-sqft" min="0" max="20000" step="1" placeholder="e.g. 320" inputmode="numeric" value="0">
-              <span class="hint">Labor adjusts with size; materials stay fixed rates.</span>
+              <span class="hint">Leave 0 for railing-only. Enter size only if you also want a full deck estimate.</span>
             </div>
             <div class="form-group">
               <label for="railing-lf">Railing (linear ft)</label>
               <input type="number" id="railing-lf" min="0" max="5000" step="1" placeholder="e.g. 48" inputmode="numeric" value="0">
-              <span class="hint" id="railing-lf-hint">Leave 0 until you know it. Deck edges + stair rail. This number is what gets priced.</span>
+              <span class="hint" id="railing-lf-hint">This is all you need for a railing-only estimate. Deck edges + stair rail. Pick a railing type below to price it.</span>
             </div>
             <div class="form-group">
               <label for="num-steps">Number of steps</label>
@@ -224,8 +226,8 @@
         <section class="card" id="section-materials" aria-labelledby="mat-title">
           <h2 id="mat-title">2. Materials</h2>
           <p class="panel-lead">
-            Starts with Trex Enhance so the total looks like a real project.
-            Pick a railing type to add rail labor and materials — or leave “No railing.”
+            For railing-only, pick a railing type and enter linear feet above — decking can stay as-is (it adds $0 until you enter deck sq ft).
+            For a full deck, starts with Trex Enhance so the total looks like a real project.
           </p>
 
           <div class="form-group">
@@ -281,7 +283,7 @@
               <option value="cable">Cable rail system</option>
               <option value="glass">Glass rail</option>
             </select>
-            <span class="hint">Posts + rail are in the rate. Enter linear feet above (deck edges + stairs) — railing stays $0 until you type LF.</span>
+            <span class="hint">Posts + rail are in the rate. Enter linear feet above — railing stays $0 until you type LF. Deck sq ft is not required.</span>
           </div>
 
           <div id="cable-post-options" class="choice-block choice-block--rail-sub" hidden>
@@ -493,8 +495,8 @@
               <li>Unforeseen framing repairs (redeck) or poor soil / access</li>
               <li>HOA fees or engineer stamps if required</li>
             </ul>
-            <p class="live-exclusions__fine">
-              New-build framing includes 16″ composite pads, gravel, and 6×6 posts. Building &amp; zoning permit allowance ($350) is included; final city fees vary by township.
+            <p class="live-exclusions__fine" id="live-exclusions-fine">
+              Railing-only: leave deck sq ft at 0. Full new-build framing includes 16″ composite pads, gravel, and 6×6 posts. Building &amp; zoning permit allowance ($350) is added only when deck sq ft is entered; final city fees vary by township.
             </p>
           </div>
 
@@ -564,6 +566,6 @@
   </footer>
 
   <script src="../js/main.js" defer></script>
-  <script src="calculator.js?v=20260819c" defer></script>
+  <script src="calculator.js?v=20260826a" defer></script>
 </body>
 </html>

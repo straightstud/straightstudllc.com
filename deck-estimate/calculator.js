@@ -9,6 +9,7 @@
  * All math runs locally in the browser — no pricing API on each keystroke.
  *
  * Railing LF includes stairs. Unit rates are never displayed to customers.
+ * Deck sq ft is optional — railing-only quotes (type + LF, sq ft left at 0) are allowed.
  *
  * Size bands (local median reported deck ~220–225 sf):
  *   <200 sf     — small-job labor premium
@@ -1227,12 +1228,20 @@
     if (elPermit) elPermit.textContent = money(permitTotal);
     if (elGrand) elGrand.textContent = money(grand);
     if (elPsf) {
-      elPsf.textContent =
-        state.sqft > 0
-          ? "About " +
-            money(grand / state.sqft) +
-            " per sq ft planning total (this estimate)"
-          : "Enter square footage to see pricing";
+      if (state.sqft > 0) {
+        elPsf.textContent =
+          "About " +
+          money(grand / state.sqft) +
+          " per sq ft planning total (this estimate)";
+      } else if (hasRailingScope()) {
+        elPsf.textContent =
+          "About " +
+          money(grand / state.railingLf) +
+          " per linear ft planning total (railing only)";
+      } else {
+        elPsf.textContent =
+          "Enter railing linear feet (and pick a type), or deck sq ft for a full estimate";
+      }
     }
 
     // Warn when a brand is picked but no line/color yet.
@@ -1300,8 +1309,18 @@
 
     var html = "";
     if (state.sqft < 1) {
-      html =
-        '<div class="totals__row totals__row--muted"><span>Enter deck sq ft to start</span><span></span></div>';
+      if (hasRailingScope()) {
+        html =
+          '<div class="totals__row totals__row--design-note"><span>Railing only — deck sq ft left at 0</span><span></span></div>';
+      } else if (keyIsRailing(state.railingType)) {
+        html = "";
+      } else if (state.railingLf > 0) {
+        html =
+          '<div class="totals__row totals__row--warn"><span>Linear feet entered — pick a railing type to price it</span><span>$0</span></div>';
+      } else {
+        html =
+          '<div class="totals__row totals__row--muted"><span>Enter railing LF + type, or deck sq ft for a full estimate</span><span></span></div>';
+      }
     } else if (isNewBuild()) {
       if (L.framing > 0) {
         html +=
@@ -1467,7 +1486,14 @@
     var br = document.getElementById("live-breakdown");
     if (br) br.innerHTML = html;
     var ban = document.getElementById("warranty-banner");
-    if (ban) ban.hidden = !isNewBuild();
+    if (ban) ban.hidden = !isNewBuild() || state.sqft < 1;
+
+    var exclFine = document.getElementById("live-exclusions-fine");
+    if (exclFine) {
+      exclFine.textContent = hasRailingScope() && state.sqft < 1
+        ? "Railing-only planning total: labor + railing materials. Building & zoning permit allowance is not added until you enter deck sq ft. Final city fees vary by township."
+        : "New-build framing includes 16″ composite pads, gravel, and 6×6 posts. Building & zoning permit allowance ($350) is included when deck sq ft is entered; final city fees vary by township.";
+    }
 
     // Scope of work — framing notes (sticky + checkout)
     var scopeHtml = "";
@@ -2069,6 +2095,10 @@
     return k && k !== "none";
   }
 
+  function hasRailingScope() {
+    return keyIsRailing(state.railingType) && (state.railingLf || 0) > 0;
+  }
+
   function shortRailLabel(label) {
     var s = String(label || "");
     var cut = s.indexOf(" — ");
@@ -2099,12 +2129,17 @@
       "City: " + (state.city || "—"),
       "",
       "Project type: " +
-        (isNewBuild() ? "New build" : "Redeck"),
+        (state.sqft < 1 && hasRailingScope()
+          ? "Railing only"
+          : isNewBuild()
+            ? "New build"
+            : "Redeck"),
       "Warranty: " +
         (isNewBuild()
           ? RATES.warrantyNewBuild
           : "Workmanship warranty per contract (redeck)"),
-      "Deck sq ft: " + state.sqft,
+      "Deck sq ft: " +
+        (state.sqft < 1 ? "0 (railing only — not entered)" : state.sqft),
       "Platforms: " + platformLabel(state.platforms),
       "Deck shape: " + shapeLabel(state.deckShape),
       "Railing linear ft: " + state.railingLf,
@@ -2212,7 +2247,12 @@
     readContactFromForm();
     var fType = document.getElementById("f-project-type");
     if (fType) {
-      fType.value = isNewBuild() ? "New build" : "Redeck";
+      fType.value =
+        state.sqft < 1 && hasRailingScope()
+          ? "Railing only"
+          : isNewBuild()
+            ? "New build"
+            : "Redeck";
     }
     var fWar = document.getElementById("f-warranty");
     if (fWar) {
@@ -2514,9 +2554,24 @@
     setError("err-4", "");
     liveRecalc();
     readContactFromForm();
-    if (state.sqft < 1) {
+    if (state.sqft < 1 && !hasRailingScope()) {
       e.preventDefault();
-      setError("err-4", "Enter deck area in square feet before submitting.");
+      if (keyIsRailing(state.railingType) && state.railingLf < 1) {
+        setError(
+          "err-4",
+          "Enter railing linear feet to price it, or enter deck square footage for a full estimate."
+        );
+      } else if (state.railingLf > 0 && !keyIsRailing(state.railingType)) {
+        setError(
+          "err-4",
+          "Pick a railing type to price the linear feet you entered, or enter deck square footage."
+        );
+      } else {
+        setError(
+          "err-4",
+          "Enter railing linear feet and pick a railing type, or enter deck square footage."
+        );
+      }
       return;
     }
     if (!state.name) {
